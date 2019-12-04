@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.13)
+project(GladApp CXX)
+set(SOURCES Source/main.cpp)
+list(TRANSFORM SOURCES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${SOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES})
