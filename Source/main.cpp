@@ -1,3 +1,4 @@
+#include <glad/glad.h>
 #include <glfw/glfw3.h>
 #include <iostream>
 
@@ -6,6 +7,6 @@ int main(int argc, char* argv[]) {
 	
 	glfwInit();
 	glfwTerminate();
-	
+
 	return 0;
 }
