@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.13)
+set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "")
 project(GladApp CXX)
 
 add_subdirectory(Libraries/glfw)
@@ -21,8 +22,13 @@ add_dependencies(${PROJECT_NAME}
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
      set(PLATFORM_LIBS OpenGL32)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    message (WARNING "Linux libraries not linked!")
-	# TODO
+	set(PLATFORM_LIBS
+    GL
+    X11
+    Xrandr
+    Xi
+    m
+)
 endif()
 
 target_link_libraries (${PROJECT_NAME} ${PLATFORM_LIBS})
