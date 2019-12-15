@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
 	char infoLog[512];
 	glad_glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
 
-	if (!success){
+	if (!success) {
 		glGetShaderInfoLog(vertex_shader, 512, NULL, infoLog);
 		//Vertex shader error
 		std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
 
 	//Check for shader compile errors
 	glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-	if (!success){
+	if (!success) {
 		glGetShaderInfoLog(fragment_shader, 512, NULL, infoLog);
 		//Fragment shader error
 		std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
@@ -98,14 +98,12 @@ int main(int argc, char* argv[]) {
 
 	//Set up vertex data and configure vertex attributes
 	float vertices[] = {
-		 0.5f,  0.5f, 0.0f,  //Top right
-		 0.5f, -0.5f, 0.0f,  //Bottom right
+		0.5f,  -0.5f, 0.0f,  //Bottom right
 		-0.5f, -0.5f, 0.0f,  //Bottom left
-		-0.5f,  0.5f, 0.0f   //Top left 
+		0.0f, 0.5f, 0.0f,  //Top
 	};
 	unsigned int indices[] = {
-		0, 1, 3,  //First Triangle
-		1, 2, 3   //Second Triangle
+		0, 1, 2  //First Triangle
 	};
 
 	unsigned int VBO, VAO, EBO;
@@ -114,7 +112,7 @@ int main(int argc, char* argv[]) {
 	glGenBuffers(1, &EBO);
 
 	glBindVertexArray(VAO); //Bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-	
+
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
@@ -142,7 +140,7 @@ int main(int argc, char* argv[]) {
 		//Draws shape
 		glUseProgram(shader_program);
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
 		//Checks if keys/mouse was pressed or if mouse was moved
 		glfwSwapBuffers(window);
@@ -154,7 +152,7 @@ int main(int argc, char* argv[]) {
 }
 
 //Process all input
-void process_input(GLFWwindow* window){
+void process_input(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 }
@@ -164,4 +162,3 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	//Makes sure the viewport matches the new window dimensions
 	glViewport(0, 0, width, height);
 }
-
