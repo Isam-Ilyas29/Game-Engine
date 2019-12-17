@@ -8,7 +8,7 @@
 #include <iostream>
 
 //Constructor reads and builds the shader
-Shadeer::Shader(const char* vertex_path, const char* fragment_path) {
+Shader::Shader(const char* vertex_path, const char* fragment_path) {
     //Retrieves the vertex/fragment source code from filePath
     std::string vertex_code;
     std::string fragment_code;
@@ -99,26 +99,26 @@ Shadeer::Shader(const char* vertex_path, const char* fragment_path) {
 
 //Activate the shader
 /*------------------------------------------------------------------------*/
-void Rect::use() {
+void Shader::use() {
     glUseProgram(ID);
 }
 //Utility uniform functions (query a uniform location and set its value)
 /*------------------------------------------------------------------------*/
-void Rect::set_bool(const std::string& name, bool value) const {
+void Shader::set_bool(const std::string& name, bool value) const {
     glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
 }
 /*------------------------------------------------------------------------*/
-void Rect::set_int(const std::string& name, int value) const {
+void Shader::set_int(const std::string& name, int value) const {
     glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }
 /*------------------------------------------------------------------------*/
-void Rect::set_float(const std::string& name, float value) const {
+void Shader::set_float(const std::string& name, float value) const {
     glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
 /*------------------------------------------------------------------------*/
 
 //Utility function for checking shader compilation/linking errors.
-void Rect::checkCompileErrors(unsigned int shader, std::string type) {
+void Shader::checkCompileErrors(unsigned int shader, std::string type) {
     int success;
     char infoLog[1024];
     if (type != "PROGRAM") {
