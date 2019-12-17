@@ -2,3 +2,4 @@ BuildDirectory
 .vs
 out/**
 .vscode
+ExeDirectory

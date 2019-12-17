@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	//Build and compile shader program
-	Shader our_shader(environment::ResourcePath("shader.fs").data(), environment::ResourcePath("shader.vs").data());
+	Shader our_shader(environment::ResourcePath("shader.vs").data(), environment::ResourcePath("shader.fs").data());
 
 	//Set up vertex data and configure vertex attributes
 	float vertices[] = {
