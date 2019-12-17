@@ -5,6 +5,16 @@
 
 #include <iostream>
 
+static void GLClearError() {
+	while (glGetError() != GL_NO_ERROR);
+}
+
+static void GlCheckError() {
+	while (GLenum error = glGetError()) {
+		std::cerr << "[OpenGL Error] (" << error << ")" << std::endl;
+	}
+}
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void process_input(GLFWwindow *window);
 
