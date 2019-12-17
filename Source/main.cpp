@@ -1,9 +1,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "shader.h"
-
 #include <iostream>
+
+#include "shader.h"
 
 static void GLClearError() {
 	while (glGetError() != GL_NO_ERROR);
@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	//Build and compile shader program
-	Shader our_shader("shader.fs", "shader.vs");
+	Shader our_shader("Resources/shader.fs", "Resources/shader.vs");
 
 	//Set up vertex data and configure vertex attributes
 	float vertices[] = {
