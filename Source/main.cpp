@@ -2,27 +2,30 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <assert.h>
 
 #include "shader.h"
-
-static void GLClearError() {
-	while (glGetError() != GL_NO_ERROR);
-}
-
-static void GlCheckError() {
-	while (GLenum error = glGetError()) {
-		std::cerr << "[OpenGL Error] (" << error << ")" << std::endl;
-	}
-}
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void process_input(GLFWwindow *window);
+#include "environment/environment.h"
 
 //Screen size settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 int main(int argc, char* argv[]) {
+	
+	//
+#if defined(_WIN32) || defined(_WIN64)
+	const char PATH_DELIM = '\\';
+#else
+	const char PATH_DELIM = '/';
+#endif
+
+	std::string exeFile = argv[0];
+	environment::exeDirectory = exeFile.substr(0, exeFile.find_last_of(PATH_DELIM));
+	environment::resourcesPath = environment::exeDirectory + "/../Resources";
+
+	void framebuffer_size_callback(GLFWwindow * window, int width, int height);
+	void process_input(GLFWwindow * window);
 
 	//Initialises 'glfw core 3.3'
 	glfwInit();
@@ -49,7 +52,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	//Build and compile shader program
-	Shader our_shader("Resources/shader.fs", "Resources/shader.vs");
+	Shader our_shader(environment::ResourcePath("shader.fs").data(), environment::ResourcePath("shader.vs").data());
 
 	//Set up vertex data and configure vertex attributes
 	float vertices[] = {
