@@ -1,1 +1,2 @@
 ADHM-8EGW-WK8Z-RTHN = Chapter 5, Hello-Triangle
+BGFW-7DBS-ND78-NDUW = Chapter 6, Shaders (+ Environment Addition)

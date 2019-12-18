@@ -11,6 +11,8 @@ set(SOURCES
     Source/shader.h
     Source/environment/environment.cpp
     Source/environment/environment.h
+    Source/stb_image/stb_image.h
+    Source/stb_image/stb_image.cpp
 )
 list(TRANSFORM SOURCES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${SOURCES})

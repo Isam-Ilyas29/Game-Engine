@@ -38,7 +38,7 @@ Shader::Shader(const char* vertex_path, const char* fragment_path) {
     }
     //If it fails then display error (Except failure)
     catch (std::ifstream::failure e) {
-        //Shader filePath error message
+        //Shader filePath error message:
         std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
     }
 
@@ -60,7 +60,7 @@ Shader::Shader(const char* vertex_path, const char* fragment_path) {
     glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(vertex, 512, NULL, info_log);
-        //Vertex shader error message
+        //Vertex shader error message:
         std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << info_log << std::endl;
     };
 
@@ -73,7 +73,7 @@ Shader::Shader(const char* vertex_path, const char* fragment_path) {
     glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(fragment, 512, NULL, info_log);
-        //Fragment shader error message
+        //Fragment shader error message:
         std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << info_log << std::endl;
     }
 
@@ -87,7 +87,7 @@ Shader::Shader(const char* vertex_path, const char* fragment_path) {
     glGetProgramiv(ID, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(ID, 512, NULL, info_log);
-        //Shader program error message
+        //Shader program error message:
         std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << info_log << std::endl;
     }
 
@@ -104,15 +104,15 @@ void Shader::use() {
 }
 //Utility uniform functions (query a uniform location and set its value)
 /*------------------------------------------------------------------------*/
-void Shader::set_bool(const std::string& name, bool value) const {
+void Shader::setBool(const std::string& name, bool value) const {
     glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
 }
 /*------------------------------------------------------------------------*/
-void Shader::set_int(const std::string& name, int value) const {
+void Shader::setInt(const std::string& name, int value) const {
     glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }
 /*------------------------------------------------------------------------*/
-void Shader::set_float(const std::string& name, float value) const {
+void Shader::setFloat(const std::string& name, float value) const {
     glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
 /*------------------------------------------------------------------------*/
@@ -125,6 +125,7 @@ void Shader::checkCompileErrors(unsigned int shader, std::string type) {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (!success) {
             glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+            //Shader compiling error message:
             std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
         }
     }
@@ -132,6 +133,7 @@ void Shader::checkCompileErrors(unsigned int shader, std::string type) {
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         if (!success) {
             glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+            //Program linkin error message:
             std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
         }
     }
