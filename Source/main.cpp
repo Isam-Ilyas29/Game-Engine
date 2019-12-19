@@ -12,8 +12,10 @@
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+bool polygon_mode;
+
 int main(int argc, char* argv[]) {
-	
+
 	//Fixes path issues
 #if defined(_WIN32) || defined(_WIN64)
 	const char PATH_DELIM = '\\';
@@ -28,7 +30,8 @@ int main(int argc, char* argv[]) {
 	/*----------------------------------------------------------------------------------*/
 
 	void framebufferSizeCallback(GLFWwindow * window, int width, int height);
-	void processInput(GLFWwindow * window);
+	void processInput(GLFWwindow * window, int key, int scancode, int action, int mods);
+	void polygonToggle(GLFWwindow * window);
 
 	/*----------------------------------------------------------------------------------*/
 
@@ -48,6 +51,10 @@ int main(int argc, char* argv[]) {
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+
+	//
+	glfwSetKeyCallback(window, processInput);
+
 
 	//Loads all OpenGL function pointers
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -97,9 +104,8 @@ int main(int argc, char* argv[]) {
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
-	//Draws outlines 'glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);'
-
 	/*----------------------------------------------------------------------------------*/
+
 	unsigned int texture1, texture2;
 	int width, height, nrChannels;
 
@@ -110,7 +116,7 @@ int main(int argc, char* argv[]) {
 	//Loads and creates textures
 	glGenTextures(1, &texture1);
 	glBindTexture(GL_TEXTURE_2D, texture1);
-	
+
 	//Sets the texture wrapping parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -125,14 +131,14 @@ int main(int argc, char* argv[]) {
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	//If the texture fails to load
-	else{
+	else {
 		//Texture loading error message [1]:
 		std::cerr << "Failed to load texture_one" << std::endl;
 	}
 
 	//Free's image memory
 	stbi_image_free(data);
-	
+
 	//TEXTURE 2
 	//Loads and creates textures
 	glGenTextures(1, &texture2);
@@ -167,8 +173,18 @@ int main(int argc, char* argv[]) {
 
 	//Render loop
 	while (!glfwWindowShouldClose(window)) {
-		//Checks for input
-		processInput(window);
+		//Polygonmode variable is set to false, so user can toggle it on -as they desire
+		polygon_mode = false;
+		//Calls function to check if user wants to toggle 'glPolygonMode'
+		polygonToggle(window);
+
+		//Allows user to toggle 'glPolygonMode' on and off
+		if (polygon_mode == 1) {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
+		else if (polygon_mode == 0) {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
 
 		//Renders Screen Colour
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -204,10 +220,32 @@ int main(int argc, char* argv[]) {
 
 /*----------------------------------------------------------------------------------*/
 
+void polygonToggle(GLFWwindow* window) {
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+		polygon_mode = !polygon_mode;
+	}
+}
+
 //Process all input
-void processInput(GLFWwindow* window) {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-	glfwSetWindowShouldClose(window, true);
+void processInput(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	switch (key) {
+
+		//'Esc'
+	case GLFW_KEY_ESCAPE:
+		if (action == GLFW_PRESS) {
+			//PRESS = Close window
+			glfwSetWindowShouldClose(window, true);
+		}
+		else if (action == GLFW_RELEASE) {
+			//RELEASE = Pass
+			break;
+		}
+		else if (action == GLFW_REPEAT) {
+			//HELD_DOWN = Pass
+			break;
+		}
+		break;
+	}
 }
 
 //[GLFW] Whenever the window is resized (by OS or user resize) this callback function executes
