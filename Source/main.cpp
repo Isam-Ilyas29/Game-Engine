@@ -14,6 +14,10 @@ const unsigned int SCR_HEIGHT = 600;
 
 bool polygon_mode;
 
+void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+void processInput(GLFWwindow* window, int key, int scancode, int action, int mods);
+void polygonToggle(GLFWwindow* window);
+
 int main(int argc, char* argv[]) {
 
 	//Fixes path issues
@@ -26,12 +30,6 @@ int main(int argc, char* argv[]) {
 	std::string exeFile = argv[0];
 	environment::exeDirectory = exeFile.substr(0, exeFile.find_last_of(PATH_DELIM));
 	environment::resourcesPath = environment::exeDirectory + "/../Resources";
-
-	/*----------------------------------------------------------------------------------*/
-
-	void framebufferSizeCallback(GLFWwindow * window, int width, int height);
-	void processInput(GLFWwindow * window, int key, int scancode, int action, int mods);
-	void polygonToggle(GLFWwindow * window);
 
 	/*----------------------------------------------------------------------------------*/
 
@@ -86,12 +84,12 @@ int main(int argc, char* argv[]) {
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
 
-	glBindVertexArray(VAO); //Bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+	glBindVertexArray(VAO);															 //Bind the Vertex Array Object first
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);												 //Bind and set Vertex Buffer(s)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);										 //Bind EBO, it stores indices that OpenGL uses to decide what vertices to draw
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	//Position attribute
@@ -179,10 +177,10 @@ int main(int argc, char* argv[]) {
 		polygonToggle(window);
 
 		//Allows user to toggle 'glPolygonMode' on and off
-		if (polygon_mode == 1) {
+		if (polygon_mode == true) {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}
-		else if (polygon_mode == 0) {
+		else if (polygon_mode == false) {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
 
@@ -212,6 +210,10 @@ int main(int argc, char* argv[]) {
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
+
+	//De-allocate Textures
+	glDeleteTextures(1, &texture1);
+	glDeleteTextures(1, &texture2);
 
 	//After leaving the loop we would need to terminate window
 	glfwTerminate();
