@@ -7,6 +7,7 @@
 
 #include "shader.h"
 #include "environment/environment.h"
+#include "graphics.h"
 
 //Screen size settings
 const unsigned int SCR_WIDTH = 800;
@@ -80,17 +81,13 @@ int main(int argc, char* argv[]) {
 	};
 
 	unsigned int VBO, VAO, EBO;
+
 	glGenVertexArrays(1, &VAO);
+	generateVAO(VAO);
 	glGenBuffers(1, &VBO);
+	generateVBO(vertices, VBO);
 	glGenBuffers(1, &EBO);
-
-	glBindVertexArray(VAO);															 //Bind the Vertex Array Object first
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);												 //Bind and set Vertex Buffer(s)
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);										 //Bind EBO, it stores indices that OpenGL uses to decide what vertices to draw
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	generateEBO(indices, EBO);
 
 	//Position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);

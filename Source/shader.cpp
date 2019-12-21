@@ -94,7 +94,7 @@ Shader::Shader(const char* vertex_path, const char* fragment_path) {
     //Delete shaders since they are linked to our program and are no longer necessery
     glDeleteShader(vertex);
     glDeleteShader(fragment);
-    glDeleteShader(ID);
+    glDeleteProgram(ID);
 }
 
 //Activate the shader
