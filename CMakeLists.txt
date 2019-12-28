@@ -4,15 +4,15 @@ project(GladApp CXX)
 
 add_subdirectory(Libraries/glfw)
 add_subdirectory(Libraries/glad)
+add_subdirectory(Libraries/stb_image)
 
 set(SOURCES 
     Source/main.cpp
     Source/shader.cpp
     Source/shader.h
+    Source/graphics.h
     Source/environment/environment.cpp
     Source/environment/environment.h
-    Source/stb_image/stb_image.h
-    Source/stb_image/stb_image.cpp
 )
 list(TRANSFORM SOURCES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${SOURCES})
@@ -32,10 +32,12 @@ set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT
 target_link_libraries(${PROJECT_NAME} 
     glfw
     glad
+	stb_image
 )
 add_dependencies(${PROJECT_NAME} 
     glfw
     glad
+	stb_image
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")

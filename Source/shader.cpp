@@ -2,11 +2,6 @@
 
 #include <glad/glad.h>
 
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-
 //Constructor reads and builds the shader
 Shader::Shader(const char* vertex_path, const char* fragment_path) {
     //Retrieves the vertex/fragment source code from filePath
@@ -94,6 +89,9 @@ Shader::Shader(const char* vertex_path, const char* fragment_path) {
     //Delete shaders since they are linked to our program and are no longer necessery
     glDeleteShader(vertex);
     glDeleteShader(fragment);
+}
+
+Shader::~Shader() {
     glDeleteProgram(ID);
 }
 
