@@ -8,9 +8,12 @@ add_subdirectory(Libraries/stb_image)
 
 set(SOURCES 
     Source/main.cpp
-    Source/shader.cpp
     Source/shader.h
+    Source/shader.cpp
     Source/graphics.h
+    Source/graphics.cpp
+	Source/texture.h
+	Source/texture.cpp
     Source/environment/environment.cpp
     Source/environment/environment.h
 )
