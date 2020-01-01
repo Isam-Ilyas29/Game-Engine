@@ -104,60 +104,24 @@ int main(int argc, char* argv[]) {
 			our_attribs->textureCoordAttrib();
 
 			/*----------------------------------------------------------------------------------*/
-			
-			unsigned int texture1, texture2;
+
 			int width, height, nrChannels;
-			std::unique_ptr<Textures> our_texture_wrapping_n_filtering = std::make_unique<Textures>();
 
-
-			//Tells stb_image to flip loaded texture's on the y-axis.
-			stbi_set_flip_vertically_on_load(true);
-
-			//TEXTURE1
-			//Loads and creates textures
-			glGenTextures(1, &texture1);
-			glBindTexture(GL_TEXTURE_2D, texture1);
-
-			our_texture_wrapping_n_filtering->texWrapping();
-			our_texture_wrapping_n_filtering->texFiltering();
-
-			//Loads image | Creates texture | Generates mipmaps
+			//TEXTURE 1
 			unsigned char* data = stbi_load(environment::ResourcePath("Textures/MetalTexture1.jpg").data(), &width, &height, &nrChannels, 0);
-			if (data) {
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-				glGenerateMipmap(GL_TEXTURE_2D);
-			}
-			//If the texture fails to load
-			else {
-				//Texture loading error message [1]:
-				std::cerr << "Failed to load texture_one" << std::endl;
-			}
 
-			//Free's image memory
-			stbi_image_free(data);
+			std::unique_ptr<Texture> our_texture1 = std::make_unique<Texture>(data, width, height, 1);
+
+			our_texture1->getID();
 
 			//TEXTURE 2
-			//Loads and creates textures
-			glGenTextures(1, &texture2);
-			glBindTexture(GL_TEXTURE_2D, texture2);
-
-			our_texture_wrapping_n_filtering->texWrapping();
-			our_texture_wrapping_n_filtering->texFiltering();
-
-			//Loads image | Creates texture | Generates mipmaps
 			data = stbi_load(environment::ResourcePath("Textures/GraffitiTexture1.png").data(), &width, &height, &nrChannels, 0);
-			if (data) {
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-				glGenerateMipmap(GL_TEXTURE_2D);
-			}
-			//If the texture fails to load
-			else {
-				//Texture loading error message [2]:
-				std::cerr << "Failed to load texture_two" << std::endl;
-			}
 
-			//Free's image memory
-			stbi_image_free(data);
+			std::unique_ptr<Texture> our_texture2 = std::make_unique<Texture>(data, width, height, 2);
+
+			our_texture2->getID();
+
+			/*----------------------------------------------------------------------------------*/
 
 			our_shader->use();
 			our_shader->setInt("texture2", 1);
@@ -179,13 +143,13 @@ int main(int argc, char* argv[]) {
 				glClear(GL_COLOR_BUFFER_BIT);
 
 				//Bind textures on corresponding texture units
-				glBindTexture(GL_TEXTURE_2D, texture1);
+				our_texture1->bind();
 
 				//Binds textures on corresponding texture units
 				glActiveTexture(GL_TEXTURE0);				//Texture 1
-				glBindTexture(GL_TEXTURE_2D, texture1);
+				our_texture1->bind();
 				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(GL_TEXTURE_2D, texture2);	   //Texture 2
+				our_texture2->bind();	   //Texture 2
 
 				//Renders shape
 				our_shader->use();
@@ -196,10 +160,6 @@ int main(int argc, char* argv[]) {
 				glfwSwapBuffers(window);
 				glfwPollEvents();
 			}
-		
-			//De-allocate Textures
-			glDeleteTextures(1, &texture1);
-			glDeleteTextures(1, &texture2);
 		}
 	}
 

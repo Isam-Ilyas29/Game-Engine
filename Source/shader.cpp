@@ -73,15 +73,15 @@ Shader::Shader(const char* vertex_path, const char* fragment_path) {
     }
 
     //Shader program
-    ID = glCreateProgram();
-    glAttachShader(ID, vertex);
-    glAttachShader(ID, fragment);
-    glLinkProgram(ID);
+    mID = glCreateProgram();
+    glAttachShader(mID, vertex);
+    glAttachShader(mID, fragment);
+    glLinkProgram(mID);
 
     //Check for linking errors
-    glGetProgramiv(ID, GL_LINK_STATUS, &success);
+    glGetProgramiv(mID, GL_LINK_STATUS, &success);
     if (!success) {
-        glGetProgramInfoLog(ID, 512, NULL, info_log);
+        glGetProgramInfoLog(mID, 512, NULL, info_log);
         //Shader program error message:
         std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << info_log << std::endl;
     }
@@ -92,26 +92,26 @@ Shader::Shader(const char* vertex_path, const char* fragment_path) {
 }
 
 Shader::~Shader() {
-    glDeleteProgram(ID);
+    glDeleteProgram(mID);
 }
 
 //Activate the shader
 /*------------------------------------------------------------------------*/
 void Shader::use() {
-    glUseProgram(ID);
+    glUseProgram(mID);
 }
 //Utility uniform functions (query a uniform location and set its value)
 /*------------------------------------------------------------------------*/
 void Shader::setBool(const std::string& name, bool value) const {
-    glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
+    glUniform1i(glGetUniformLocation(mID, name.c_str()), (int)value);
 }
 /*------------------------------------------------------------------------*/
 void Shader::setInt(const std::string& name, int value) const {
-    glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+    glUniform1i(glGetUniformLocation(mID, name.c_str()), value);
 }
 /*------------------------------------------------------------------------*/
 void Shader::setFloat(const std::string& name, float value) const {
-    glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+    glUniform1f(glGetUniformLocation(mID, name.c_str()), value);
 }
 /*------------------------------------------------------------------------*/
 
