@@ -7,6 +7,7 @@ add_subdirectory(Libraries/glad)
 add_subdirectory(Libraries/stb_image)
 add_subdirectory(Libraries/glm)
 
+#Source files
 set(SOURCES 
     Source/main.cpp
     Source/rendering/shader.h
@@ -39,6 +40,7 @@ target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 
 set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
+#Libraries
 target_link_libraries(${PROJECT_NAME} 
     glfw
     glad
@@ -52,6 +54,7 @@ add_dependencies(${PROJECT_NAME}
     glm
 )
 
+#Windows + Linux Support
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
      set(PLATFORM_LIBS OpenGL32)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
