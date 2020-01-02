@@ -1,6 +1,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
 #include <vector>
@@ -49,8 +52,9 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
+	/*----------------------------------------------------------------------------------*/
+
 	{
-		/*----------------------------------------------------------------------------------*/
 
 		//Build and compile shader program
 		std::unique_ptr<Shader> our_shader = std::make_unique<Shader>(environment::ResourcePath("shader.vs").data(), environment::ResourcePath("shader.fs").data());
@@ -58,10 +62,10 @@ int main(int argc, char* argv[]) {
 		//Set up vertex data and configure vertex attributes
 		std::vector<float> vertices = {
 			//Positions           //Colours           //Texture Coord
-			 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,				//Top right
-			 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,				//Bottom right
-			-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,				//Bottom left
-			-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f				//Top left 
+			 0.5f,  0.5f, 0.0f,   0.0f, 0.0f, 0.0f,   1.0f, 1.0f,				//Top right
+			 0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 0.0f,   1.0f, 0.0f,				//Bottom right
+			-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 0.0f,   0.0f, 0.0f,				//Bottom left
+			-0.5f,  0.5f, 0.0f,   0.0f, 0.0f, 0.0f,   0.0f, 1.0f				//Top left 
 		};
 		std::vector<unsigned int> indices = {
 			0, 1, 3,				//First triangle
@@ -98,20 +102,20 @@ int main(int argc, char* argv[]) {
 			//TEXTURE 1
 			unsigned char* data = stbi_load(environment::ResourcePath("Textures/MetalTexture1.jpg").data(), &width, &height, &nrChannels, 0);
 
-			std::unique_ptr<Texture> our_texture1 = std::make_unique<Texture>(data, width, height, 1);
+			Texture our_texture1(data, width, height, 1);
 			
 			stbi_image_free(data);
 
 			//TEXTURE 2
 			data = stbi_load(environment::ResourcePath("Textures/GraffitiTexture1.png").data(), &width, &height, &nrChannels, 0);
 
-			std::unique_ptr<Texture> our_texture2 = std::make_unique<Texture>(data, width, height, 2);
+			Texture our_texture2(data, width, height, 2);
 			
 			stbi_image_free(data);
 
 			/*----------------------------------------------------------------------------------*/
 
-			our_shader->use();
+			our_shader->use();           
 			our_shader->setInt("texture2", 1);
 
 			/*----------------------------------------------------------------------------------*/
@@ -130,18 +134,37 @@ int main(int argc, char* argv[]) {
 				glClear(GL_COLOR_BUFFER_BIT);
 
 				//Bind textures on corresponding texture units
-				our_texture1->bind();
+				our_texture1.bind();
 
 				//Binds textures on corresponding texture units
 				glActiveTexture(GL_TEXTURE0);				//Texture 1
-				our_texture1->bind();
+				our_texture1.bind();
 				glActiveTexture(GL_TEXTURE1);
-				our_texture2->bind();						//Texture 2
+				our_texture2.bind();						//Texture 
+
+				//First container
+				//---------------------
+				glm::mat4 transform = glm::mat4(1.0f);
+				transform = glm::translate(transform, glm::vec3(0.5f, 0.0f, 0.0f));							//Position on screen
+				transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));		//Position of shape points
+				
+				unsigned int transform_loc = glGetUniformLocation(our_shader->mID, "transform");
+				glUniformMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(transform));
 
 				//Renders shape
-				our_shader->use();
 				glBindVertexArray(VAO);
 				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+				//Second transformation
+				//---------------------
+				transform = glm::mat4(1.0f); // reset it to identity matrix
+				transform = glm::translate(transform, glm::vec3(-0.5f, 0.0f, 0.0f));
+				float scaleAmount = sin(glfwGetTime());
+				transform = glm::scale(transform, glm::vec3(scaleAmount, scaleAmount, scaleAmount));
+				glUniformMatrix4fv(transform_loc, 1, GL_FALSE, &transform[0][0]); // this time take the matrix value array's first element as its memory pointer value
+
+				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
 
 				//Checks if keys/mouse was pressed or if mouse was moved
 				glfwSwapBuffers(window);

@@ -5,6 +5,7 @@ project(GladApp CXX)
 add_subdirectory(Libraries/glfw)
 add_subdirectory(Libraries/glad)
 add_subdirectory(Libraries/stb_image)
+add_subdirectory(Libraries/glm)
 
 set(SOURCES 
     Source/main.cpp
@@ -41,12 +42,14 @@ set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT
 target_link_libraries(${PROJECT_NAME} 
     glfw
     glad
-	stb_image
+    stb_image
+    glm
 )
 add_dependencies(${PROJECT_NAME} 
     glfw
     glad
-	stb_image
+    stb_image
+    glm
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
