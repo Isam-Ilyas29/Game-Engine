@@ -26,7 +26,7 @@ void VertexObjects::generateVBO(const std::vector<float>& vertices, unsigned int
 
 void VertexObjects::generateVAO(unsigned int VAO) {
 	//Binds the Vertex Array Object
-	glBindVertexArray(VAO);	//Bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+	glBindVertexArray(VAO);
 }
 
 void VertexObjects::generateEBO(const std::vector<unsigned int>& indices, unsigned int EBO) {

@@ -2,8 +2,8 @@
 
 
 Texture::Texture(unsigned char* data, int width, int height, GLuint components) 
-	: mData(data), mWidth(width), mHeight(height), mType(0), mID(0){
-	
+: mData(data), mWidth(width), mHeight(height), mType(0){
+
 	switch (components) {
 	case 1:
 		mType = GL_RGB;
@@ -13,7 +13,10 @@ Texture::Texture(unsigned char* data, int width, int height, GLuint components)
 		break;
 	default:
 		std::cerr << "ERROR::TEXTURE::TYPE_NOT_SPECIFIED" << std::endl;
+		break;
 	}
+
+	mID = dataToTextureID(mData, mWidth, mHeight, mType);
 }
 
 Texture::~Texture(){
@@ -22,9 +25,6 @@ Texture::~Texture(){
 
 GLuint Texture::dataToTextureID(unsigned char* data, int width, int height, GLuint type){
 	GLuint textureID;
-
-	//Tells stb_image to flip loaded texture's on the y-axis.
-	stbi_set_flip_vertically_on_load(true);
 
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);
@@ -41,22 +41,14 @@ GLuint Texture::dataToTextureID(unsigned char* data, int width, int height, GLui
 		glTexImage2D(GL_TEXTURE_2D, 0, type, width, height, 0, type, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
-	//If the texture fails to load
 	else {
-		//Texture loading error message [1]:
-		std::cerr << "Failed to load texture_one" << std::endl;
+		std::cerr << "Failed to load texture" << std::endl;
 	}
-
-	stbi_image_free(data);
 
 	return textureID;
 }
 
-GLuint Texture::getID() {
-	if (mID == 0) {
-		mID = dataToTextureID(mData, mWidth, mHeight, mType);
-	}
-
+GLuint Texture::getID() const {
 	return mID;
 }
 

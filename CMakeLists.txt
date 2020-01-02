@@ -8,14 +8,20 @@ add_subdirectory(Libraries/stb_image)
 
 set(SOURCES 
     Source/main.cpp
-    Source/shader.h
-    Source/shader.cpp
-    Source/graphics.h
-    Source/graphics.cpp
-	Source/texture.h
-	Source/texture.cpp
+    Source/rendering/shader.h
+    Source/rendering/shader.cpp
+    Source/rendering/graphics.h
+    Source/rendering/graphics.cpp
+    Source/rendering/texture.h
+    Source/rendering/texture.cpp
     Source/environment/environment.cpp
     Source/environment/environment.h
+    Source/window.h
+    Source/window.cpp
+    Source/input/keyboard.h
+    Source/input/keyboard.cpp
+    Source/input/mouse.h
+    Source/input/mouse.cpp
 )
 list(TRANSFORM SOURCES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${SOURCES})

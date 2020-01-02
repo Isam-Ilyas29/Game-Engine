@@ -2,7 +2,7 @@
 
 #include <glad/glad.h>
 #include <stb_image.h>
-#include "environment/environment.h"
+#include "../environment/environment.h"
 
 #include <iostream>
 
@@ -18,7 +18,7 @@ public:
 	~Texture();
 
 	static GLuint dataToTextureID(unsigned char* data, int width, int height, GLuint type);
-	GLuint getID();
+	GLuint getID() const;
 	void bind();
 	GLuint getType() const;
 	int getWidth() const;

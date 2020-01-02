@@ -6,20 +6,13 @@
 #include <vector>
 #include <assert.h>
 
-#include "shader.h"
+#include "rendering/shader.h"
 #include "environment/environment.h"
-#include "graphics.h"
-#include "texture.h"
+#include "rendering/graphics.h"
+#include "rendering/texture.h"
+#include "window.h"
+#include "input/keyboard.h"
 
-//Screen size settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
-
-bool polygon_mode;
-
-void framebufferSizeCallback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window, int key, int scancode, int action, int mods);
-void polygonToggle(GLFWwindow* window);
 
 int main(int argc, char* argv[]) {
 
@@ -44,22 +37,14 @@ int main(int argc, char* argv[]) {
 
 	//GLFW window creation
 	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "My Game", NULL, NULL);
-	if (window == NULL) {
-		//Window error message:
-		std::cerr << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-		return -1;
-	}
-	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+	
+	windowCreation(window);
 
-	//
 	glfwSetKeyCallback(window, processInput);
 
 
 	//Loads all OpenGL function pointers
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		//GLAD error message:
 		std::cerr << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
@@ -107,19 +92,22 @@ int main(int argc, char* argv[]) {
 
 			int width, height, nrChannels;
 
+			//Tells stb_image to flip loaded texture's on the y-axis.
+			stbi_set_flip_vertically_on_load(true);
+
 			//TEXTURE 1
 			unsigned char* data = stbi_load(environment::ResourcePath("Textures/MetalTexture1.jpg").data(), &width, &height, &nrChannels, 0);
 
 			std::unique_ptr<Texture> our_texture1 = std::make_unique<Texture>(data, width, height, 1);
-
-			our_texture1->getID();
+			
+			stbi_image_free(data);
 
 			//TEXTURE 2
 			data = stbi_load(environment::ResourcePath("Textures/GraffitiTexture1.png").data(), &width, &height, &nrChannels, 0);
 
 			std::unique_ptr<Texture> our_texture2 = std::make_unique<Texture>(data, width, height, 2);
-
-			our_texture2->getID();
+			
+			stbi_image_free(data);
 
 			/*----------------------------------------------------------------------------------*/
 
@@ -132,11 +120,10 @@ int main(int argc, char* argv[]) {
 			while (!glfwWindowShouldClose(window)) {
 
 				//Polygonmode variable is set to false, so user can toggle it on -as they desire
-				polygon_mode = false;
-				//Calls function to check if user wants to toggle 'glPolygonMode'
-				polygonToggle(window);
-				//Allows user to toggle 'glPolygonMode' on and off
-				glPolygonMode(GL_FRONT_AND_BACK, polygon_mode ? GL_LINE : GL_FILL);
+				PolygonToggle pt;
+				pt.polygon_mode = false;
+				pt.toggle(window);
+				glPolygonMode(GL_FRONT_AND_BACK, pt.polygon_mode ? GL_LINE : GL_FILL);
 
 				//Renders Screen Colour
 				glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -149,7 +136,7 @@ int main(int argc, char* argv[]) {
 				glActiveTexture(GL_TEXTURE0);				//Texture 1
 				our_texture1->bind();
 				glActiveTexture(GL_TEXTURE1);
-				our_texture2->bind();	   //Texture 2
+				our_texture2->bind();						//Texture 2
 
 				//Renders shape
 				our_shader->use();
@@ -163,43 +150,7 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	//After leaving the loop we would need to terminate window
 	glfwTerminate();
 	return 0;
 }
 
-/*----------------------------------------------------------------------------------*/
-
-void polygonToggle(GLFWwindow* window) {
-	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
-		polygon_mode = !polygon_mode;
-	}
-}
-
-//Process all input
-void processInput(GLFWwindow* window, int key, int scancode, int action, int mods) {
-	switch (key) {
-
-		//'Esc'
-	case GLFW_KEY_ESCAPE:
-		if (action == GLFW_PRESS) {
-			//PRESS = Close window
-			glfwSetWindowShouldClose(window, true);
-		}
-		else if (action == GLFW_RELEASE) {
-			//RELEASE = Pass
-			break;
-		}
-		else if (action == GLFW_REPEAT) {
-			//HELD_DOWN = Pass
-			break;
-		}
-		break;
-	}
-}
-
-//[GLFW] Whenever the window is resized (by OS or user resize) this callback function executes
-void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
-	//Makes sure the viewport matches the new window dimensions
-	glViewport(0, 0, width, height);
-}

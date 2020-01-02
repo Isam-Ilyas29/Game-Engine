@@ -14,30 +14,23 @@ Shader::Shader(const char* vertex_path, const char* fragment_path) {
     fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
     try {
-        //Opens files
         vShaderFile.open(vertex_path);
         fShaderFile.open(fragment_path);
         std::stringstream vShaderStream, fShaderStream;
 
-        //Reads file's buffer contents into stream
         vShaderStream << vShaderFile.rdbuf();
         fShaderStream << fShaderFile.rdbuf();
 
-        //Closes file handlers
         vShaderFile.close();
         fShaderFile.close();
 
-        //Converts stream into string
         vertex_code = vShaderStream.str();
         fragment_code = fShaderStream.str();
     }
-    //If it fails then display error (Except failure)
     catch (std::ifstream::failure e) {
-        //Shader filePath error message:
         std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
     }
 
-    //Points to the vertex/fragment code
     const char* vShaderCode = vertex_code.c_str();
     const char* fShaderCode = fragment_code.c_str();
 
@@ -55,7 +48,6 @@ Shader::Shader(const char* vertex_path, const char* fragment_path) {
     glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(vertex, 512, NULL, info_log);
-        //Vertex shader error message:
         std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << info_log << std::endl;
     };
 
@@ -68,7 +60,6 @@ Shader::Shader(const char* vertex_path, const char* fragment_path) {
     glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(fragment, 512, NULL, info_log);
-        //Fragment shader error message:
         std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << info_log << std::endl;
     }
 
@@ -82,7 +73,6 @@ Shader::Shader(const char* vertex_path, const char* fragment_path) {
     glGetProgramiv(mID, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(mID, 512, NULL, info_log);
-        //Shader program error message:
         std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << info_log << std::endl;
     }
 
@@ -123,7 +113,6 @@ void Shader::checkCompileErrors(unsigned int shader, std::string type) {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (!success) {
             glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-            //Shader compiling error message:
             std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
         }
     }
@@ -131,7 +120,6 @@ void Shader::checkCompileErrors(unsigned int shader, std::string type) {
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         if (!success) {
             glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-            //Program linkin error message:
             std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
         }
     }
