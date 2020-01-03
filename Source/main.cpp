@@ -40,8 +40,9 @@ int main(int argc, char* argv[]) {
 
 	//GLFW window creation
 	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "My Game", NULL, NULL);
-	
 	windowCreation(window);
+
+	glfwMakeContextCurrent(window);
 
 	glfwSetKeyCallback(window, processInput);
 
@@ -52,12 +53,37 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
+	glEnable(GL_DEPTH_TEST);
+
 	/*----------------------------------------------------------------------------------*/
 
 	{
 
 		//Build and compile shader program
 		std::unique_ptr<Shader> our_shader = std::make_unique<Shader>(environment::ResourcePath("shader.vs").data(), environment::ResourcePath("shader.fs").data());
+
+		//Generates a list of 100 quad(/s) location/translation vectors
+		glm::vec3 translations[100];
+		int index = 0;
+		float offset = 0.1f;
+		for (int y = -10; y < 10; y += 2)
+		{
+			for (int x = -10; x < 10; x += 2)
+			{
+				glm::vec3 translation;
+				translation.x = (float)x / 10.0f + offset;
+				translation.y = (float)y / 10.0f + offset;
+				translation.z = 0;
+				translations[index++] = translation;
+			}
+		}
+
+		//Stores instance data in an array buffer
+		unsigned int instanceVBO;
+		glGenBuffers(1, &instanceVBO);
+		glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, &translations[0], GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		//Set up vertex data and configure vertex attributes
 		std::vector<float> vertices = {
@@ -76,7 +102,7 @@ int main(int argc, char* argv[]) {
 		glGenBuffers(1, &VBO);
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &EBO);
-		
+
 		{
 			//Creates vertex object
 			std::unique_ptr<VertexObjects> our_vertex_objects = std::make_unique<VertexObjects>(VAO, VBO, EBO);
@@ -92,6 +118,13 @@ int main(int argc, char* argv[]) {
 			our_attribs->colourAttrib();
 			our_attribs->textureCoordAttrib();
 
+			//Sets instance data
+			glEnableVertexAttribArray(2);
+			glBindBuffer(GL_ARRAY_BUFFER, instanceVBO); // this attribute comes from a different vertex buffer
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glVertexAttribDivisor(2, 1); // tell OpenGL this is an instanced vertex attribute.
+
 			/*----------------------------------------------------------------------------------*/
 
 			int width, height, nrChannels;
@@ -103,19 +136,19 @@ int main(int argc, char* argv[]) {
 			unsigned char* data = stbi_load(environment::ResourcePath("Textures/MetalTexture1.jpg").data(), &width, &height, &nrChannels, 0);
 
 			Texture our_texture1(data, width, height, 1);
-			
+
 			stbi_image_free(data);
 
 			//TEXTURE 2
 			data = stbi_load(environment::ResourcePath("Textures/GraffitiTexture1.png").data(), &width, &height, &nrChannels, 0);
 
 			Texture our_texture2(data, width, height, 2);
-			
+
 			stbi_image_free(data);
 
 			/*----------------------------------------------------------------------------------*/
 
-			our_shader->use();           
+			our_shader->use();
 			our_shader->setInt("texture2", 1);
 
 			/*----------------------------------------------------------------------------------*/
@@ -146,13 +179,13 @@ int main(int argc, char* argv[]) {
 				glm::mat4 transform = glm::mat4(1.0f);
 				transform = glm::translate(transform, glm::vec3(0.0f, 0.0f, 0.0f));							//Position on screen
 				transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));		//Position of shape points
-				
+
 				unsigned int transform_loc = glGetUniformLocation(our_shader->mID, "transform");
 				glUniformMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(transform));
 
 				//Renders shape
 				glBindVertexArray(VAO);
-				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+				glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 100);
 
 				//Checks if keys/mouse was pressed or if mouse was moved
 				glfwSwapBuffers(window);
@@ -164,4 +197,3 @@ int main(int argc, char* argv[]) {
 	glfwTerminate();
 	return 0;
 }
-
