@@ -142,10 +142,9 @@ int main(int argc, char* argv[]) {
 				glActiveTexture(GL_TEXTURE1);
 				our_texture2.bind();						//Texture 
 
-				//First container
-				//---------------------
+				//Transformations
 				glm::mat4 transform = glm::mat4(1.0f);
-				transform = glm::translate(transform, glm::vec3(0.5f, 0.0f, 0.0f));							//Position on screen
+				transform = glm::translate(transform, glm::vec3(0.0f, 0.0f, 0.0f));							//Position on screen
 				transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));		//Position of shape points
 				
 				unsigned int transform_loc = glGetUniformLocation(our_shader->mID, "transform");
@@ -154,17 +153,6 @@ int main(int argc, char* argv[]) {
 				//Renders shape
 				glBindVertexArray(VAO);
 				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-				//Second transformation
-				//---------------------
-				transform = glm::mat4(1.0f); // reset it to identity matrix
-				transform = glm::translate(transform, glm::vec3(-0.5f, 0.0f, 0.0f));
-				float scaleAmount = sin(glfwGetTime());
-				transform = glm::scale(transform, glm::vec3(scaleAmount, scaleAmount, scaleAmount));
-				glUniformMatrix4fv(transform_loc, 1, GL_FALSE, &transform[0][0]); // this time take the matrix value array's first element as its memory pointer value
-
-				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
 
 				//Checks if keys/mouse was pressed or if mouse was moved
 				glfwSwapBuffers(window);
