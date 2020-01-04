@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
 	windowCreation(window);
 
 	glfwMakeContextCurrent(window);
-
+	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 	glfwSetKeyCallback(window, processInput);
 
 
@@ -62,68 +62,83 @@ int main(int argc, char* argv[]) {
 		//Build and compile shader program
 		std::unique_ptr<Shader> our_shader = std::make_unique<Shader>(environment::ResourcePath("shader.vs").data(), environment::ResourcePath("shader.fs").data());
 
-		//Generates a list of 100 quad(/s) location/translation vectors
-		glm::vec3 translations[100];
-		int index = 0;
-		float offset = 0.1f;
-		for (int y = -10; y < 10; y += 2)
-		{
-			for (int x = -10; x < 10; x += 2)
-			{
-				glm::vec3 translation;
-				translation.x = (float)x / 10.0f + offset;
-				translation.y = (float)y / 10.0f + offset;
-				translation.z = 0;
-				translations[index++] = translation;
-			}
-		}
-
-		//Stores instance data in an array buffer
-		unsigned int instanceVBO;
-		glGenBuffers(1, &instanceVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, &translations[0], GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 		//Set up vertex data and configure vertex attributes
 		std::vector<float> vertices = {
-			//Positions           //Colours           //Texture Coord
-			 0.5f,  0.5f, 0.0f,   0.0f, 0.0f, 0.0f,   1.0f, 1.0f,				//Top right
-			 0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 0.0f,   1.0f, 0.0f,				//Bottom right
-			-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 0.0f,   0.0f, 0.0f,				//Bottom left
-			-0.5f,  0.5f, 0.0f,   0.0f, 0.0f, 0.0f,   0.0f, 1.0f				//Top left 
-		};
-		std::vector<unsigned int> indices = {
-			0, 1, 3,				//First triangle
-			1, 2, 3					//Second triangle
+			//Positions							   
+			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,		
+			 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,		
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,		
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,		
+		    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+		
+		    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,		
+		     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+		    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		
+		    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		
+		     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		
+		    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+		     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		
+		    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+		    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f						
 		};
 
-		unsigned int VBO, VAO, EBO;
+		std::vector<glm::vec3> cube_positions = {
+		  glm::vec3(0.0f,  0.0f,  0.0f),
+		  glm::vec3(2.0f,  5.0f, -15.0f),
+		  glm::vec3(-1.5f, -2.2f, -2.5f),
+		  glm::vec3(-3.8f, -2.0f, -12.3f),
+		  glm::vec3(2.4f, -0.4f, -3.5f),
+		  glm::vec3(-1.7f,  3.0f, -7.5f),
+		  glm::vec3(1.3f, -2.0f, -2.5f),
+		  glm::vec3(1.5f,  2.0f, -2.5f),
+		  glm::vec3(1.5f,  0.2f, -1.5f),
+		  glm::vec3(-1.3f,  1.0f, -1.5f)
+		};
+
+		std::vector<unsigned int> indices = {};
+
+		unsigned int VBO, VAO;
 		glGenBuffers(1, &VBO);
 		glGenVertexArrays(1, &VAO);
-		glGenBuffers(1, &EBO);
 
 		{
 			//Creates vertex object
-			std::unique_ptr<VertexObjects> our_vertex_objects = std::make_unique<VertexObjects>(VAO, VBO, EBO);
+			std::unique_ptr<VertexObjects> our_vertex_objects = std::make_unique<VertexObjects>(VAO, VBO);
 
 			our_vertex_objects->generateVBO(vertices, VBO);
 			our_vertex_objects->generateVAO(VAO);
-			our_vertex_objects->generateEBO(indices, EBO);
 
 			//Creates attributes object
 			std::unique_ptr<Attrib> our_attribs = std::make_unique<Attrib>();
 
 			our_attribs->positionAttrib();
-			our_attribs->colourAttrib();
 			our_attribs->textureCoordAttrib();
-
-			//Sets instance data
-			glEnableVertexAttribArray(2);
-			glBindBuffer(GL_ARRAY_BUFFER, instanceVBO); // this attribute comes from a different vertex buffer
-			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glVertexAttribDivisor(2, 1); // tell OpenGL this is an instanced vertex attribute.
 
 			/*----------------------------------------------------------------------------------*/
 
@@ -164,7 +179,7 @@ int main(int argc, char* argv[]) {
 
 				//Renders Screen Colour
 				glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-				glClear(GL_COLOR_BUFFER_BIT);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 				//Bind textures on corresponding texture units
 				our_texture1.bind();
@@ -173,19 +188,36 @@ int main(int argc, char* argv[]) {
 				glActiveTexture(GL_TEXTURE0);				//Texture 1
 				our_texture1.bind();
 				glActiveTexture(GL_TEXTURE1);
-				our_texture2.bind();						//Texture 
+				our_texture2.bind();						//Texture 2
 
 				//Transformations
+				glm::mat4 view = glm::mat4(1.0f);
+				glm::mat4 projection = glm::mat4(1.0f);
 				glm::mat4 transform = glm::mat4(1.0f);
-				transform = glm::translate(transform, glm::vec3(0.0f, 0.0f, 0.0f));							//Position on screen
-				transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));		//Position of shape points
+
+				view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+				projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+				transform = glm::translate(transform, glm::vec3(0.0f, 0.0f, 0.0f));						
+				transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));	
+
+				our_shader->setMat4("projection", projection);
+				our_shader->setMat4("view", view);
 
 				unsigned int transform_loc = glGetUniformLocation(our_shader->mID, "transform");
 				glUniformMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(transform));
 
-				//Renders shape
+				//Render boxes
 				glBindVertexArray(VAO);
-				glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, 100);
+				for (unsigned int i = 0; i < 10; i++)
+				{
+					glm::mat4 model = glm::mat4(1.0f);
+					model = glm::translate(model, cube_positions[i]);
+					float angle = 20.0f * i;
+					model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+					our_shader->setMat4("model", model);
+
+					glDrawArrays(GL_TRIANGLES, 0, 36);
+				}
 
 				//Checks if keys/mouse was pressed or if mouse was moved
 				glfwSwapBuffers(window);

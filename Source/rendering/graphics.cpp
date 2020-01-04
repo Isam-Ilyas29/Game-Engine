@@ -12,9 +12,15 @@ VertexObjects::VertexObjects(const unsigned int& VAO, const unsigned int& VBO, c
 
 VertexObjects::~VertexObjects() {
 	//De-allocate GLFW resources
-	glDeleteVertexArrays(1, &rVAO);
-	glDeleteBuffers(1, &rVBO);
-	glDeleteBuffers(1, &rEBO);
+	if (rVAO != 0) {
+		glDeleteVertexArrays(1, &rVAO);
+	}
+	if (rEBO != 0) {
+		glDeleteVertexArrays(1, &rEBO);
+	}
+	if (rEBO != 0) {
+		glDeleteVertexArrays(1, &rEBO);
+	}
 }
 
 
@@ -39,17 +45,17 @@ void VertexObjects::generateEBO(const std::vector<unsigned int>& indices, unsign
 /*----------------------------------------------------------------------------------*/
 
 void Attrib::positionAttrib() {
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 }
 
 void Attrib::colourAttrib() {
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 }
 
 void Attrib::textureCoordAttrib() {
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 }
 

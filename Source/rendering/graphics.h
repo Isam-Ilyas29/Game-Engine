@@ -21,6 +21,6 @@ public:
 	void generateVBO(const std::vector<float>& vertices, unsigned int VBO);
 	void generateEBO(const std::vector<unsigned int>& indices, unsigned int EBO);
 
-	VertexObjects(const unsigned int& VAO, const unsigned int& VBO, const unsigned int& EBO);
+	VertexObjects(const unsigned int& VAO, const unsigned int& VBO, const unsigned int& EBO = 0);
 	~VertexObjects();
 };
