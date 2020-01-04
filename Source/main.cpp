@@ -17,6 +17,11 @@
 #include "input/keyboard.h"
 
 
+//Camera
+glm::vec3 camera_pos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
+
 int main(int argc, char* argv[]) {
 
 	//Fixes path issues
@@ -45,7 +50,10 @@ int main(int argc, char* argv[]) {
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 	glfwSetKeyCallback(window, processInput);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
 
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//Loads all OpenGL function pointers
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -164,18 +172,28 @@ int main(int argc, char* argv[]) {
 			/*----------------------------------------------------------------------------------*/
 
 			our_shader->use();
-			our_shader->setInt("texture2", 1);
+			our_shader->setInt("texture2", 1); //Comment out to remove graffiti
 
 			/*----------------------------------------------------------------------------------*/
 
 			//Render loop
 			while (!glfwWindowShouldClose(window)) {
+				extern bool first_mouse;
+				extern float yaw, pitch, lastX, lastY, fov, delta_time, last_frame;
 
 				//Polygonmode variable is set to false, so user can toggle it on -as they desire
 				PolygonToggle pt;
 				pt.polygon_mode = false;
 				pt.toggle(window);
 				glPolygonMode(GL_FRONT_AND_BACK, pt.polygon_mode ? GL_LINE : GL_FILL);
+
+				//Per-frame time logic
+				float currentFrame = glfwGetTime();
+				delta_time = currentFrame - last_frame;
+				last_frame = currentFrame;
+				
+				//Camera input
+				cameraInput(window);
 
 				//Renders Screen Colour
 				glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -185,23 +203,27 @@ int main(int argc, char* argv[]) {
 				our_texture1.bind();
 
 				//Binds textures on corresponding texture units
-				glActiveTexture(GL_TEXTURE0);				//Texture 1
+				glActiveTexture(GL_TEXTURE0);
 				our_texture1.bind();
 				glActiveTexture(GL_TEXTURE1);
-				our_texture2.bind();						//Texture 2
+				our_texture2.bind();
 
-				//Transformations
+				//Projection
+				glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+				our_shader->setMat4("projection", projection);
+
+				//View
 				glm::mat4 view = glm::mat4(1.0f);
-				glm::mat4 projection = glm::mat4(1.0f);
+
+				view = glm::lookAt(camera_pos, camera_pos + camera_front, camera_up);
+
+				our_shader->setMat4("view", view);
+
+				//Transform
 				glm::mat4 transform = glm::mat4(1.0f);
 
-				view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-				projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 				transform = glm::translate(transform, glm::vec3(0.0f, 0.0f, 0.0f));						
 				transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));	
-
-				our_shader->setMat4("projection", projection);
-				our_shader->setMat4("view", view);
 
 				unsigned int transform_loc = glGetUniformLocation(our_shader->mID, "transform");
 				glUniformMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(transform));
