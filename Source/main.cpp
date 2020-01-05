@@ -15,12 +15,9 @@
 #include "rendering/texture.h"
 #include "window.h"
 #include "input/keyboard.h"
+#include "camera/camera_properties.h"
+#include "camera/camera.h"
 
-
-//Camera
-glm::vec3 camera_pos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
 
 int main(int argc, char* argv[]) {
 
@@ -46,6 +43,8 @@ int main(int argc, char* argv[]) {
 	//GLFW window creation
 	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "My Game", NULL, NULL);
 	windowCreation(window);
+
+	glfwSwapInterval(1);
 
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
@@ -174,33 +173,41 @@ int main(int argc, char* argv[]) {
 			our_shader->use();
 			our_shader->setInt("texture2", 1); //Comment out to remove graffiti
 
+			//Avoid cursor jump
+			glfwSetCursorPos(window, lastX, lastY);
+
+			cameraProperties cp;
+			cp.mouseProp(true, -90.0f, 0.0f, (800.0f / 2.0), (600.0 / 2.0), 45.0f);
+
+			float time = 2.0f;
+
 			/*----------------------------------------------------------------------------------*/
 
-			//Render loop
+			//Game loop
 			while (!glfwWindowShouldClose(window)) {
-				extern bool first_mouse;
-				extern float yaw, pitch, lastX, lastY, fov, delta_time, last_frame;
-
 				//Polygonmode variable is set to false, so user can toggle it on -as they desire
 				PolygonToggle pt;
 				pt.polygon_mode = false;
 				pt.toggle(window);
 				glPolygonMode(GL_FRONT_AND_BACK, pt.polygon_mode ? GL_LINE : GL_FILL);
 
-				//Per-frame time logic
-				float currentFrame = glfwGetTime();
-				delta_time = currentFrame - last_frame;
-				last_frame = currentFrame;
+				//Creates camera object
+				Camera camera;
 				
-				//Camera input
+				camera.perFrameTimeLogic();
+
+				//Displays FPS every 2 seconds
+				time -= delta_time;
+				if (time <= 0.0f) {
+					time = 2.0f;
+					camera.framesPerSecond();
+				}
+
 				cameraInput(window);
 
 				//Renders Screen Colour
 				glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-				//Bind textures on corresponding texture units
-				our_texture1.bind();
 
 				//Binds textures on corresponding texture units
 				glActiveTexture(GL_TEXTURE0);
@@ -208,34 +215,22 @@ int main(int argc, char* argv[]) {
 				glActiveTexture(GL_TEXTURE1);
 				our_texture2.bind();
 
-				//Projection
-				glm::mat4 projection = glm::perspective(glm::radians(fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+				//Projection + View + Transform
+				glm::mat4 projection = camera.getMat4Projection();
 				our_shader->setMat4("projection", projection);
 
-				//View
-				glm::mat4 view = glm::mat4(1.0f);
-
-				view = glm::lookAt(camera_pos, camera_pos + camera_front, camera_up);
-
+				glm::mat4 view = camera.getMat4View();
 				our_shader->setMat4("view", view);
 
-				//Transform
-				glm::mat4 transform = glm::mat4(1.0f);
-
-				transform = glm::translate(transform, glm::vec3(0.0f, 0.0f, 0.0f));						
-				transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));	
-
+				glm::mat4 transform = camera.getMat4Transform();
 				unsigned int transform_loc = glGetUniformLocation(our_shader->mID, "transform");
 				glUniformMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(transform));
 
 				//Render boxes
 				glBindVertexArray(VAO);
-				for (unsigned int i = 0; i < 10; i++)
-				{
-					glm::mat4 model = glm::mat4(1.0f);
-					model = glm::translate(model, cube_positions[i]);
-					float angle = 20.0f * i;
-					model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+				for (unsigned int i = 0; i < 10; i++){
+					glm::mat4 model = getMat4Model(i, cube_positions);
+
 					our_shader->setMat4("model", model);
 
 					glDrawArrays(GL_TRIANGLES, 0, 36);

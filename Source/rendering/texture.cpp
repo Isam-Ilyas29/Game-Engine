@@ -2,7 +2,7 @@
 
 
 Texture::Texture(unsigned char* data, int width, int height, GLuint components) 
-: mData(data), mWidth(width), mHeight(height), mType(0){
+	: mData(data), mWidth(width), mHeight(height), mType(0){
 
 	switch (components) {
 	case 1:

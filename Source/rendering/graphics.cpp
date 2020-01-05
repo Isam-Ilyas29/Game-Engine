@@ -61,3 +61,11 @@ void Attrib::textureCoordAttrib() {
 
 /*----------------------------------------------------------------------------------*/
 
+glm::mat4 getMat4Model(unsigned int i, std::vector<glm::vec3>& cube_positions) {
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::translate(model, cube_positions[i]);
+	float angle = 20.0f * i;
+	model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+
+	return model;
+}

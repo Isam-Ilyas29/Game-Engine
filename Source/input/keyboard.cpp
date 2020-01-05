@@ -24,27 +24,19 @@ void processInput(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 void cameraInput(GLFWwindow* window) {
-	extern glm::vec3 camera_pos, camera_front, camera_up;
-	extern float delta_time;
+	const float camera_speed = 2.5 * delta_time;
 
-	float camera_speed = 15.0f * delta_time;
-
-	float cameraSpeed = 2.5 * delta_time;
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera_pos += cameraSpeed * camera_front;
+		camera_pos += camera_speed * camera_front;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera_pos -= cameraSpeed * camera_front;
+		camera_pos -= camera_speed * camera_front;
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera_pos -= glm::normalize(glm::cross(camera_front, camera_up)) * cameraSpeed;
+		camera_pos -= glm::normalize(glm::cross(camera_front, camera_up)) * camera_speed;
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera_pos += glm::normalize(glm::cross(camera_front, camera_up)) * cameraSpeed;
+		camera_pos += glm::normalize(glm::cross(camera_front, camera_up)) * camera_speed;
 }
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos){
-	extern bool first_mouse;
-	extern float yaw, pitch, lastX, lastY, fov;
-	extern glm::vec3 camera_front;
-
 	if (first_mouse)
 	{
 		lastX = xpos;
@@ -57,7 +49,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
 	lastX = xpos;
 	lastY = ypos;
 
-	float sensitivity = 0.05f; 
+	const float sensitivity = 0.05f; 
 	xoffset *= sensitivity;
 	yoffset *= sensitivity;
 
@@ -78,14 +70,12 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset){
-	extern float fov;
-
-	if (fov >= 1.0f && fov <= 45.0f)
-		fov -= yoffset;
-	if (fov <= 1.0f)
-		fov = 1.0f;
-	if (fov >= 45.0f)
-		fov = 45.0f;
+	if (FOV >= 1.0f && FOV <= 45.0f)
+		FOV -= yoffset;
+	if (FOV <= 1.0f)
+		FOV = 1.0f;
+	if (FOV >= 45.0f)
+		FOV = 45.0f;
 }
 
 //Allows user to alternate between polygon modes
