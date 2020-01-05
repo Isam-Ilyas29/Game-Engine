@@ -3,3 +3,4 @@ BGFW-7DBS-ND78-NDUW = Chapter 6, Shaders (+ Environment Addition)
 FQUY-4HDB-NU43-UWGH = Chapter 7, Textures
 HIWE-6BEI-IE38-IBRI = Chapter 8, Transformations (+ Segmented Program Addition)
 AUUI-8WUJ-UW78-UBEU = Chapter 9, Coordinate System
+UEIE-8SVE-IW29-JCBH = Chapter 10, Camera
