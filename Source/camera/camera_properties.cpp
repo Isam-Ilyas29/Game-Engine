@@ -10,12 +10,12 @@ void cameraProperties::mouseProp (bool iFirstMouse, float iYaw, float iPitch, fl
 }
 
 //Mouse
-extern bool first_mouse = first_mouse;
-extern float yaw = yaw;
-extern float pitch = pitch;
-extern float lastX = lastX;
-extern float lastY = lastY;
-extern float FOV = FOV;
+bool first_mouse;
+float yaw;
+float pitch;
+float lastX;
+float lastY;
+float FOV;
 
 //Timing
 extern float delta_time = 0.0f;
