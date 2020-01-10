@@ -48,9 +48,7 @@ int main(int argc, char* argv[]) {
 
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-	glfwSetKeyCallback(window, processInput);
-	glfwSetCursorPosCallback(window, mouse_callback);
-	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetKeyCallback(window, Input::processInput);
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -185,11 +183,6 @@ int main(int argc, char* argv[]) {
 
 			//Game loop
 			while (!glfwWindowShouldClose(window)) {
-				//Polygonmode variable is set to false, so user can toggle it on -as they desire
-				PolygonToggle pt;
-				pt.polygon_mode = false;
-				pt.toggle(window);
-				glPolygonMode(GL_FRONT_AND_BACK, pt.polygon_mode ? GL_LINE : GL_FILL);
 
 				//Creates camera object
 				Camera camera;
@@ -203,7 +196,24 @@ int main(int argc, char* argv[]) {
 					camera.framesPerSecond();
 				}
 
-				cameraInput(window);
+				//ISM
+				bool pressed;
+				pressed = Input::isPressed(GLFW_KEY_W);
+				if (pressed) {
+					std::cout << "PRESSED" << std::endl;
+				}
+
+				bool held;
+				held = Input::isHeld(GLFW_KEY_W);
+				if (held) {
+					std::cout << "HELD" << std::endl;
+				}
+
+				bool released;
+				released = Input::isReleased(GLFW_KEY_W);
+				if (released) {
+					std::cout << "RELEASED" << std::endl;
+				}
 
 				//Renders Screen Colour
 				glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -238,6 +248,7 @@ int main(int argc, char* argv[]) {
 
 				//Checks if keys/mouse was pressed or if mouse was moved
 				glfwSwapBuffers(window);
+				Input::startFrame();
 				glfwPollEvents();
 			}
 		}
