@@ -29,6 +29,8 @@ set(SOURCES
     Source/camera/camera.cpp
     Source/camera/camera_properties.h
     Source/camera/camera_properties.cpp
+    Source/input/callbacks.h
+    Source/input/callbacks.cpp
 )
 list(TRANSFORM SOURCES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${SOURCES})

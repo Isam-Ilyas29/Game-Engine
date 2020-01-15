@@ -5,35 +5,18 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <iostream>
-#include <set>
-#include <unordered_set>
-
 #include "../camera/camera_properties.h"
 
 
-namespace Input {
-    enum StateEnum {
-        STATE_FREE,
-        STATE_MOVE_FORWARD,
-        STATE_MOVE_LEFT,
-        STATE_MOVE_BACKWARD,
-        STATE_MOVE_RIGHT
-    };
+void processInput(GLFWwindow* window, int key, int scancode, int action, int mods);
 
-    void processInput(GLFWwindow* window, int key, int scancode, int action, int mods);
+void cameraInput(GLFWwindow* window);
 
-    struct StateStruct {
-        std::unordered_set<int> pressed;
-        std::unordered_set<int> held;
-        std::unordered_set<int> released;
-    };
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
-    void startFrame();
-    void onInput(int key, int action);
-    StateStruct const& getState();
-
-    bool isPressed(int key);
-    bool isHeld(int key);
-    bool isReleased(int key);
-}
+class PolygonToggle {
+public:
+	bool polygon_mode;
+	void toggle(GLFWwindow* window);
+};

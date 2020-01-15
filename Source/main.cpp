@@ -14,7 +14,7 @@
 #include "rendering/graphics.h"
 #include "rendering/texture.h"
 #include "window.h"
-#include "input/keyboard.h"
+#include "input/callbacks.h"
 #include "camera/camera_properties.h"
 #include "camera/camera.h"
 
@@ -48,9 +48,7 @@ int main(int argc, char* argv[]) {
 
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-	glfwSetKeyCallback(window, Input::processInput);
-
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetKeyCallback(window, PlayerCallback::processInput);
 
 	//Loads all OpenGL function pointers
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -70,47 +68,47 @@ int main(int argc, char* argv[]) {
 		//Set up vertex data and configure vertex attributes
 		std::vector<float> vertices = {
 			//Positions							   
-			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,		
-			 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,		
-			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,		
-			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,		
-		    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-		
-		    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,		
-		     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-		    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-		    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		
-		    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		
-		     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		
-		    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-		     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-		    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-		    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-		
-		    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-		     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-		     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-		    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-		    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f						
+			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+			-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+			 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+			-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+			-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+			 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+			-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 		};
 
 		std::vector<glm::vec3> cube_positions = {
@@ -179,14 +177,24 @@ int main(int argc, char* argv[]) {
 
 			float time = 2.0f;
 
+			//Input object
+			std::unique_ptr<PlayerCallback> test = std::make_unique<PlayerCallback>();
+			bool temp_bool = test->getMoveForward();
+
 			/*----------------------------------------------------------------------------------*/
 
 			//Game loop
 			while (!glfwWindowShouldClose(window)) {
 
+
+				if (temp_bool) {
+					std::cout << "MOVE FORWARD!" << std::endl;
+				}
+
+
 				//Creates camera object
 				Camera camera;
-				
+
 				camera.perFrameTimeLogic();
 
 				//Displays FPS every 2 seconds
@@ -194,25 +202,6 @@ int main(int argc, char* argv[]) {
 				if (time <= 0.0f) {
 					time = 2.0f;
 					camera.framesPerSecond();
-				}
-
-				//ISM
-				bool pressed;
-				pressed = Input::isPressed(GLFW_KEY_W);
-				if (pressed) {
-					std::cout << "PRESSED" << std::endl;
-				}
-
-				bool held;
-				held = Input::isHeld(GLFW_KEY_W);
-				if (held) {
-					std::cout << "HELD" << std::endl;
-				}
-
-				bool released;
-				released = Input::isReleased(GLFW_KEY_W);
-				if (released) {
-					std::cout << "RELEASED" << std::endl;
 				}
 
 				//Renders Screen Colour
@@ -238,7 +227,7 @@ int main(int argc, char* argv[]) {
 
 				//Render boxes
 				glBindVertexArray(VAO);
-				for (unsigned int i = 0; i < 10; i++){
+				for (unsigned int i = 0; i < 10; i++) {
 					glm::mat4 model = getMat4Model(i, cube_positions);
 
 					our_shader->setMat4("model", model);
@@ -248,7 +237,6 @@ int main(int argc, char* argv[]) {
 
 				//Checks if keys/mouse was pressed or if mouse was moved
 				glfwSwapBuffers(window);
-				Input::startFrame();
 				glfwPollEvents();
 			}
 		}
