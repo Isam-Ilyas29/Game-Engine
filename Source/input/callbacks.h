@@ -8,20 +8,27 @@
 
 
 
+namespace input
+{
+    using Token = int;  // later shared_ptr<int>
+    using Callback = std::function<void(GLFWwindow*, int, int, int, int)>;
+
+    Token registerCallback(Callback c);
+    bool unregisterCallback(Token token);  // not required with shared_ptr
+}
+
+/*----------------------------------------------------------------------------------*/
+
 class PlayerCallback final {
 private:
-    int mInputToken;
+    input::Token mInputToken;
     static bool mMoveForward;
-    std::map<int, std::function<void(GLFWwindow*, int, int, int, int)>> gCallbacks;
 
 public:
-    int registerCallback(std::function<void(GLFWwindow*, int, int, int, int)> callback);
-    bool unregisterCallback(int token);
-
     PlayerCallback();
     ~PlayerCallback();
 
-    bool getMoveForward();
+    void moveForwardLogic();
 
     static void processInput(GLFWwindow* window, int key, int scancode, int action, int mods);
 };

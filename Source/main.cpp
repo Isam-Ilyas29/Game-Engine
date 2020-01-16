@@ -41,19 +41,11 @@ int main(int argc, char* argv[]) {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	//GLFW window creation
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "My Game", NULL, NULL);
-	windowCreation(window);
-
-	glfwSwapInterval(1);
-
-	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-	glfwSetKeyCallback(window, PlayerCallback::processInput);
+	GLFWwindow* window = windowCreation("My Game");
 
 	//Loads all OpenGL function pointers
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cerr << "Failed to initialize GLAD" << std::endl;
-		return -1;
 	}
 
 	glEnable(GL_DEPTH_TEST);
@@ -179,18 +171,13 @@ int main(int argc, char* argv[]) {
 
 			//Input object
 			std::unique_ptr<PlayerCallback> test = std::make_unique<PlayerCallback>();
-			bool temp_bool = test->getMoveForward();
 
 			/*----------------------------------------------------------------------------------*/
 
 			//Game loop
 			while (!glfwWindowShouldClose(window)) {
-
-
-				if (temp_bool) {
-					std::cout << "MOVE FORWARD!" << std::endl;
-				}
-
+				
+				test->moveForwardLogic();
 
 				//Creates camera object
 				Camera camera;
