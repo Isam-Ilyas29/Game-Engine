@@ -12,8 +12,8 @@ set(SOURCES
     Source/main.cpp
     Source/rendering/shader.h
     Source/rendering/shader.cpp
-    Source/rendering/graphics.h
-    Source/rendering/graphics.cpp
+    Source/rendering/graphic.h
+    Source/rendering/graphic.cpp
     Source/rendering/texture.h
     Source/rendering/texture.cpp
     Source/environment/environment.cpp
@@ -24,13 +24,16 @@ set(SOURCES
     Source/input/keyboard.cpp
     Source/input/mouse.h
     Source/input/mouse.cpp
-    Source/camera/camera_properties.h
     Source/camera/camera.h
     Source/camera/camera.cpp
-    Source/camera/camera_properties.h
-    Source/camera/camera_properties.cpp
-    Source/input/callbacks.h
-    Source/input/callbacks.cpp
+    Source/camera/camera_property.h
+    Source/camera/camera_property.cpp
+    Source/input/callback.h
+    Source/input/callback.cpp
+    Source/input/input.h
+    Source/input/input.cpp
+    Source/context.h
+    Source/context.cpp
 )
 list(TRANSFORM SOURCES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${SOURCES})

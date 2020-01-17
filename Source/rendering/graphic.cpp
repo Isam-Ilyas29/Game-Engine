@@ -1,4 +1,4 @@
-#include "graphics.h"
+#include "graphic.h"
 
 
 //VERTEX OBJECT
