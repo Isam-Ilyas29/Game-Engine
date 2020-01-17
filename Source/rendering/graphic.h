@@ -8,7 +8,7 @@
 #include <iostream>
 #include <vector>
 
-#include "../camera/camera_properties.h"
+#include "../camera/camera_property.h"
 
 class Attrib{
 public:

@@ -1,24 +1,18 @@
 #include "window.h"
 
 
-GLFWwindow* windowCreation(std::string str_name) {
-	const char* name = str_name.c_str();
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, name, NULL, NULL);
 
-    //Window verifier
-    if (window == NULL) {
-        std::cerr << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-    }
-
-
-	glfwSwapInterval(1);
-
+void windowLoader(GLFWwindow* window) {
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-	glfwSetKeyCallback(window, PlayerCallback::processInput);
+}
 
-	return window;
+int windowVerifier(GLFWwindow* window) {
+	if (window == NULL) {
+		std::cerr << "Failed to create GLFW window" << std::endl;
+		glfwTerminate();
+		return -1;
+	}
 }
 
 //[GLFW] Whenever the window is resized (by OS or user resize) this callback function executes
