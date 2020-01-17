@@ -5,7 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "../camera/camera_property.h"
+#include "../camera/camera_properties.h"
 
 
 void processInput(GLFWwindow* window, int key, int scancode, int action, int mods);

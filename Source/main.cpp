@@ -11,13 +11,12 @@
 
 #include "rendering/shader.h"
 #include "environment/environment.h"
-#include "rendering/graphic.h"
+#include "rendering/graphics.h"
 #include "rendering/texture.h"
 #include "window.h"
-#include "input/callback.h"
-#include "camera/camera_property.h"
+#include "input/callbacks.h"
+#include "camera/camera_properties.h"
 #include "camera/camera.h"
-#include "context.h"
 
 
 int main(int argc, char* argv[]) {
@@ -42,13 +41,7 @@ int main(int argc, char* argv[]) {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	//GLFW window creation
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "My Game", NULL, NULL);
-	windowLoader(window);
-	windowVerifier(window);
-
-	glfwSwapInterval(1);
-
-	setupContext(window);
+	GLFWwindow* window = windowCreation("My Game");
 
 	//Loads all OpenGL function pointers
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
