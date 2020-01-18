@@ -1,8 +1,10 @@
 #pragma once
+
 #include <string>
+#include <filesystem>
 
 namespace environment {
-    extern std::string exeDirectory;
-    extern std::string resourcesPath;
+    extern std::filesystem::path exeDirectory;
+    extern std::filesystem::path resourcesPath;
     std::string ResourcePath(std::string_view id);
 }

@@ -9,12 +9,12 @@
 class Texture {
 private:
 	unsigned char* mData;
-	int mWidth, mHeight;
+	int mWidth, mHeight, mChannels;
 	GLuint mID;
-	GLuint mType;
+	GLuint mFormat;
 
 public:
-	Texture(unsigned char* data, int width, int height, GLuint components);
+	Texture(unsigned char* data, int width, int height, int channels, GLuint components);
 	~Texture();
 
 	static GLuint dataToTextureID(unsigned char* data, int width, int height, GLuint type);

@@ -4,9 +4,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "camera_properties.h"
+#include "camera_property.h"
 #include "../rendering/shader.h"
-#include "../window.h"
+#include "../window/window.h"
 
 class Camera {
 public:

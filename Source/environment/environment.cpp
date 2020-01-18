@@ -1,12 +1,12 @@
 #include "environment.h"
 
 namespace environment{
-	std::string exeDirectory;
-	std::string resourcesPath;
+	std::filesystem::path exeDirectory;
+	std::filesystem::path resourcesPath;
 }
 
 std::string environment::ResourcePath(std::string_view id){
-	std::string ret = resourcesPath;
+	std::string ret = resourcesPath.generic_string();
 	ret += "/";
 	ret += id;
 	return ret;

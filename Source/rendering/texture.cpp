@@ -1,22 +1,32 @@
 #include "texture.h"
 
 
-Texture::Texture(unsigned char* data, int width, int height, GLuint components) 
-	: mData(data), mWidth(width), mHeight(height), mType(0){
+Texture::Texture(unsigned char* data, int width, int height, int channels, GLuint components)
+	: mData(data), mWidth(width), mHeight(height), mChannels(channels), mFormat(0){
+
+	stbi_set_flip_vertically_on_load(true);
 
 	switch (components) {
 	case 1:
-		mType = GL_RGB;
+		mFormat = GL_RED;
 		break;
 	case 2:
-		mType = GL_RGBA;
+		mFormat = GL_RG;
+		break;
+	case 3:
+		mFormat = GL_RGB;
+		break;
+	case 4:
+		mFormat = GL_RGBA;
 		break;
 	default:
 		std::cerr << "ERROR::TEXTURE::TYPE_NOT_SPECIFIED" << std::endl;
 		break;
 	}
 
-	mID = dataToTextureID(mData, mWidth, mHeight, mType);
+	mID = dataToTextureID(mData, mWidth, mHeight, mFormat);
+
+	stbi_image_free(data);
 }
 
 Texture::~Texture(){
@@ -29,10 +39,8 @@ GLuint Texture::dataToTextureID(unsigned char* data, int width, int height, GLui
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 
-	//Sets the texture wrapping parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	//Sets texture filtering parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -57,7 +65,7 @@ void Texture::bind() {
 }
 
 GLuint Texture::getType() const {
-	return mType;
+	return mFormat;
 }
 
 int Texture::getWidth() const {
