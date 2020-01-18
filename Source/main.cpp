@@ -34,13 +34,13 @@ int main(int argc, char* argv[]) {
 
 	/*----------------------------------------------------------------------------------*/
 
-	//Initialises 'glfw core 3.3'
+	//Initialises 'GLFW core 3.3'
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	//GLFW window creation
+	//Window
 	GLFWwindow* window = windowCreation("My Game");
 
 	//Loads all OpenGL function pointers
