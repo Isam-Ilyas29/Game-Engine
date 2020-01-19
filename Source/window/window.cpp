@@ -15,7 +15,7 @@ int windowVerifier(GLFWwindow* window) {
 	}
 }
 
-//[GLFW] Whenever the window is resized (by OS or user resize) this callback function executes
+//Whenever the window is resized (by OS or user resize) this callback function executes
 void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
 	//Makes sure the viewport matches the new window dimensions
 	glViewport(0, 0, width, height);

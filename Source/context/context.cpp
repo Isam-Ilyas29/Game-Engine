@@ -4,8 +4,8 @@
 
 void initialiseGLFW() {
 	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 }
 
@@ -21,13 +21,15 @@ void setupContext(GLFWwindow* window) {
 }
 
 void inputContext(GLFWwindow* iWindow, int key, int scancode, int action, int mods) {
-    PlayerCallback::processInput(key, action);
+    input::processInput(key, action);
 }
 
-void initialiseGlad(){
+int initialiseGlad(){
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cerr << "Failed to initialize GLAD" << std::endl;
+		return -1;
 	}
-
-	glEnable(GL_DEPTH_TEST);
+	else {
+		glEnable(GL_DEPTH_TEST);
+	}
 }

@@ -8,6 +8,8 @@
 
 
 
+extern bool mMoveForward;
+
 namespace input
 {
     using Token = int;  // later shared_ptr<int>
@@ -16,5 +18,5 @@ namespace input
     Token registerCallback(Callback c);
     bool unregisterCallback(Token token);  // not required with shared_ptr
 
-    void foo();
+    void processInput(int key, int action);
 }

@@ -1,15 +1,16 @@
 #include "camera.h"
 
+
+void framesPerSecond() {
+	float frame_rate = 1.0 / delta_time;
+
+	std::cout << "FPS: " << frame_rate << std::endl;
+}
+
 void Camera::perFrameTimeLogic() {
 	float current_frame = glfwGetTime();
 	delta_time = current_frame - last_frame;
 	last_frame = current_frame;
-}
-
-void Camera::sFramesPerSecond() {
-	float frame_rate = 1.0 / delta_time;
-
-	std::cout << "FPS: " << frame_rate << std::endl;
 }
 
 glm::mat4 Camera::getMat4Projection() {

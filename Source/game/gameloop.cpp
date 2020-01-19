@@ -29,7 +29,7 @@ void gameloop::run(int argc, char* argv[]) {
 	{
 
 		//Build and compile shader program
-		std::unique_ptr<Shader> our_shader = std::make_unique<Shader>(environment::ResourcePath("shader.vs").data(), environment::ResourcePath("shader.fs").data());
+		std::unique_ptr<Shader> our_shader = std::make_unique<Shader>(environment::ResourcePath("shader.vs").string().c_str(), environment::ResourcePath("shader.fs").string().c_str());
 
 		//Set up vertex data and configure vertex attributes
 		float vertices[] = {
@@ -108,19 +108,10 @@ void gameloop::run(int argc, char* argv[]) {
 
 			/*----------------------------------------------------------------------------------*/
 
-			int width, height, channels;
-
 			//TEXTURE 1
-			unsigned char* data = stbi_load(environment::ResourcePath("Textures/MetalTexture1.jpg").data(), &width, &height, &channels, 0);
-
-			Texture our_texture1(data, width, height, channels, 3);
-
-
+			Texture our_texture1(environment::ResourcePath("Textures/MetalTexture1.jpg"));
 			//TEXTURE 2
-			data = stbi_load(environment::ResourcePath("Textures/GraffitiTexture1.png").data(), &width, &height, &channels, 0);
-
-			Texture our_texture2(data, width, height, channels, 4);
-
+			Texture our_texture2(environment::ResourcePath("Textures/GraffitiTexture1.png"));
 
 			/*----------------------------------------------------------------------------------*/
 
@@ -130,8 +121,9 @@ void gameloop::run(int argc, char* argv[]) {
 			//Avoid cursor jump
 			glfwSetCursorPos(window, lastX, lastY);
 
-			cameraProperties cp;
-			cp.mouseProp(true, -90.0f, 0.0f, (800.0f / 2.0), (600.0 / 2.0), 45.0f);
+			mouseProp(true, -90.0f, 0.0f, (800.0f / 2.0), (600.0 / 2.0), 45.0f);
+
+			float time = 2.0f;
 
 			//Input object
 			std::unique_ptr<PlayerCallback> test = std::make_unique<PlayerCallback>();
@@ -141,14 +133,19 @@ void gameloop::run(int argc, char* argv[]) {
 			//Game loop
 			while (!glfwWindowShouldClose(window)) {
 
+				test->update(0.f);
+
 				//Creates camera object
 				Camera camera;
 
 				camera.perFrameTimeLogic();
 
-
-				//Update code
-				test->update(delta_time);
+				//Displays FPS every 2 seconds
+				time -= delta_time;
+				if (time <= 0.0f) {
+					time = 2.0f;
+					framesPerSecond();
+				}
 
 				//Renders Screen Colour
 				glClearColor(0.2f, 0.3f, 0.3f, 1.0f);

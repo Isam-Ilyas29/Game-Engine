@@ -1,6 +1,6 @@
 #include "camera_property.h"
 
-void cameraProperties::mouseProp (bool iFirstMouse, float iYaw, float iPitch, float iLastX, float iLastY, float iFOV) {
+void mouseProp (bool iFirstMouse, float iYaw, float iPitch, float iLastX, float iLastY, float iFOV) {
 	first_mouse = iFirstMouse;
 	yaw = iYaw;
 	pitch = iPitch;

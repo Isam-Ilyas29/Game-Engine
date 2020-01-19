@@ -1,9 +1,9 @@
 #include "input.h"
 
 
+extern bool mMoveForward = false;
 
-namespace
-{
+namespace{
     std::unordered_map<input::Token, input::Callback> gCallbacks;
 }
 
@@ -22,7 +22,21 @@ bool input::unregisterCallback(input::Token token) {
     return false;
 }
 
-void input::foo() {
+void input::processInput(int key, int action) {
+    if (key == GLFW_KEY_W) {
+        switch (action) {
 
+        case (GLFW_PRESS):
+            mMoveForward = true;
+            break;
+
+        case (GLFW_RELEASE):
+            mMoveForward = false;
+            break;
+
+        default:
+            break;
+        }
+    }
 }
 
