@@ -6,6 +6,12 @@ void Camera::perFrameTimeLogic() {
 	last_frame = current_frame;
 }
 
+void Camera::sFramesPerSecond() {
+	float frame_rate = 1.0 / delta_time;
+
+	std::cout << "FPS: " << frame_rate << std::endl;
+}
+
 glm::mat4 Camera::getMat4Projection() {
 	glm::mat4 projection = glm::perspective(glm::radians(FOV), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 	
@@ -25,10 +31,4 @@ glm::mat4 Camera::getMat4Transform() {
 	transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
 	
 	return transform;
-}
-
-void Camera::framesPerSecond() {
-	float frame_rate = 1.0 / delta_time;
-
-	std::cout << "FPS: " << frame_rate << std::endl;
 }

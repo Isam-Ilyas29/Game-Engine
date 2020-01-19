@@ -11,10 +11,9 @@
 class Camera {
 public:
 	void perFrameTimeLogic();
+	static void sFramesPerSecond();
 	glm::mat4 getMat4Projection();
 	glm::mat4 getMat4View();
 	glm::mat4 getMat4Transform();
-	void framesPerSecond();
 };
-
 

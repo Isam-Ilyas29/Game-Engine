@@ -133,8 +133,6 @@ void gameloop::run(int argc, char* argv[]) {
 			cameraProperties cp;
 			cp.mouseProp(true, -90.0f, 0.0f, (800.0f / 2.0), (600.0 / 2.0), 45.0f);
 
-			float time = 2.0f;
-
 			//Input object
 			std::unique_ptr<PlayerCallback> test = std::make_unique<PlayerCallback>();
 
@@ -143,19 +141,14 @@ void gameloop::run(int argc, char* argv[]) {
 			//Game loop
 			while (!glfwWindowShouldClose(window)) {
 
-				test->moveForwardLogic();
-
 				//Creates camera object
 				Camera camera;
 
 				camera.perFrameTimeLogic();
 
-				//Displays FPS every 2 seconds
-				time -= delta_time;
-				if (time <= 0.0f) {
-					time = 2.0f;
-					camera.framesPerSecond();
-				}
+
+				//Update code
+				test->update(delta_time);
 
 				//Renders Screen Colour
 				glClearColor(0.2f, 0.3f, 0.3f, 1.0f);

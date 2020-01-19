@@ -1,7 +1,6 @@
 #include "callback.h"
 
 
-
 bool PlayerCallback::mMoveForward = false;
 
 PlayerCallback::PlayerCallback() {
@@ -13,7 +12,16 @@ PlayerCallback::~PlayerCallback() {
     input::unregisterCallback(mInputToken);
 }
 
-void PlayerCallback::moveForwardLogic() {
+void PlayerCallback::update(float delta_time) {
+    float time_between_fps_display = 2.0f;
+
+    time_between_fps_display -= delta_time;
+    if (time_between_fps_display <= 0.0f) {
+        time_between_fps_display = 2.0f;
+        Camera::sFramesPerSecond();
+    }
+
+    //MOVE FORWARD ['W']
     /*if (mMoveForward) {
         std::cout << "MOVE FORWARD!" << std::endl;
     }

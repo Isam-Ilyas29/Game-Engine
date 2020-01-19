@@ -7,7 +7,7 @@
 #include <GLFW/glfw3.h>
 
 #include "input.h"
-
+#include "../camera/camera.h"
 
 
 class PlayerCallback final {
@@ -19,7 +19,7 @@ public:
     PlayerCallback();
     ~PlayerCallback();
 
-    void moveForwardLogic();
+    void update(float delta_time);
 
     static void processInput(int key, int action);
 };
