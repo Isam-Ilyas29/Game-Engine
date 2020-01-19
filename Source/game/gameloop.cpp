@@ -1,5 +1,11 @@
 #include "gameloop.h"
 
+#include "../context/context.h"
+#include "../rendering/graphic.h"
+#include "../rendering/shader.h"
+#include "../rendering/texture.h"
+#include "../input/callback.h"
+
 
 
 void gameloop::run(int argc, char* argv[]) {
@@ -133,7 +139,7 @@ void gameloop::run(int argc, char* argv[]) {
 			//Game loop
 			while (!glfwWindowShouldClose(window)) {
 
-				test->update(0.f);
+				test->update(delta_time);
 
 				//Creates camera object
 				Camera camera;
