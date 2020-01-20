@@ -43,6 +43,13 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 
 set(EXECUTABLE_PATH "${CMAKE_SOURCE_DIR}/ExeDirectory")
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${EXECUTABLE_PATH}")
+
+#Compiler warnings
+target_compile_options(${PROJECT_NAME} PRIVATE 
+    $<$<CXX_COMPILER_ID:MSVC>:/W4>
+    $<$<NOT:$<BOOL:$<CXX_COMPILER_ID:MSVC>>>:-Wall -Wextra>
+)
+
 foreach(CONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${CONFIG} CONFIG)
     set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${CONFIG} "${EXECUTABLE_PATH}")
@@ -76,6 +83,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     Xrandr
     Xi
     m
+    stdc++fs
 )
 endif()
 
