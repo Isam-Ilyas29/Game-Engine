@@ -3,7 +3,7 @@
 
 
 PlayerCallback::PlayerCallback() {
-    auto lambda = [this](int key, int action) { input::processInput(key, action); };
+    auto lambda = [this](int key, int action) { input::onInput(key, action); };
     mInputToken = input::registerCallback(lambda);
 }
 

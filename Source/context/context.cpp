@@ -21,7 +21,7 @@ void setupContext(GLFWwindow* window) {
 }
 
 void inputContext(GLFWwindow* iWindow, int key, int scancode, int action, int mods) {
-    input::processInput(key, action);
+    input::onInput(key, action);
 }
 
 int initialiseGlad(){

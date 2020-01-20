@@ -18,5 +18,5 @@ namespace input
     Token registerCallback(Callback c);
     bool unregisterCallback(Token token);  // not required with shared_ptr
 
-    void processInput(int key, int action);
+    void onInput(int key, int action);
 }

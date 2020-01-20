@@ -22,7 +22,7 @@ bool input::unregisterCallback(input::Token token) {
     return false;
 }
 
-void input::processInput(int key, int action) {
+void input::onInput(int key, int action) {
     if (key == GLFW_KEY_W) {
         switch (action) {
 
