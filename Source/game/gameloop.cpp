@@ -11,13 +11,6 @@
 
 bool gameloop::run(int argc, char* argv[]) {
 
-	//Fixes path issues
-#if defined(_WIN32) || defined(_WIN64)
-	const char PATH_DELIM = '\\';
-#else
-	const char PATH_DELIM = '/';
-#endif
-
 	std::filesystem::path exeFile = argv[0];
 	environment::exeDirectory = exeFile.parent_path();
 	environment::resourcesPath = environment::exeDirectory.parent_path() / "Resources";
