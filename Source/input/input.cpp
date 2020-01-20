@@ -1,7 +1,7 @@
 #include "input.h"
 
 
-extern bool mMoveForward = false;
+bool mMoveForward = false;
 
 namespace{
     std::unordered_map<input::Token, input::Callback> gCallbacks;

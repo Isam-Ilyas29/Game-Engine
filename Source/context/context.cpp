@@ -20,7 +20,7 @@ void setupContext(GLFWwindow* window) {
 	glfwSetKeyCallback(window, inputContext);
 }
 
-void inputContext(GLFWwindow* iWindow, int key, int scancode, int action, int mods) {
+void inputContext(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	input::onInput(key, action);
 }
 
