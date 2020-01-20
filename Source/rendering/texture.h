@@ -8,19 +8,22 @@
 
 class Texture {
 private:
-	unsigned char* mData;
-	int mWidth, mHeight;
-	GLuint mID;
-	GLuint mType;
+	int mWidth, mHeight, mChannels;
+	GLenum mID;
+	GLenum mInternalFormat, mFormat;
+	bool mValid;
 
 public:
-	Texture(unsigned char* data, int width, int height, GLuint components);
+	Texture(const std::filesystem::path& path);
 	~Texture();
 
-	static GLuint dataToTextureID(unsigned char* data, int width, int height, GLuint type);
+	static GLuint dataToTextureID(unsigned char* data, int width, int height, GLuint internal_format, GLuint type);
 	GLuint getID() const;
-	void bind();
-	GLuint getType() const;
+	void bind() const;
+	void unbind() const;
+	bool isValid() const;
+	GLuint getFormat() const;
 	int getWidth() const;
 	int getHeight() const;
 };
+

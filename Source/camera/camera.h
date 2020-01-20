@@ -4,9 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "camera_properties.h"
-#include "../rendering/shader.h"
-#include "../window.h"
+void framesPerSecond();
 
 class Camera {
 public:
@@ -14,7 +12,5 @@ public:
 	glm::mat4 getMat4Projection();
 	glm::mat4 getMat4View();
 	glm::mat4 getMat4Transform();
-	void framesPerSecond();
 };
-
 
