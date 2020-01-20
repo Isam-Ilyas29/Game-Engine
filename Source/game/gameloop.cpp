@@ -192,7 +192,7 @@ bool gameloop::run(int argc, char* argv[]) {
 			}
 		}
 	}
-	return true;
 	glfwTerminate();
+	return true;
 }
 

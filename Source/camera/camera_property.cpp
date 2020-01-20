@@ -18,11 +18,11 @@ float lastY;
 float FOV;
 
 //Timing
-extern float delta_time = 0.0f;
-extern float last_frame = 0.0f;
+float delta_time = 0.0f;
+float last_frame = 0.0f;
 
 //Camera
-extern glm::vec3 camera_pos = glm::vec3(0.0f, 0.0f, 3.0f);
-extern glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
-extern glm::vec3 camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 camera_pos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
 
