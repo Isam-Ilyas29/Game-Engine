@@ -5,10 +5,11 @@
 #include "../rendering/shader.h"
 #include "../rendering/texture.h"
 #include "../input/callback.h"
+#include "../window/window.h"
 
 
 
-void gameloop::run(int argc, char* argv[]) {
+bool gameloop::run(int argc, char* argv[]) {
 
 	//Fixes path issues
 #if defined(_WIN32) || defined(_WIN64)
@@ -24,11 +25,19 @@ void gameloop::run(int argc, char* argv[]) {
 	/*----------------------------------------------------------------------------------*/
 
 	initialiseGLFW();
+
 	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "My Game", NULL, NULL);
-	setupWindow(window);
+	bool success  = setupWindow(window);
+	if (!success) {
+		return false;
+	}
+
 	setupContext(window);
 
-	initialiseGlad();
+	success = initialiseGlad();
+	if (!success) {
+		return false;
+	}
 
 	/*----------------------------------------------------------------------------------*/
 
@@ -106,8 +115,8 @@ void gameloop::run(int argc, char* argv[]) {
 			//Creates vertex/attribute object
 			std::unique_ptr<VertAttribObject> vertex_and_attrib_object = std::make_unique<VertAttribObject>(VAO, VBO);
 
-			vertex_and_attrib_object->generateVBO(vertices, sizeof(vertices), VBO);
-			vertex_and_attrib_object->generateVAO(VAO);
+			vertex_and_attrib_object->bindVBO(vertices, sizeof(vertices), VBO);
+			vertex_and_attrib_object->bindVAO(VAO);
 
 			vertex_and_attrib_object->positionAttrib();
 			vertex_and_attrib_object->textureCoordAttrib();
@@ -190,7 +199,7 @@ void gameloop::run(int argc, char* argv[]) {
 			}
 		}
 	}
-
+	return true;
 	glfwTerminate();
 }
 

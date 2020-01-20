@@ -1,5 +1,8 @@
 #include "camera.h"
 
+#include "camera_property.h"
+#include "../window/window.h"
+
 
 void framesPerSecond() {
 	float frame_rate = 1.0 / delta_time;

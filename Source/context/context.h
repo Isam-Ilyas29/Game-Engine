@@ -6,11 +6,11 @@
 
 
 void windowLoader(GLFWwindow* window);
-int windowVerifier(GLFWwindow* window);
+bool windowVerifier(GLFWwindow* window);
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
 void initialiseGLFW();
-void setupWindow(GLFWwindow* window);
+bool setupWindow(GLFWwindow* window);
 void setupContext(GLFWwindow* window);
 void inputContext(GLFWwindow* iWindow, int key, int scancode, int action, int mods);
-int initialiseGlad();
+bool initialiseGlad();

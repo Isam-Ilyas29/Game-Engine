@@ -24,24 +24,24 @@ VertAttribObject::~VertAttribObject() {
 }
 
 
-void VertAttribObject::generateVBO(const std::vector<float>& vertices, unsigned int VBO) {
-	//Binds and sets Vertex Buffer
+void VertAttribObject::bindVBO(const std::vector<float>& vertices, unsigned int VBO) {
+	//Binds and sets Vertex Buffer [vector]
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices.front(), GL_STATIC_DRAW);
 }
 
-void VertAttribObject::generateVBO(float vertices[], size_t size, unsigned int VBO) {
-	//Binds and sets Vertex Buffer
+void VertAttribObject::bindVBO(float vertices[], size_t size, unsigned int VBO) {
+	//Binds and sets Vertex Buffer [array]
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 }
 
-void VertAttribObject::generateVAO(unsigned int VAO) {
+void VertAttribObject::bindVAO(unsigned int VAO) {
 	//Binds the Vertex Array Object
 	glBindVertexArray(VAO);
 }
 
-void VertAttribObject::generateEBO(const std::vector<unsigned int>& indices, unsigned int EBO) {
+void VertAttribObject::bindEBO(const std::vector<unsigned int>& indices, unsigned int EBO) {
 	//Binds EBO, it stores indices that OpenGL uses to decide what vertices to draw
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices.front(), GL_STATIC_DRAW);

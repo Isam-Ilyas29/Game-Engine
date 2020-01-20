@@ -4,6 +4,6 @@
 
 
 namespace gameloop {
-	void run(int argc, char* argv[]);
+	bool run(int argc, char* argv[]);
 }
 

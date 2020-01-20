@@ -1,7 +1,6 @@
 #include "context.h"
 
 
-
 void initialiseGLFW() {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -9,27 +8,27 @@ void initialiseGLFW() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 }
 
-void setupWindow(GLFWwindow* window) {
+bool setupWindow(GLFWwindow* window) {
 	windowLoader(window);
-	windowVerifier(window);
+	bool success = windowVerifier(window);
+	return success;
 }
 
 void setupContext(GLFWwindow* window) {
 	glfwSwapInterval(1);
 
-    glfwSetKeyCallback(window, inputContext);
+	glfwSetKeyCallback(window, inputContext);
 }
 
 void inputContext(GLFWwindow* iWindow, int key, int scancode, int action, int mods) {
-    input::onInput(key, action);
+	input::onInput(key, action);
 }
 
-int initialiseGlad(){
+bool initialiseGlad() {
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cerr << "Failed to initialize GLAD" << std::endl;
-		return -1;
+		return false;
 	}
-	else {
-		glEnable(GL_DEPTH_TEST);
-	}
+	glEnable(GL_DEPTH_TEST);
+	return true;
 }
