@@ -13,7 +13,7 @@ namespace context {
 	void inputContext(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 	namespace window {
-		bool setupWindow(const char* name, unsigned int width, unsigned int height);
+		bool setupWindow(std::string name, unsigned int width, unsigned int height);
 		void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
 		GLFWwindow* getWindow();

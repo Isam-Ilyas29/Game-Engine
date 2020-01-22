@@ -4,7 +4,7 @@
 //VERTEX
 /*----------------------------------------------------------------------------------*/
 
-VertAttribObject::VertAttribObject(const unsigned int& VAO, const unsigned int& VBO, const unsigned int& EBO) {
+VertAttribObject::VertAttribObject(unsigned int VAO, unsigned int VBO, unsigned int EBO) {
 	mVAO = VAO;
 	mVBO = VBO;
 	mEBO = EBO;

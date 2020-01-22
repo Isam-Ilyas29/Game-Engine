@@ -5,9 +5,9 @@
 
 namespace {
 	GLFWwindow* window;
-	unsigned int scr_width;
-	unsigned int scr_height;
-	const char* name;
+	std::string name;
+	unsigned int scr_width = 0;
+	unsigned int scr_height = 0;
 
 	void windowLoader(GLFWwindow* window) {
 		glfwMakeContextCurrent(window);
@@ -54,8 +54,9 @@ namespace context {
 
 	namespace window {
 
-		bool setupWindow(const char* name, unsigned int width, unsigned int height) {
-			::window = glfwCreateWindow(width, height, name, NULL, NULL);
+		bool setupWindow(std::string name, unsigned int width, unsigned int height) {
+			::name = name;  ::scr_width = width; ::scr_height = height;
+			::window = glfwCreateWindow(::scr_width, ::scr_height, ::name.data(), NULL, NULL);
 
 			windowLoader(::window);
 			bool success = windowVerifier(::window);

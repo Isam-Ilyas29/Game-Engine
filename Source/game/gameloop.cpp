@@ -23,9 +23,6 @@ bool gameloop::run(int argc, char* argv[]) {
 		return false;
 	}
 
-	std::cout << "Width: " << context::window::getWidth << std::endl;
-	std::cout << "Height: " << context::window::getHeight << std::endl;
-
 	success = context::initialiseGlad();
 	if (!success) {
 		return false;

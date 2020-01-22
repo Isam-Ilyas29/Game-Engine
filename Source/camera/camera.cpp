@@ -18,7 +18,7 @@ void Camera::perFrameTimeLogic() {
 }
 
 glm::mat4 Camera::getMat4Projection() {
-	glm::mat4 projection = glm::perspective(glm::radians(FOV), (float)600 / (float)450, 0.1f, 100.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(FOV), (float)context::window::getWidth() / (float)context::window::getHeight(), 0.1f, 100.0f);
 	
 	return projection;
 }

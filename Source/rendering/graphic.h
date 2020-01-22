@@ -17,6 +17,9 @@ private:
 	unsigned int mVAO, mVBO, mEBO;
 
 public:
+	VertAttribObject(unsigned int VAO, unsigned int VBO, unsigned int EBO = 0);
+	~VertAttribObject();
+
 	void bindVAO(unsigned int VAO);
 	void bindVBO(const std::vector<float>& vertices, unsigned int VBO);		//Accepts Vertices
 	void bindVBO(float vertices[], size_t size, unsigned int VBO);			//Accepts Arrays
@@ -25,9 +28,6 @@ public:
 	void positionAttrib();
 	void colourAttrib();
 	void textureCoordAttrib();
-
-	VertAttribObject(const unsigned int& VAO, const unsigned int& VBO, const unsigned int& EBO = 0);
-	~VertAttribObject();
 };
 
 glm::mat4 getMat4Model(unsigned int i, glm::vec3 cube_positions[]);
