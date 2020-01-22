@@ -1,11 +1,10 @@
 #include "gameloop.h"
 
-#include "../context/context.h"
-#include "../rendering/graphic.h"
-#include "../rendering/shader.h"
-#include "../rendering/texture.h"
-#include "../input/callback.h"
-#include "../window/window.h"
+#include "../Context/context.h"
+#include "../Rendering/graphic.h"
+#include "../Rendering/shader.h"
+#include "../Rendering/texture.h"
+#include "../Input/callback.h"
 
 
 
@@ -17,17 +16,17 @@ bool gameloop::run(int argc, char* argv[]) {
 
 	/*----------------------------------------------------------------------------------*/
 
-	initialiseGLFW();
+	context::initialiseGLFW();
 
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "My Game", NULL, NULL);
-	bool success  = setupWindow(window);
+	bool success  = context::window::setupWindow("My Game", 600, 450);
 	if (!success) {
 		return false;
 	}
 
-	setupContext(window);
+	std::cout << "Width: " << context::window::getWidth << std::endl;
+	std::cout << "Height: " << context::window::getHeight << std::endl;
 
-	success = initialiseGlad();
+	success = context::initialiseGlad();
 	if (!success) {
 		return false;
 	}
@@ -117,9 +116,9 @@ bool gameloop::run(int argc, char* argv[]) {
 			/*----------------------------------------------------------------------------------*/
 
 			//TEXTURE 1
-			Texture our_texture1(environment::ResourcePath("Textures/MetalTexture1.jpg"));
+			Texture our_texture1(environment::ResourcePath("Textures/metal_texture1.jpg"));
 			//TEXTURE 2
-			Texture our_texture2(environment::ResourcePath("Textures/GraffitiTexture1.png"));
+			Texture our_texture2(environment::ResourcePath("Textures/graffiti_texture1.png"));
 
 			/*----------------------------------------------------------------------------------*/
 
@@ -127,7 +126,7 @@ bool gameloop::run(int argc, char* argv[]) {
 			our_shader->setInt("texture2", 1); //Comment out to remove graffiti
 
 			//Avoid cursor jump
-			glfwSetCursorPos(window, lastX, lastY);
+			glfwSetCursorPos(context::window::getWindow(), lastX, lastY);
 
 			mouseProp(true, -90.0f, 0.0f, (800.0f / 2.0), (600.0 / 2.0), 45.0f);
 
@@ -139,7 +138,7 @@ bool gameloop::run(int argc, char* argv[]) {
 			/*----------------------------------------------------------------------------------*/
 
 			//Game loop
-			while (!glfwWindowShouldClose(window)) {
+			while (!glfwWindowShouldClose(context::window::getWindow())) {
 
 				test->update(delta_time);
 
@@ -187,7 +186,7 @@ bool gameloop::run(int argc, char* argv[]) {
 				}
 
 				//Checks if keys/mouse was pressed or if mouse was moved
-				glfwSwapBuffers(window);
+				glfwSwapBuffers(context::window::getWindow());
 				glfwPollEvents();
 			}
 		}

@@ -2,15 +2,24 @@
 
 #include <glad/glad.h>
 
-#include "../input/input.h"
+#include "../Input/input.h"
 
 
-void windowLoader(GLFWwindow* window);
-bool windowVerifier(GLFWwindow* window);
-void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+namespace context {
+	void initialiseGLFW();
+	bool initialiseGlad();
 
-void initialiseGLFW();
-bool setupWindow(GLFWwindow* window);
-void setupContext(GLFWwindow* window);
-void inputContext(GLFWwindow* window, int key, int scancode, int action, int mods);
-bool initialiseGlad();
+	void setupContext();
+	void inputContext(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+	namespace window {
+		bool setupWindow(const char* name, unsigned int width, unsigned int height);
+		void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+
+		GLFWwindow* getWindow();
+		unsigned int getWidth();
+		unsigned int getHeight();
+	}
+}
+
+

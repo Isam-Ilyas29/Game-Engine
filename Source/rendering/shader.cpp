@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 
+
 //Constructor reads and builds the shader
 Shader::Shader(const char* vertex_path, const char* fragment_path) {
     //Retrieves the vertex/fragment source code from filePath

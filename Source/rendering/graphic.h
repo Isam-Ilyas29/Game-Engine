@@ -8,7 +8,7 @@
 #include <iostream>
 #include <vector>
 
-#include "../camera/camera_property.h"
+#include "../Camera/camera_property.h"
 
 
 //Vertex and Attribute Objects

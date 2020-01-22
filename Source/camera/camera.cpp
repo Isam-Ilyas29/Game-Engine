@@ -1,7 +1,8 @@
-#include "camera.h"
+#include <iostream>
 
+#include "camera.h"
 #include "camera_property.h"
-#include "../window/window.h"
+#include "../Context/context.h"
 
 
 void framesPerSecond() {
@@ -17,7 +18,7 @@ void Camera::perFrameTimeLogic() {
 }
 
 glm::mat4 Camera::getMat4Projection() {
-	glm::mat4 projection = glm::perspective(glm::radians(FOV), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(FOV), (float)600 / (float)450, 0.1f, 100.0f);
 	
 	return projection;
 }

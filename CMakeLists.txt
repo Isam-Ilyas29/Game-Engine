@@ -10,32 +10,30 @@ add_subdirectory(Libraries/glm)
 #Source files
 set(SOURCES 
     Source/main.cpp
-    Source/rendering/shader.h
-    Source/rendering/shader.cpp
-    Source/rendering/graphic.h
-    Source/rendering/graphic.cpp
-    Source/rendering/texture.h
-    Source/rendering/texture.cpp
-    Source/environment/environment.cpp
-    Source/environment/environment.h
-    Source/window/window.h
-    Source/window/window.cpp
-    Source/input/keyboard.h
-    Source/input/keyboard.cpp
-    Source/input/mouse.h
-    Source/input/mouse.cpp
-    Source/camera/camera.h
-    Source/camera/camera.cpp
-    Source/camera/camera_property.h
-    Source/camera/camera_property.cpp
-    Source/input/callback.h
-    Source/input/callback.cpp
-    Source/input/input.h
-    Source/input/input.cpp
-    Source/context/context.h
-    Source/context/context.cpp
-    Source/game/gameloop.h
-    Source/game/gameloop.cpp
+    Source/Rendering/shader.h
+    Source/Rendering/shader.cpp
+    Source/Rendering/graphic.h
+    Source/Rendering/graphic.cpp
+    Source/Rendering/texture.h
+    Source/Rendering/texture.cpp
+    Source/Environment/environment.cpp
+    Source/Environment/environment.h
+    Source/Input/keyboard.h
+    Source/Input/keyboard.cpp
+    Source/Input/mouse.h
+    Source/Input/mouse.cpp
+    Source/Camera/camera.h
+    Source/Camera/camera.cpp
+    Source/Camera/camera_property.h
+    Source/Camera/camera_property.cpp
+    Source/Input/callback.h
+    Source/Input/callback.cpp
+    Source/Input/input.h
+    Source/Input/input.cpp
+    Source/Context/context.h
+    Source/Context/context.cpp
+    Source/Game/gameloop.h
+    Source/Game/gameloop.cpp
 )
 list(TRANSFORM SOURCES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${SOURCES})

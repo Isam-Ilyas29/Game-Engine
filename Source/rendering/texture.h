@@ -2,7 +2,7 @@
 
 #include <glad/glad.h>
 #include <stb_image.h>
-#include "../environment/environment.h"
+#include "../Environment/environment.h"
 
 #include <iostream>
 
