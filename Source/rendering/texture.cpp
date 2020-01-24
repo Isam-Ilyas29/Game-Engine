@@ -1,6 +1,12 @@
 #include "texture.h"
 
 
+namespace {
+	std::vector<unsigned int> texture_count;
+}
+
+/*----------------------------------------------------------------------------------*/
+
 Texture::Texture(const std::filesystem::path& path)
 	: mValid(false), mWidth(0), mHeight(0), mChannels(0), mID(0), mInternalFormat(0), mFormat(0) {
 
@@ -69,8 +75,33 @@ GLuint Texture::getID() const {
 	return mID;
 }
 
-void Texture::bind() const {
-	glBindTexture(GL_TEXTURE_2D, getID());
+void Texture::bind() {
+	if (isBindCallable) {
+		texture_count.push_back(1);
+		unsigned int texture_unit = texture_count.size();
+
+		switch (texture_unit) {
+		case 1:
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, getID());
+			break;
+		case 2:
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, getID());
+			break;
+		case 3:
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, getID());
+			break;
+		case 4:
+			glActiveTexture(GL_TEXTURE3);
+			glBindTexture(GL_TEXTURE_2D, getID());
+		default:
+			std::cout << "TEXTURE::ERROR::ONLY_SUPPORT_FOUR_TEXTURE_UNITS" << std::endl;
+			break;
+		}
+	}
+	isBindCallable = false;
 }
 
 void Texture::unbind() const {

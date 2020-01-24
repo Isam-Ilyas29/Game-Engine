@@ -1,22 +1,22 @@
 #include "keyboard.h"
 
 
-//Process all input
+// Process all input
 void processInput(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	switch (key) {
 
-		//'Esc'
+		// 'Esc'
 	case GLFW_KEY_ESCAPE:
 		if (action == GLFW_PRESS) {
-			//PRESS = Close window
+			// PRESS = Close window
 			glfwSetWindowShouldClose(window, true);
 		}
 		else if (action == GLFW_RELEASE) {
-			//RELEASE = Pass
+			// RELEASE = Pass
 			break;
 		}
 		else if (action == GLFW_REPEAT) {
-			//HELD_DOWN = Pass
+			// HELD_DOWN = Pass
 			break;
 		}
 		break;
@@ -45,7 +45,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	}
 
 	float xoffset = xpos - lastX;
-	float yoffset = lastY - ypos;	//Reversed since y-coordinates go from bottom to top
+	float yoffset = lastY - ypos;	// Reversed since y-coordinates go from bottom to top
 	lastX = xpos;
 	lastY = ypos;
 
@@ -56,7 +56,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	yaw += xoffset;
 	pitch += yoffset;
 
-	//Makes sure that when pitch is out of bounds, screen doesn't get flipped
+	// Makes sure that when pitch is out of bounds, screen doesn't get flipped
 	if (pitch > 89.0f)
 		pitch = 89.0f;
 	if (pitch < -89.0f)
@@ -78,7 +78,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 		FOV = 45.0f;
 }
 
-//Allows user to alternate between polygon modes
+// Allows user to alternate between polygon modes
 void PolygonToggle::toggle(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
 		polygon_mode = !polygon_mode;

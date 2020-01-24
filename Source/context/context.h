@@ -16,6 +16,8 @@ namespace context {
 		bool setupWindow(std::string name, unsigned int width, unsigned int height);
 		void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
+		bool isClosed(GLFWwindow* window);
+
 		GLFWwindow* getWindow();
 		unsigned int getWidth();
 		unsigned int getHeight();

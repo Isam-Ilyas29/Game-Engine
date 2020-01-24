@@ -23,7 +23,7 @@ bool gameloop::run(int argc, char* argv[]) {
 		return false;
 	}
 
-	success = context::initialiseGlad();
+	success = context::graphics::initialiseGraphics();
 	if (!success) {
 		return false;
 	}
@@ -31,13 +31,9 @@ bool gameloop::run(int argc, char* argv[]) {
 	/*----------------------------------------------------------------------------------*/
 
 	{
+		Shader shader(environment::ResourcePath("shader.vs").string().data(), environment::ResourcePath("shader.fs").string().data());
 
-		//Build and compile shader program
-		std::unique_ptr<Shader> our_shader = std::make_unique<Shader>(environment::ResourcePath("shader.vs").string().c_str(), environment::ResourcePath("shader.fs").string().c_str());
-
-		//Set up vertex data and configure vertex attributes
-		float vertices[] = {
-			//Positions							   
+		float vertices[] = {		   
 		   -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 			0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
 			0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
@@ -96,98 +92,88 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		std::vector<unsigned int> indices = {};
 
+		/*----------------------------------------------------------------------------------*/
+
 		unsigned int VBO, VAO;
 		glGenBuffers(1, &VBO);
 		glGenVertexArrays(1, &VAO);
 
-		{
-			//Creates vertex/attribute object
-			std::unique_ptr<VertAttribObject> vertex_and_attrib_object = std::make_unique<VertAttribObject>(VAO, VBO);
+		VertAttribObject vertex_and_attrib_object(VAO, VBO);
 
-			vertex_and_attrib_object->bindVBO(vertices, sizeof(vertices), VBO);
-			vertex_and_attrib_object->bindVAO(VAO);
+		vertex_and_attrib_object.bindVBO(vertices, sizeof(vertices), VBO);
+		vertex_and_attrib_object.bindVAO(VAO);
 
-			vertex_and_attrib_object->positionAttrib();
-			vertex_and_attrib_object->textureCoordAttrib();
+		vertex_and_attrib_object.positionAttrib();
+		vertex_and_attrib_object.textureCoordAttrib();
 
-			/*----------------------------------------------------------------------------------*/
+		/*----------------------------------------------------------------------------------*/
 
-			//TEXTURE 1
-			Texture our_texture1(environment::ResourcePath("Textures/metal_texture1.jpg"));
-			//TEXTURE 2
-			Texture our_texture2(environment::ResourcePath("Textures/graffiti_texture1.png"));
+		Texture texture1(environment::ResourcePath("Textures/metal_texture1.jpg"));
+		Texture texture2(environment::ResourcePath("Textures/graffiti_texture1.png"));
 
-			/*----------------------------------------------------------------------------------*/
+		/*----------------------------------------------------------------------------------*/
 
-			our_shader->use();
-			our_shader->setInt("texture2", 1); //Comment out to remove graffiti
+		shader.use();
+		shader.setInt("texture2", 1); // Comment out to remove graffiti
 
-			//Avoid cursor jump
-			glfwSetCursorPos(context::window::getWindow(), lastX, lastY);
+		// Avoid cursor jump
+		input::setCursorPos();
 
-			mouseProp(true, -90.0f, 0.0f, (800.0f / 2.0), (600.0 / 2.0), 45.0f);
+		mouseProp(true, -90.0f, 0.0f, (800.0f / 2.0), (600.0 / 2.0), 45.0f);
 
-			float time = 2.0f;
+		float time = 2.0f;
 
-			//Input object
-			std::unique_ptr<PlayerCallback> test = std::make_unique<PlayerCallback>();
+		PlayerCallback callbacks;
 
-			/*----------------------------------------------------------------------------------*/
+		/*----------------------------------------------------------------------------------*/
 
-			//Game loop
-			while (!glfwWindowShouldClose(context::window::getWindow())) {
+		// Game loop
+		while (context::window::isClosed(context::window::getWindow()) == false) {
 
-				test->update(delta_time);
+			callbacks.update(delta_time);
 
-				//Creates camera object
-				Camera camera;
+			Camera camera;
 
-				camera.perFrameTimeLogic();
+			camera.perFrameTimeLogic();
 
-				//Displays FPS every 2 seconds
-				time -= delta_time;
-				if (time <= 0.0f) {
-					time = 2.0f;
-					framesPerSecond();
-				}
-
-				//Renders Screen Colour
-				glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-				//Binds textures on corresponding texture units
-				glActiveTexture(GL_TEXTURE0);
-				our_texture1.bind();
-				glActiveTexture(GL_TEXTURE1);
-				our_texture2.bind();
-
-				//Projection + View + Transform
-				glm::mat4 projection = camera.getMat4Projection();
-				our_shader->setMat4("projection", projection);
-
-				glm::mat4 view = camera.getMat4View();
-				our_shader->setMat4("view", view);
-
-				glm::mat4 transform = camera.getMat4Transform();
-				unsigned int transform_loc = glGetUniformLocation(our_shader->mID, "transform");
-				glUniformMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(transform));
-
-				//Render boxes
-				glBindVertexArray(VAO);
-				for (unsigned int i = 0; i < 10; i++) {
-					glm::mat4 model = getMat4Model(i, cube_positions);
-
-					our_shader->setMat4("model", model);
-
-					glDrawArrays(GL_TRIANGLES, 0, 36);
-				}
-
-				//Checks if keys/mouse was pressed or if mouse was moved
-				glfwSwapBuffers(context::window::getWindow());
-				glfwPollEvents();
+			// Displays FPS every 2 seconds
+			time -= delta_time;
+			if (time <= 0.0f) {
+				time = 2.0f;
+				framesPerSecond();
 			}
+
+			screenColour(0.2f, 0.3f, 0.3f, 1.0f);
+
+			texture1.bind();
+			texture2.bind();
+
+			// Projection + View + Transform
+			glm::mat4 projection = camera.getMat4Projection();
+			shader.setMat4("projection", projection);
+
+			glm::mat4 view = camera.getMat4View();
+			shader.setMat4("view", view);
+
+			glm::mat4 transform = camera.getMat4Transform();
+			unsigned int transform_loc = glGetUniformLocation(shader.mID, "transform");
+			shader.modMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(transform));
+
+			// Renders boxes
+			glBindVertexArray(VAO);
+			for (unsigned int i = 0; i < 10; i++) {
+				glm::mat4 model = getMat4Model(i, cube_positions);
+
+				shader.setMat4("model", model);
+
+				glDrawArrays(GL_TRIANGLES, 0, 36);
+			}
+
+			glfwSwapBuffers(context::window::getWindow());
+			glfwPollEvents();
 		}
 	}
+
 	glfwTerminate();
 	return true;
 }

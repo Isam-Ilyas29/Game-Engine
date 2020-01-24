@@ -12,7 +12,7 @@ PlayerCallback::~PlayerCallback() {
 }
 
 void PlayerCallback::update(float delta_time) {
-    //MOVE FORWARD ['W']
+    // MOVE FORWARD ['W']
 
     /*
     if (mMoveForward) {
