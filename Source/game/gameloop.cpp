@@ -31,7 +31,7 @@ bool gameloop::run(int argc, char* argv[]) {
 	/*----------------------------------------------------------------------------------*/
 
 	{
-		Shader shader(environment::ResourcePath("shader.vs").string().data(), environment::ResourcePath("shader.fs").string().data());
+		Shader shader(environment::ResourcePath("shader.vs"), environment::ResourcePath("shader.fs"));
 
 		float vertices[] = {		   
 		   -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
@@ -111,10 +111,10 @@ bool gameloop::run(int argc, char* argv[]) {
 		Texture texture1(environment::ResourcePath("Textures/metal_texture1.jpg"));
 		Texture texture2(environment::ResourcePath("Textures/graffiti_texture1.png"));
 
-		/*----------------------------------------------------------------------------------*/
-
 		shader.use();
 		shader.setInt("texture2", 1); // Comment out to remove graffiti
+
+		/*----------------------------------------------------------------------------------*/
 
 		// Avoid cursor jump
 		input::setCursorPos();
@@ -123,7 +123,10 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		float time = 2.0f;
 
+		/*----------------------------------------------------------------------------------*/
+
 		PlayerCallback callbacks;
+		Camera camera;
 
 		/*----------------------------------------------------------------------------------*/
 
@@ -131,8 +134,6 @@ bool gameloop::run(int argc, char* argv[]) {
 		while (context::window::isClosed(context::window::getWindow()) == false) {
 
 			callbacks.update(delta_time);
-
-			Camera camera;
 
 			camera.perFrameTimeLogic();
 
@@ -145,8 +146,8 @@ bool gameloop::run(int argc, char* argv[]) {
 
 			screenColour(0.2f, 0.3f, 0.3f, 1.0f);
 
-			texture1.bind();
-			texture2.bind();
+			texture1.setTexture(true, 0);
+			texture2.setTexture(true, 1);
 
 			// Projection + View + Transform
 			glm::mat4 projection = camera.getMat4Projection();
@@ -169,8 +170,8 @@ bool gameloop::run(int argc, char* argv[]) {
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 			}
 
-			glfwSwapBuffers(context::window::getWindow());
-			glfwPollEvents();
+			context::window::swapBuffers();
+			context::window::pollEvents();
 		}
 	}
 

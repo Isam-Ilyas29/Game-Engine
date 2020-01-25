@@ -1,9 +1,6 @@
 #include "texture.h"
 
 
-namespace {
-	std::vector<unsigned int> texture_count;
-}
 
 /*----------------------------------------------------------------------------------*/
 
@@ -75,37 +72,16 @@ GLuint Texture::getID() const {
 	return mID;
 }
 
-void Texture::bind() {
-	if (isBindCallable) {
-		texture_count.push_back(1);
-		unsigned int texture_unit = texture_count.size();
-
-		switch (texture_unit) {
-		case 1:
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, getID());
-			break;
-		case 2:
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, getID());
-			break;
-		case 3:
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, getID());
-			break;
-		case 4:
-			glActiveTexture(GL_TEXTURE3);
-			glBindTexture(GL_TEXTURE_2D, getID());
-		default:
-			std::cout << "TEXTURE::ERROR::ONLY_SUPPORT_FOUR_TEXTURE_UNITS" << std::endl;
-			break;
-		}
+// Bind = true, Unbind = false
+void Texture::setTexture(bool bind_or_unbind, unsigned int tex_unit) const {
+	if (bind_or_unbind) {
+		glActiveTexture(GL_TEXTURE0 + tex_unit);
+		glBindTexture(GL_TEXTURE_2D, getID());
 	}
-	isBindCallable = false;
-}
-
-void Texture::unbind() const {
-	glBindTexture(GL_TEXTURE_2D, 0);
+	else {
+		// 0 to unbind
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 }
 
 bool Texture::isValid() const {

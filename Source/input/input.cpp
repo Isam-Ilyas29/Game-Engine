@@ -3,6 +3,8 @@
 #include "../Context/context.h"
 #include "../Camera/camera_property.h"
 
+#include <GLFW/glfw3.h>
+
 
 bool mMoveForward = false;
 

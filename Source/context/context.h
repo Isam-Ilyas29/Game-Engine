@@ -1,8 +1,10 @@
 #pragma once
 
-#include <glad/glad.h>
-
 #include "../Input/input.h"
+
+#include <GLFW/glfw3.h>
+
+#include <string>
 
 
 namespace context {
@@ -17,10 +19,14 @@ namespace context {
 		void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
 		bool isClosed(GLFWwindow* window);
+		void swapBuffers();
+		void pollEvents();
 
 		GLFWwindow* getWindow();
 		unsigned int getWidth();
 		unsigned int getHeight();
+
+		float aspectRatio();
 	}
 }
 

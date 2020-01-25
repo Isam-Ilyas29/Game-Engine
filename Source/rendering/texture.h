@@ -14,16 +14,13 @@ private:
 	GLenum mInternalFormat, mFormat;
 	bool mValid;
 
-	bool isBindCallable = true;
-
 public:
 	Texture(const std::filesystem::path& path);
 	~Texture();
 
 	static GLuint dataToTextureID(unsigned char* data, int width, int height, GLuint internal_format, GLuint type);
 	GLuint getID() const;
-	void bind();
-	void unbind() const;
+	void setTexture(bool bind_or_unbind, unsigned int tex_unit) const;
 	bool isValid() const;
 	GLuint getFormat() const;
 	int getWidth() const;

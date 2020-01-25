@@ -4,6 +4,8 @@
 #include "camera_property.h"
 #include "../Context/context.h"
 
+#include <GLFW/glfw3.h>
+
 
 void framesPerSecond() {
 	float frame_rate = 1.0 / delta_time;
@@ -18,7 +20,7 @@ void Camera::perFrameTimeLogic() {
 }
 
 glm::mat4 Camera::getMat4Projection() {
-	glm::mat4 projection = glm::perspective(glm::radians(FOV), (float)context::window::getWidth() / (float)context::window::getHeight(), 0.1f, 100.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(FOV), context::window::aspectRatio(), 0.1f, 100.0f);
 	
 	return projection;
 }

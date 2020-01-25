@@ -18,7 +18,7 @@ namespace context {
 }
 
 // Vertex and Attribute Objects
-class VertAttribObject {
+class VertAttribObject final {
 private:
 	unsigned int mVAO, mVBO, mEBO;
 
