@@ -79,7 +79,7 @@ void Texture::setTexture(bool bind_or_unbind, unsigned int tex_unit) const {
 		glBindTexture(GL_TEXTURE_2D, getID());
 	}
 	else {
-		// 0 to unbind
+		glActiveTexture(GL_TEXTURE0 + tex_unit);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 }

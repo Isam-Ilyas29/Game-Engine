@@ -99,7 +99,7 @@ namespace context {
 
 		
 		float aspectRatio() {
-			return ::scr_width / ::scr_height;
+			return (float)::scr_width / (float)::scr_height;
 		}
 	}
 }

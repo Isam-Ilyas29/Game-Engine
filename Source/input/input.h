@@ -4,9 +4,6 @@
 #include <functional>
 #include <map>
 
-#define GLFW_INCLUDE_NONE
-
-
 
 extern bool mMoveForward;
 
