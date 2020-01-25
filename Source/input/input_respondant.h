@@ -11,14 +11,7 @@
 #include "../Camera/camera.h"
 
 
-class PlayerCallback final {
-private:
-    input::Token mInputToken;
-
-public:
-    PlayerCallback();
-    ~PlayerCallback();
-
+class inputRespondant final {
     void update(float delta_time);
 };
 

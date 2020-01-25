@@ -26,8 +26,8 @@ set(SOURCES
     Source/Camera/camera.cpp
     Source/Camera/camera_property.h
     Source/Camera/camera_property.cpp
-    Source/Input/callback.h
-    Source/Input/callback.cpp
+    Source/Input/input_respondant.h
+    Source/Input/input_respondant.cpp
     Source/Input/input.h
     Source/Input/input.cpp
     Source/Context/context.h
