@@ -2,9 +2,10 @@
 
 #include <glad/glad.h>
 #include <stb_image.h>
-#include "../environment/environment.h"
+#include "../Environment/environment.h"
 
 #include <iostream>
+#include <vector>
 
 class Texture {
 private:
@@ -19,8 +20,7 @@ public:
 
 	static GLuint dataToTextureID(unsigned char* data, int width, int height, GLuint internal_format, GLuint type);
 	GLuint getID() const;
-	void bind() const;
-	void unbind() const;
+	void setTexture(bool bind_or_unbind, unsigned int tex_unit) const;
 	bool isValid() const;
 	GLuint getFormat() const;
 	int getWidth() const;

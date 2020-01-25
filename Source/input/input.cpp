@@ -1,41 +1,54 @@
 #include "input.h"
 
+#include "../Context/context.h"
+#include "../Camera/camera_property.h"
+
+#include <GLFW/glfw3.h>
+
 
 bool mMoveForward = false;
 
-namespace{
+namespace {
+
     std::unordered_map<input::Token, input::Callback> gCallbacks;
 }
 
-input::Token input::registerCallback(input::Callback callback) {
-    int token = 0;
-    gCallbacks.emplace(token, callback);
-    return token;
-}
+namespace input {
 
-bool input::unregisterCallback(input::Token token) {
-    auto search = gCallbacks.find(token);
-    if (search != gCallbacks.end()) {
-        gCallbacks.erase(search);
-        return true;
+    void setCursorPos() {
+        glfwSetCursorPos(context::window::getWindow(), lastX, lastY);
     }
-    return false;
-}
 
-void input::onInput(int key, int action) {
-    if (key == GLFW_KEY_W) {
-        switch (action) {
+    Token registerCallback(Callback callback) {
+        int token = 0;
+        gCallbacks.emplace(token, callback);
+        return token;
+    }
 
-        case (GLFW_PRESS):
-            mMoveForward = true;
-            break;
+    bool unregisterCallback(Token token) {
+        auto search = gCallbacks.find(token);
+        if (search != gCallbacks.end()) {
+            gCallbacks.erase(search);
+            return true;
+        }
+        return false;
+    }
 
-        case (GLFW_RELEASE):
-            mMoveForward = false;
-            break;
+    void onInput(int key, int action) {
+        if (key == GLFW_KEY_W) {
+            switch (action) {
 
-        default:
-            break;
+            case (GLFW_PRESS):
+                mMoveForward = true;
+                break;
+
+            case (GLFW_RELEASE):
+                mMoveForward = false;
+                break;
+
+            default:
+                break;
+            }
         }
     }
 }

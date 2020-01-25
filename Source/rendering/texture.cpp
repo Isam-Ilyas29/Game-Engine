@@ -1,6 +1,9 @@
 #include "texture.h"
 
 
+
+/*----------------------------------------------------------------------------------*/
+
 Texture::Texture(const std::filesystem::path& path)
 	: mValid(false), mWidth(0), mHeight(0), mChannels(0), mID(0), mInternalFormat(0), mFormat(0) {
 
@@ -69,12 +72,16 @@ GLuint Texture::getID() const {
 	return mID;
 }
 
-void Texture::bind() const {
-	glBindTexture(GL_TEXTURE_2D, getID());
-}
-
-void Texture::unbind() const {
-	glBindTexture(GL_TEXTURE_2D, 0);
+// Bind = true, Unbind = false
+void Texture::setTexture(bool bind_or_unbind, unsigned int tex_unit) const {
+	if (bind_or_unbind) {
+		glActiveTexture(GL_TEXTURE0 + tex_unit);
+		glBindTexture(GL_TEXTURE_2D, getID());
+	}
+	else {
+		glActiveTexture(GL_TEXTURE0 + tex_unit);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 }
 
 bool Texture::isValid() const {

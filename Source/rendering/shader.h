@@ -1,19 +1,21 @@
 #pragma once
 
-
 #include <glm/glm.hpp>
+#include <glad/glad.h>
 
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <filesystem>
+
 
 class Shader {
 public:
-    //Program ID
+    // Program ID
     unsigned int mID;
 
-    Shader(const char* vertex_path, const char* fragment_path);
+    Shader(std::filesystem::path vertex_path, std::filesystem::path fragment_path);
     ~Shader();
 
     void use();
@@ -30,6 +32,8 @@ public:
     void setMat2(const std::string& name, const glm::mat2& mat) const;
     void setMat3(const std::string& name, const glm::mat3& mat) const;
     void setMat4(const std::string& name, const glm::mat4& mat) const;
+
+    void modMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
 
 private:
     void checkCompileErrors(unsigned int shader, std::string type);
