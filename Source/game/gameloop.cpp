@@ -137,7 +137,7 @@ bool gameloop::run(int argc, char* argv[]) {
 				std::cout << "FPS: " << framesPerSecond() << std::endl;
 			}
 
-			screenColour(0.2f, 0.3f, 0.3f, 1.0f);
+			screenColour(0.2, 0.3, 0.3, 1.0);
 
 			texture1.setTexture(true, 0);
 			texture2.setTexture(true, 1);

@@ -22,7 +22,7 @@ namespace camera {
 		last_frame = current_frame;
 	}
 
-	glm::mat4 getMat4Projection() {																		 // Render distance
+	glm::mat4 getMat4Projection() {
 		glm::mat4 projection = glm::perspective(glm::radians(FOV), context::window::aspectRatio(), 0.1f, render_distance);
 
 		return projection;
@@ -30,7 +30,7 @@ namespace camera {
 
 	glm::mat4 getMat4View() {
 		glm::mat4 view = glm::mat4(1.0f);
-		view = glm::lookAt(camera_pos, getCentre(), camera_up);
+		view = glm::lookAt(camera_pos, centre, camera_up);
 
 		return view;
 	}

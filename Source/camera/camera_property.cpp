@@ -26,12 +26,10 @@ glm::vec3 camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
 
 glm::vec3 spawn_postion = glm::vec3(0.0f, 0.0f, 0.0f);
 
+glm::vec3 centre = camera_pos + camera_front;
+
 // Time
 float delta_time = 0.0f;
 float last_frame = 0.0f;
 
-
-const glm::highp_vec3 getCentre() {
-	return (camera_pos + camera_front);
-}
 

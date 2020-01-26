@@ -23,11 +23,10 @@ extern glm::vec3 camera_up;
 
 extern glm::vec3 spawn_postion;
 
+extern glm::vec3 centre;
+
 // Time
 extern float delta_time;
 extern float last_frame;
-
-
-const glm::highp_vec3 getCentre();
 
 
