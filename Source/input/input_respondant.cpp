@@ -2,6 +2,7 @@
 
 
 void update(float delta_time) {
+	/*
 	bool pressed;
 	pressed = input::isPressed(GLFW_KEY_W);
 
@@ -22,6 +23,7 @@ void update(float delta_time) {
 	if (released) {
 		std::cout << "RELEASED" << std::endl;
 	}
+	*/
 }
 
 
