@@ -132,8 +132,6 @@ bool gameloop::run(int argc, char* argv[]) {
 		// Game loop
 		while (context::window::isClosed(context::window::getWindow()) == false) {
 
-			update(delta_time);
-
 			camera.perFrameTimeLogic();
 
 			// Displays FPS every 2 seconds
@@ -170,8 +168,9 @@ bool gameloop::run(int argc, char* argv[]) {
 			}
 
 			context::window::swapBuffers();
-			input::startFrame();
 			context::window::pollEvents();
+			update(delta_time);
+			input::endFrame();
 		}
 	}
 

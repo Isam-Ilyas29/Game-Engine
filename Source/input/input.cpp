@@ -19,8 +19,14 @@ namespace input {
 
     /*----------------------------------------------------------------------------------*/
 
-    void startFrame() {
+    void endFrame() {
         state.released.clear();
+
+        for (auto i = state.pressed.cbegin(); i != state.pressed.cend(); i++) {
+            state.held.insert(*i);
+        }
+
+        state.pressed.clear();
     }
     void onInput(int key, int action) {
         switch (action) {
@@ -29,13 +35,7 @@ namespace input {
         case GLFW_PRESS:
             state.released.erase(key);
 
-            if (isPressed(key)) {
-                state.pressed.erase(key);
-                state.held.insert(key);
-            }
-            else {
-                state.pressed.insert(key);
-            }
+            state.pressed.insert(key);
 
             break;
 

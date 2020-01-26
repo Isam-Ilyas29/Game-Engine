@@ -17,7 +17,7 @@ namespace input {
         std::unordered_set<int> released;
     };
 
-    void startFrame();
+    void endFrame();
     void onInput(int key, int action);
     State const& getState();
 
