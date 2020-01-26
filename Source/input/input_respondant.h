@@ -11,10 +11,8 @@
 #include "../Camera/camera.h"
 
 
-class inputRespondant final {
-    void update(float delta_time);
-};
 
+void update(float delta_time);
 
 
 

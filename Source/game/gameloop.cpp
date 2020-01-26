@@ -125,7 +125,6 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		/*----------------------------------------------------------------------------------*/
 
-		PlayerCallback callbacks;
 		Camera camera;
 
 		/*----------------------------------------------------------------------------------*/
@@ -133,7 +132,7 @@ bool gameloop::run(int argc, char* argv[]) {
 		// Game loop
 		while (context::window::isClosed(context::window::getWindow()) == false) {
 
-			callbacks.update(delta_time);
+			update(delta_time);
 
 			camera.perFrameTimeLogic();
 
@@ -171,6 +170,7 @@ bool gameloop::run(int argc, char* argv[]) {
 			}
 
 			context::window::swapBuffers();
+			input::startFrame();
 			context::window::pollEvents();
 		}
 	}
