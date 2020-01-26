@@ -5,6 +5,7 @@
 #include "../Rendering/shader.h"
 #include "../Rendering/texture.h"
 #include "../Input/input_respondant.h"
+#include "../Tools/tool.h"
 
 
 
@@ -116,19 +117,18 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		/*----------------------------------------------------------------------------------*/
 
-		// Avoid cursor jump
-		input::setCursorPos();
-
-		cameraProperties(true, -90.0f, 0.0f, (800.0f / 2.0f), (600.0f / 2.0f), 45.0f, 100.0f);
-
 		float time = 2.0f;
+
+		/*----------------------------------------------------------------------------------*/
+
+		Camera camera(true, -90.0f, 0.0f, (800.0f / 2.0f), (600.0f / 2.0f), 45.0f, 100.0f);
 
 		/*----------------------------------------------------------------------------------*/
 
 		// Game loop
 		while (context::window::isClosed(context::window::getWindow()) == false) {
 
-			camera::perFrameTimeLogic();
+			camera.perFrameTimeLogic();
 
 			// Displays FPS every 2 seconds
 			time -= delta_time;
@@ -143,13 +143,13 @@ bool gameloop::run(int argc, char* argv[]) {
 			texture2.setTexture(true, 1);
 
 			// Projection + View + Transform
-			glm::mat4 projection = camera::getMat4Projection();
+			glm::mat4 projection = camera.getMat4Projection();
 			shader.setMat4("projection", projection);
 
-			glm::mat4 view = camera::getMat4View();
+			glm::mat4 view = camera.getMat4View();
 			shader.setMat4("view", view);
 
-			glm::mat4 transform = camera::getMat4Transform();
+			glm::mat4 transform = camera.getMat4Transform();
 			unsigned int transform_loc = glGetUniformLocation(shader.mID, "transform");
 			shader.modMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(transform));
 

@@ -24,8 +24,6 @@ set(SOURCES
     Source/Input/mouse.cpp
     Source/Camera/camera.h
     Source/Camera/camera.cpp
-    Source/Camera/camera_property.h
-    Source/Camera/camera_property.cpp
     Source/Input/input_respondant.h
     Source/Input/input_respondant.cpp
     Source/Input/input.h
@@ -34,6 +32,8 @@ set(SOURCES
     Source/Context/context.cpp
     Source/Game/gameloop.h
     Source/Game/gameloop.cpp
+    Source/Tools/tool.h
+    Source/Tools/tool.cpp
 )
 list(TRANSFORM SOURCES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${SOURCES})

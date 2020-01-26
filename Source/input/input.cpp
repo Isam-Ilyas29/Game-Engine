@@ -1,7 +1,6 @@
 #include "input.h"
 
 #include "../Context/context.h"
-#include "../Camera/camera_property.h"
 
 #include <GLFW/glfw3.h>
 
@@ -12,12 +11,6 @@ namespace {
 }
 
 namespace input {
-
-    void setCursorPos() {
-        glfwSetCursorPos(context::window::getWindow(), lastX, lastY);
-    }
-
-    /*----------------------------------------------------------------------------------*/
 
     void endFrame() {
         state.released.clear();

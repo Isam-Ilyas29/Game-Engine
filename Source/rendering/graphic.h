@@ -8,7 +8,6 @@
 #include <iostream>
 #include <vector>
 
-#include "../Camera/camera_property.h"
 
 
 namespace context {

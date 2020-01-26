@@ -8,9 +8,6 @@
 
 namespace input {
 
-    void setCursorPos();
-
-
     struct State {
         std::unordered_set<int> pressed;
         std::unordered_set<int> held;

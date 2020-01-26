@@ -1,8 +1,9 @@
 #pragma once
 
+#include "../Environment/environment.h"
+
 #include <glad/glad.h>
 #include <stb_image.h>
-#include "../Environment/environment.h"
 
 #include <iostream>
 #include <vector>
