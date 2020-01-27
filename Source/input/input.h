@@ -8,7 +8,7 @@
 
 namespace input {
 
-    struct State {
+    struct keyStates {
         std::unordered_set<int> pressed;
         std::unordered_set<int> held;
         std::unordered_set<int> released;
@@ -16,7 +16,7 @@ namespace input {
 
     void endFrame();
     void onInput(int key, int action);
-    State const& getState();
+    keyStates const& getState();
 
     bool isPressed(int key);
     bool isHeld(int key);

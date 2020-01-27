@@ -7,7 +7,7 @@
 
 namespace {
 
-    input::State state;
+    input::keyStates state;
 }
 
 namespace input {
@@ -24,7 +24,6 @@ namespace input {
     void onInput(int key, int action) {
         switch (action) {
 
-        case GLFW_REPEAT:
         case GLFW_PRESS:
             state.released.erase(key);
 
@@ -44,7 +43,7 @@ namespace input {
             break;
         }
     }
-    State const& getState() {  
+    keyStates const& getState() {  
         return state;
     }
 

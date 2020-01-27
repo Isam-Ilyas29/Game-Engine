@@ -83,8 +83,6 @@ Shader::Shader(std::filesystem::path vertex_path, std::filesystem::path fragment
 }
 
 Shader::~Shader() {
-    std::cout << "hola";
-
     glDeleteProgram(mID);
 }
 
