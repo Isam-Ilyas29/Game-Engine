@@ -8,26 +8,17 @@
 
 
 
-float framesPerSecond() {
-	float frame_rate = 1.0 / delta_time;
-	return 0.f;
-}
-
 /*----------------------------------------------------------------------------------*/
 
 Camera::Camera(bool first_mouse, float yaw, float pitch, float lastX, float lastY, float FOV, float render_distance)
-	:mFirstMouse(first_mouse), mYaw(yaw), mPitch(pitch), mLastX(lastX), mLastY(lastY), mFOV(FOV), mRenderDistance(render_distance), mDeltaTime(0.f), mLastFrame(0.f) {
+	:mFirstMouse(first_mouse), mYaw(yaw), mPitch(pitch), mLastX(lastX), mLastY(lastY), mFOV(FOV), mRenderDistance(render_distance), mCameraSpeed(0.0f) {
 	
 	// Default settings
-	mCameraSpeed = 2.5 * mDeltaTime;
-
 	mCameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 	mCameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	mCameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	mSpawnPostion = glm::vec3(0.0f, 0.0f, 0.0f);
-
-	mCentre = mCameraPos + mCameraFront;
 }
 
 void Camera::operator()(glm::vec3 camera_pos, glm::vec3 camera_front, glm::vec3 camera_up, glm::vec3 spawn_postion) {
@@ -36,16 +27,16 @@ void Camera::operator()(glm::vec3 camera_pos, glm::vec3 camera_front, glm::vec3 
 	mCameraUp = camera_up;
 
 	mSpawnPostion = spawn_postion;
-
-	mCentre = mCameraPos + mCameraFront;
 }
 
 /*----------------------------------------------------------------------------------*/
 
 void Camera::perFrameTimeLogic() {
 	float current_frame = glfwGetTime();
-	mDeltaTime = current_frame - mLastFrame;
-	mLastFrame = current_frame;
+	delta_time = current_frame - last_frame;
+	last_frame = current_frame;
+
+	mCameraSpeed = 2.5 * delta_time;
 }
 
 /*----------------------------------------------------------------------------------*/
@@ -77,7 +68,7 @@ glm::mat4 Camera::getMat4Projection() {
 
 glm::mat4 Camera::getMat4View() {
 	glm::mat4 view = glm::mat4(1.0f);
-	view = glm::lookAt(mCameraPos, mCentre, mCameraUp);
+	view = glm::lookAt(mCameraPos, mCameraPos + mCameraFront, mCameraUp);
 
 	return view;
 }

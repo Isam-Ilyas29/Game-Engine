@@ -5,8 +5,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
-// TODO: Complete Tools Module.
-float framesPerSecond();
 
 class Camera {
 private:
@@ -26,13 +24,6 @@ private:
 	glm::vec3 mCameraUp;
 
 	glm::vec3 mSpawnPostion;
-
-	glm::vec3 mCentre;
-
-
-	// Time
-	float mDeltaTime;
-	float mLastFrame;
 
 public:
 	Camera(bool first_mouse, float yaw, float pitch, float lastX, float lastY, float FOV, float render_distance);
