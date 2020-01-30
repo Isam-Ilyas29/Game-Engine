@@ -4,7 +4,8 @@
 #include "../Rendering/graphic.h"
 #include "../Rendering/shader.h"
 #include "../Rendering/texture.h"
-#include "../Input/callback.h"
+#include "../Input/input_respondant.h"
+#include "../Tools/tool.h"
 
 
 
@@ -116,24 +117,16 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		/*----------------------------------------------------------------------------------*/
 
-		// Avoid cursor jump
-		input::setCursorPos();
-
-		mouseProp(true, -90.0f, 0.0f, (800.0f / 2.0), (600.0 / 2.0), 45.0f);
-
 		float time = 2.0f;
 
 		/*----------------------------------------------------------------------------------*/
 
-		PlayerCallback callbacks;
-		Camera camera;
+		Camera camera(true, -90.0f, 0.0f, (800.0f / 2.0f), (600.0f / 2.0f), 45.0f, 100.0f);
 
 		/*----------------------------------------------------------------------------------*/
 
 		// Game loop
 		while (context::window::isClosed(context::window::getWindow()) == false) {
-
-			callbacks.update(delta_time);
 
 			camera.perFrameTimeLogic();
 
@@ -141,10 +134,10 @@ bool gameloop::run(int argc, char* argv[]) {
 			time -= delta_time;
 			if (time <= 0.0f) {
 				time = 2.0f;
-				framesPerSecond();
+				std::cout << "FPS: " << framesPerSecond() << std::endl;
 			}
 
-			screenColour(0.2f, 0.3f, 0.3f, 1.0f);
+			screenColour(0.2, 0.3, 0.3, 1.0);
 
 			texture1.setTexture(true, 0);
 			texture2.setTexture(true, 1);
@@ -172,6 +165,8 @@ bool gameloop::run(int argc, char* argv[]) {
 
 			context::window::swapBuffers();
 			context::window::pollEvents();
+			update(delta_time, camera);
+			input::endFrame();
 		}
 	}
 

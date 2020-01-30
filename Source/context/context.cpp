@@ -1,6 +1,6 @@
 #include "context.h"
 
-#include <glad/glad.h>
+#include "glad/glad.h"
 
 
 /*----------------------------------------------------------------------------------*/
@@ -78,11 +78,11 @@ namespace context {
 			return glfwWindowShouldClose(window);
 		}
 
-		void swapBuffers(){
+		void swapBuffers() {
 			glfwSwapBuffers(::window);
 		}
 
-		void pollEvents(){
+		void pollEvents() {
 			glfwPollEvents();
 		}
 
@@ -97,9 +97,10 @@ namespace context {
 			return ::scr_height;
 		}
 
-		
+
 		float aspectRatio() {
 			return (float)::scr_width / (float)::scr_height;
 		}
 	}
 }
+

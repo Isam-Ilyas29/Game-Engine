@@ -1,7 +1,7 @@
 #include "graphic.h"
 
 #include <GLFW/glfw3.h>
-#include <glad/glad.h>
+
 
 
 /*----------------------------------------------------------------------------------*/
@@ -82,7 +82,7 @@ void VertAttribObject::textureCoordAttrib() {
 
 /*----------------------------------------------------------------------------------*/
 
-void screenColour(float r, float g, float b, float a) {
+void screenColour(double r, double g, double b, double a) {
 	glClearColor(r, g, b, a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

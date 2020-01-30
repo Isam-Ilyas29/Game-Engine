@@ -8,7 +8,6 @@
 #include <iostream>
 #include <vector>
 
-#include "../Camera/camera_property.h"
 
 
 namespace context {
@@ -36,6 +35,6 @@ public:
 	void textureCoordAttrib();
 };
 
-void screenColour(float r, float g, float b, float a);
+void screenColour(double r, double g, double b, double a);
 
 glm::mat4 getMat4Model(unsigned int i, glm::vec3 cube_positions[]);

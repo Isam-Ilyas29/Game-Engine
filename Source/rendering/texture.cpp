@@ -1,7 +1,6 @@
 #include "texture.h"
 
 
-
 /*----------------------------------------------------------------------------------*/
 
 Texture::Texture(const std::filesystem::path& path)
