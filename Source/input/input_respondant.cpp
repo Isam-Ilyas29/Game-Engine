@@ -25,33 +25,7 @@ bool isSceneState(sceneStates state) {
 
 /*----------------------------------------------------------------------------------*/
 
-// Input states and has the correspoding functions and bitset.
-// Also holds all input functions.
-
-enum class inputStates {
-	STATE_MOVE_FORWARD,
-	STATE_MOVE_LEFT,
-	STATE_MOVE_BACKWARD,
-	STATE_MOVE_RIGHT,
-
-	_COUNT
-};
-
-std::bitset<size_t(inputStates::_COUNT)> input_state;
-
-void enableInputState(inputStates state) {
-	input_state[size_t(state)] = true;
-}
-void disableInputState(inputStates state) {
-	input_state[size_t(state)] = false;
-}
-bool isInputState(inputStates state) {
-	bool state_to_check = input_state[size_t(state)];
-	return state_to_check;
-}
-
-
-void keyboardResponder(){
+void keyboardResponder(Camera& camera) {
 	bool w_HELD;
 	w_HELD = input::isHeld(GLFW_KEY_W);
 
@@ -65,60 +39,25 @@ void keyboardResponder(){
 	d_HELD = input::isHeld(GLFW_KEY_D);
 
 	if (w_HELD) {
-		disableInputState(inputStates::STATE_MOVE_LEFT);
-		disableInputState(inputStates::STATE_MOVE_BACKWARD);
-		disableInputState(inputStates::STATE_MOVE_RIGHT);
-
-		enableInputState(inputStates::STATE_MOVE_FORWARD);
+		camera.moveForward();
 	}
-	else if (a_HELD) {
-		disableInputState(inputStates::STATE_MOVE_FORWARD);
-		disableInputState(inputStates::STATE_MOVE_BACKWARD);
-		disableInputState(inputStates::STATE_MOVE_RIGHT);
-
-		enableInputState(inputStates::STATE_MOVE_LEFT);
+	if (a_HELD) {
+		camera.moveLeft();
 	}
-	else  if (s_HELD) {
-		disableInputState(inputStates::STATE_MOVE_FORWARD);
-		disableInputState(inputStates::STATE_MOVE_LEFT);
-		disableInputState(inputStates::STATE_MOVE_RIGHT);
-
-		enableInputState(inputStates::STATE_MOVE_BACKWARD);
+	if (s_HELD) {
+		camera.moveBackward();
 	}
-	else if (d_HELD) {
-		disableInputState(inputStates::STATE_MOVE_FORWARD);
-		disableInputState(inputStates::STATE_MOVE_LEFT);
-		disableInputState(inputStates::STATE_MOVE_BACKWARD);
-
-		enableInputState(inputStates::STATE_MOVE_RIGHT);
-	}
-	else {
-		disableInputState(inputStates::STATE_MOVE_FORWARD);
-		disableInputState(inputStates::STATE_MOVE_LEFT);
-		disableInputState(inputStates::STATE_MOVE_BACKWARD);
-		disableInputState(inputStates::STATE_MOVE_RIGHT);
-	}
-
-	/*---------------------------------------------------------*/
-
-	if (isInputState(inputStates::STATE_MOVE_FORWARD)) {
-		std::cout << "MOVE FORWARD FUNCTION" << std::endl;
-	}
-	else if (isInputState(inputStates::STATE_MOVE_LEFT)) {
-		std::cout << "MOVE LEFT FUNCTION" << std::endl;
-	}
-	else if (isInputState(inputStates::STATE_MOVE_BACKWARD)) {
-		std::cout << "MOVE BACKWARD FUNCTION" << std::endl;
-	}
-	else if (isInputState(inputStates::STATE_MOVE_RIGHT)) {
-		std::cout << "MOVE RIGHT FUNCTION" << std::endl;
+	if (d_HELD) {
+		camera.moveRight();
 	}
 }
 void mouseResponder() {
 
 }
 
-void update(float delta_time) {
+/*----------------------------------------------------------------------------------*/
+
+void update(float delta_time, Camera& camera) {
 	bool zero_HELD;
 	zero_HELD = input::isHeld(GLFW_KEY_0);
 
@@ -136,12 +75,11 @@ void update(float delta_time) {
 	/*---------------------------------------------*/
 
 	if (isSceneState(sceneStates::STATE_CAMERA)) {
-		keyboardResponder();
+		keyboardResponder(camera);
 		mouseResponder();
 	}
 	else if (isSceneState(sceneStates::STATE_HALTED)) {
 		std::cout << "YOU ARE ISOLATED FROM ALL OTHER SCENE STATES!" << std::endl;
 	}
 }
-
 

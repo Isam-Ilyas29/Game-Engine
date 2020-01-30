@@ -19,15 +19,7 @@ bool isSceneState(sceneStates state);
 
 /*----------------------------------------------------------------------------------*/
 
-enum class inputStates;
-
-void enableInputState(inputStates state);
-void disableInputState(inputStates state);
-bool isInputState(inputStates state);
-
-void keyboardResponder();
+void keyboardResponder(Camera& camera);
 void mouseResponder();
-void update(float delta_time);
-
-
+void update(float delta_time, Camera& camera);
 

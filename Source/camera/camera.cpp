@@ -19,6 +19,8 @@ Camera::Camera(bool first_mouse, float yaw, float pitch, float lastX, float last
 	:mFirstMouse(first_mouse), mYaw(yaw), mPitch(pitch), mLastX(lastX), mLastY(lastY), mFOV(FOV), mRenderDistance(render_distance), mDeltaTime(0.f), mLastFrame(0.f) {
 	
 	// Default settings
+	mCameraSpeed = 2.5 * mDeltaTime;
+
 	mCameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 	mCameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	mCameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -44,6 +46,25 @@ void Camera::perFrameTimeLogic() {
 	float current_frame = glfwGetTime();
 	mDeltaTime = current_frame - mLastFrame;
 	mLastFrame = current_frame;
+}
+
+/*----------------------------------------------------------------------------------*/
+
+void Camera::moveForward() {
+	std::cout << "Move Forward FUNCTION: " << std::endl;
+	mCameraPos += mCameraSpeed * mCameraFront;
+}
+void Camera::moveLeft() {
+	std::cout << "Move Left FUNCTION: " << std::endl;
+	mCameraPos -= glm::normalize(glm::cross(mCameraFront, mCameraUp)) * mCameraSpeed;
+}
+void Camera::moveBackward() {
+	std::cout << "Move Backward FUNCTION: " << std::endl;
+	mCameraPos -= mCameraSpeed * mCameraFront;
+}
+void Camera::moveRight() {
+	std::cout << "Move Right FUNCTION: " << std::endl;
+	mCameraPos += glm::normalize(glm::cross(mCameraFront, mCameraUp)) * mCameraSpeed;
 }
 
 /*----------------------------------------------------------------------------------*/

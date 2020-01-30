@@ -165,7 +165,7 @@ bool gameloop::run(int argc, char* argv[]) {
 
 			context::window::swapBuffers();
 			context::window::pollEvents();
-			update(delta_time);
+			update(delta_time, camera);
 			input::endFrame();
 		}
 	}

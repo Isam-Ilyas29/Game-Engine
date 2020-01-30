@@ -5,7 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
-// TODO: Make tools module and TU.
+// TODO: Complete Tools Module.
 float framesPerSecond();
 
 class Camera {
@@ -18,6 +18,8 @@ private:
 	float mLastY;
 	float mFOV;
 	float mRenderDistance;
+
+	float mCameraSpeed;
 
 	glm::vec3 mCameraPos;
 	glm::vec3 mCameraFront;
@@ -34,10 +36,14 @@ private:
 
 public:
 	Camera(bool first_mouse, float yaw, float pitch, float lastX, float lastY, float FOV, float render_distance);
-
 	void operator() (glm::vec3 camera_pos, glm::vec3 camera_front, glm::vec3 camera_up, glm::vec3 spawn_postion);
 
 	void perFrameTimeLogic();
+
+	void moveForward();
+	void moveLeft();
+	void moveBackward();
+	void moveRight();
 
 	glm::mat4 getMat4Projection();
 	glm::mat4 getMat4View();
