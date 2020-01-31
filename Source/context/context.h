@@ -12,8 +12,10 @@ namespace context {
 	void initialiseGLFW();
 	bool initialiseGlad();
 
-	void setupContext();
+	void glfwContext();
 	void inputContext(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+	void imguiContext();
 
 	namespace window {
 		bool setupWindow(std::string name, unsigned int width, unsigned int height);

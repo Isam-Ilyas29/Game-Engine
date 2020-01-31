@@ -5,7 +5,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
-
 class Camera {
 private:
 	// Camera

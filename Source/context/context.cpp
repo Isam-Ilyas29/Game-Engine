@@ -1,6 +1,9 @@
 #include "context.h"
 
 #include "glad/glad.h"
+#include <imgui.h>
+#include "../Rendering/ImGUI/imgui_impl_glfw.h"
+#include "../Rendering/ImGUI/imgui_impl_opengl3.h"
 
 
 /*----------------------------------------------------------------------------------*/
@@ -45,13 +48,25 @@ namespace context {
 		return true;
 	}
 
-	void setupContext() {
+	void glfwContext() {
 		glfwSwapInterval(1);
 		glfwSetKeyCallback(::window, inputContext);
 	}
 
 	void inputContext(GLFWwindow* window, int key, int scancode, int action, int mods) {
 		input::onInput(key, action);
+	}
+
+
+	void imguiContext() {
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO();
+
+		ImGui_ImplGlfw_InitForOpenGL(::window, true);
+		ImGui_ImplOpenGL3_Init("#version 330 core");
+		
+		ImGui::StyleColorsDark();
 	}
 
 	namespace window {
@@ -63,7 +78,7 @@ namespace context {
 			windowLoader(::window);
 			bool success = windowVerifier(::window);
 
-			setupContext();
+			glfwContext();
 			return success;
 		}
 

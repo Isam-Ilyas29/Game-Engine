@@ -6,34 +6,35 @@ add_subdirectory(Libraries/glfw)
 add_subdirectory(Libraries/glad)
 add_subdirectory(Libraries/stb_image)
 add_subdirectory(Libraries/glm)
+add_subdirectory(Libraries/imgui)
 
 #Source files
 set(SOURCES 
     Source/main.cpp
+    Source/Game/gameloop.h
+    Source/Game/gameloop.cpp
+    Source/Context/context.h
+    Source/Context/context.cpp
+    Source/Tools/tool.h
+    Source/Tools/tool.cpp
+    Source/Environment/environment.cpp
+    Source/Environment/environment.h
     Source/Rendering/shader.h
     Source/Rendering/shader.cpp
     Source/Rendering/graphic.h
     Source/Rendering/graphic.cpp
     Source/Rendering/texture.h
     Source/Rendering/texture.cpp
-    Source/Environment/environment.cpp
-    Source/Environment/environment.h
-    Source/Input/keyboard.h
-    Source/Input/keyboard.cpp
-    Source/Input/mouse.h
-    Source/Input/mouse.cpp
-    Source/Camera/camera.h
-    Source/Camera/camera.cpp
-    Source/Input/input_respondant.h
-    Source/Input/input_respondant.cpp
+    Source/Input/input_responder.h
+    Source/Input/input_responder.cpp
     Source/Input/input.h
     Source/Input/input.cpp
-    Source/Context/context.h
-    Source/Context/context.cpp
-    Source/Game/gameloop.h
-    Source/Game/gameloop.cpp
-    Source/Tools/tool.h
-    Source/Tools/tool.cpp
+    Source/Camera/camera.h
+    Source/Camera/camera.cpp
+    Source/Rendering/ImGUI/imgui_impl_glfw.h
+    Source/Rendering/ImGUI/imgui_impl_glfw.cpp 
+    Source/Rendering/ImGUI/imgui_impl_opengl3.h 
+    Source/Rendering/ImGUI/imgui_impl_opengl3.cpp
 )
 list(TRANSFORM SOURCES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${SOURCES})
@@ -63,12 +64,14 @@ target_link_libraries(${PROJECT_NAME}
     glad
     stb_image
     glm
+    imgui
 )
 add_dependencies(${PROJECT_NAME} 
     glfw
     glad
     stb_image
     glm
+    imgui
 )
 
 #Windows + Linux Support

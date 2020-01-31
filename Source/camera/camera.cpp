@@ -42,19 +42,15 @@ void Camera::perFrameTimeLogic() {
 /*----------------------------------------------------------------------------------*/
 
 void Camera::moveForward() {
-	std::cout << "Move Forward FUNCTION: " << std::endl;
 	mCameraPos += mCameraSpeed * mCameraFront;
 }
 void Camera::moveLeft() {
-	std::cout << "Move Left FUNCTION: " << std::endl;
 	mCameraPos -= glm::normalize(glm::cross(mCameraFront, mCameraUp)) * mCameraSpeed;
 }
 void Camera::moveBackward() {
-	std::cout << "Move Backward FUNCTION: " << std::endl;
 	mCameraPos -= mCameraSpeed * mCameraFront;
 }
 void Camera::moveRight() {
-	std::cout << "Move Right FUNCTION: " << std::endl;
 	mCameraPos += glm::normalize(glm::cross(mCameraFront, mCameraUp)) * mCameraSpeed;
 }
 
