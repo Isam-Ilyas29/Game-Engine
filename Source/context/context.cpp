@@ -69,6 +69,11 @@ namespace context {
 		ImGui::StyleColorsDark();
 	}
 
+	void renderImgui() {
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	}
+
 	namespace window {
 
 		bool setupWindow(std::string name, unsigned int width, unsigned int height) {

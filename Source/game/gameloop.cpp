@@ -6,6 +6,7 @@
 #include "../Rendering/texture.h"
 #include "../Input/input_responder.h"
 #include "../Tools/tool.h"
+#include "../Rendering/ImGUI/imgui_scene_manager.h"
 
 #include <imgui.h>
 #include "../Rendering/ImGUI/imgui_impl_glfw.h"
@@ -145,11 +146,6 @@ bool gameloop::run(int argc, char* argv[]) {
 
 			screenColour(0.2, 0.3, 0.3, 1.0);
 
-			// Feed input to imGUI, start new frame
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
-
 			texture1.setTexture(true, 0);
 			texture2.setTexture(true, 1);
 
@@ -175,14 +171,10 @@ bool gameloop::run(int argc, char* argv[]) {
 			}
 
 			// Render imGUI
-			ImGui::Begin("My GUI");
-			ImGui::Button("Hello World!");
+			createImguiWindow("My GUI");
 			ImGui::End();
 
-			// Render onto screen
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
+			context::renderImgui();
 			context::window::swapBuffers();
 			context::window::pollEvents();
 			update(delta_time, camera);

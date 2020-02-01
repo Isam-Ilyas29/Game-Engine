@@ -35,6 +35,8 @@ set(SOURCES
     Source/Rendering/ImGUI/imgui_impl_glfw.cpp 
     Source/Rendering/ImGUI/imgui_impl_opengl3.h 
     Source/Rendering/ImGUI/imgui_impl_opengl3.cpp
+    Source/Rendering/ImGUI/imgui_scene_manager.h
+    Source/Rendering/ImGUI/imgui_scene_manager.cpp
 )
 list(TRANSFORM SOURCES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${SOURCES})
