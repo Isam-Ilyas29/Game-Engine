@@ -35,12 +35,14 @@ set(SOURCES
     Source/Rendering/ImGUI/imgui_impl_glfw.cpp 
     Source/Rendering/ImGUI/imgui_impl_opengl3.h 
     Source/Rendering/ImGUI/imgui_impl_opengl3.cpp
-    Source/Rendering/ImGUI/imgui_scene_manager.h
-    Source/Rendering/ImGUI/imgui_scene_manager.cpp
+    Source/Rendering/ImGUI/utils.h
+    Source/Rendering/ImGUI/utils.cpp
 )
 list(TRANSFORM SOURCES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${SOURCES})
 add_executable(${PROJECT_NAME} ${SOURCES})
+
+target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:Debug>:DEBUG_MODE>")
 
 set(EXECUTABLE_PATH "${CMAKE_SOURCE_DIR}/ExeDirectory")
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${EXECUTABLE_PATH}")

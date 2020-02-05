@@ -6,11 +6,7 @@
 #include "../Rendering/texture.h"
 #include "../Input/input_responder.h"
 #include "../Tools/tool.h"
-#include "../Rendering/ImGUI/imgui_scene_manager.h"
-
-#include <imgui.h>
-#include "../Rendering/ImGUI/imgui_impl_glfw.h"
-#include "../Rendering/ImGUI/imgui_impl_opengl3.h"
+#include "../Rendering/ImGUI/utils.h"
 
 
 
@@ -24,7 +20,7 @@ bool gameloop::run(int argc, char* argv[]) {
 
 	context::initialiseGLFW();
 
-	bool success  = context::window::setupWindow("My Game", 600, 450);
+	bool success = context::window::setupWindow("My Game", 600, 450);
 	if (!success) {
 		return false;
 	}
@@ -41,7 +37,7 @@ bool gameloop::run(int argc, char* argv[]) {
 	{
 		Shader shader(environment::ResourcePath("shader.vs"), environment::ResourcePath("shader.fs"));
 
-		float vertices[] = {		   
+		float vertices[] = {
 		   -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 			0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
 			0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
@@ -116,11 +112,24 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		/*----------------------------------------------------------------------------------*/
 
-		Texture texture1(environment::ResourcePath("Textures/metal_texture1.jpg"));
-		Texture texture2(environment::ResourcePath("Textures/graffiti_texture1.png"));
+		std::vector<std::string> textures = readFile("../Resources/DirectoryReader/textures_list.txt");
+
+		/*----------------------------------------------------------------------------------*/
+
+		Texture transparent1(environment::ResourcePath("Textures/TransparentTextures/graffiti_texture1.png"));
+
+		auto texture1 = std::make_unique<Texture>(environment::ResourcePath("Textures/MetalTextures/metal_bricks1.jpg"));
+		auto texture2 = std::make_unique<Texture>(environment::ResourcePath("Textures/WoodTextures/wood_planks1.jpg"));
+		auto texture3 = std::make_unique<Texture>(environment::ResourcePath("Textures/BrickTextures/white_brick_wall1.jpg"));
+
+		std::vector<std::unique_ptr<Texture>> loaded_textures;
+
+		loaded_textures.push_back(std::move(texture1));
+		loaded_textures.push_back(std::move(texture2));
+		loaded_textures.push_back(std::move(texture3));
 
 		shader.use();
-		shader.setInt("texture2", 1); // Comment out to remove graffiti
+		shader.setInt("transparent1", 1);
 
 		/*----------------------------------------------------------------------------------*/
 
@@ -135,6 +144,8 @@ bool gameloop::run(int argc, char* argv[]) {
 		// Game loop
 		while (context::window::isClosed(context::window::getWindow()) == false) {
 
+			glPolygonMode(GL_FRONT_AND_BACK, polygon_mode ? GL_LINE : GL_FILL);
+
 			camera.perFrameTimeLogic();
 
 			// Displays FPS every 2 seconds
@@ -146,8 +157,43 @@ bool gameloop::run(int argc, char* argv[]) {
 
 			screenColour(0.2, 0.3, 0.3, 1.0);
 
-			texture1.setTexture(true, 0);
-			texture2.setTexture(true, 1);
+			// Render imGUI
+			createImguiWindow("My GUI###GUI1");
+
+			// Polygon toggle checkbox: 
+			CreateCheckbox polygon_mode_checkbox("Polygon Toggle: ", "###polygon_mode_checkbox1");
+			if (polygon_mode_checkbox.isChecked()) {
+				polygon_mode = true;
+			}
+			else {
+				polygon_mode = false;
+			}
+
+			// Texture loader combo:
+			CreateCombo texture_picker("\nTexture Picker: ", "###texture_picker1", textures, 5);
+			int selected_value = texture_picker.getSelectedItem();
+			std::string selected_item = textures[selected_value];
+			//std::cout << selected_value << std::endl;
+			//std::cout << selected_item << std::endl;
+
+			for (size_t i = 0; i < loaded_textures.size(); i++) {
+				bool correct_texture = (i == selected_value);
+				loaded_textures[i]->setTexture(correct_texture, 0);
+
+				if (correct_texture) {
+					GLuint imgui_preview_image_texture = 0;
+
+					bool image = loaded_textures[i]->previewImage(&imgui_preview_image_texture);
+					IM_ASSERT(image);
+
+					ImGui::Text("\nImage Preview: ");
+					ImGui::Image((void*)(intptr_t)imgui_preview_image_texture, ImVec2(160, 160));
+				}
+			}
+
+			transparent1.setTexture(true, 1);
+
+			ImGui::End();
 
 			// Projection + View + Transform
 			glm::mat4 projection = camera.getMat4Projection();
@@ -170,14 +216,10 @@ bool gameloop::run(int argc, char* argv[]) {
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 			}
 
-			// Render imGUI
-			createImguiWindow("My GUI");
-			ImGui::End();
-
 			context::renderImgui();
-			context::window::swapBuffers();
 			context::window::pollEvents();
-			update(delta_time, camera);
+			update(delta_time, camera, polygon_mode_checkbox);
+			context::window::swapBuffers();
 			input::endFrame();
 		}
 	}

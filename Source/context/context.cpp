@@ -1,6 +1,7 @@
 #include "context.h"
 
 #include "glad/glad.h"
+
 #include <imgui.h>
 #include "../Rendering/ImGUI/imgui_impl_glfw.h"
 #include "../Rendering/ImGUI/imgui_impl_opengl3.h"
@@ -91,6 +92,9 @@ namespace context {
 		void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
 			// Makes sure the viewport matches the new window dimensions
 			glViewport(0, 0, width, height);
+
+			ImGui::SetWindowSize("###GUI1", ImVec2(0.24 * width, 0.35 * height));
+			ImGui::SetWindowPos("###GUI1", ImVec2(8, 8));
 		}
 
 

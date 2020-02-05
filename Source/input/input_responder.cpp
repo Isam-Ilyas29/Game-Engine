@@ -1,5 +1,8 @@
 #include "input_responder.h"
 
+#include "../Tools/tool.h"
+#include "../Context/context.h"
+
 
 // Scene states and has the correspoding functions and bitset
 
@@ -25,31 +28,54 @@ bool isSceneState(sceneStates state) {
 
 /*----------------------------------------------------------------------------------*/
 
-void keyboardResponder(Camera& camera) {
+void keyboardResponder(Camera& camera, CreateCheckbox& polygon_mode_checkbox) {
+
+	/*-----------------------------------------*/
+
 	bool w_HELD;
 	w_HELD = input::isHeld(GLFW_KEY_W);
-
-	bool a_HELD;
-	a_HELD = input::isHeld(GLFW_KEY_A);
-
-	bool s_HELD;
-	s_HELD = input::isHeld(GLFW_KEY_S);
-
-	bool d_HELD;
-	d_HELD = input::isHeld(GLFW_KEY_D);
 
 	if (w_HELD) {
 		camera.moveForward();
 	}
+
+	/*-----------------------------------------*/
+
+	bool a_HELD;
+	a_HELD = input::isHeld(GLFW_KEY_A);
+
 	if (a_HELD) {
 		camera.moveLeft();
 	}
+
+	/*-----------------------------------------*/
+
+	bool s_HELD;
+	s_HELD = input::isHeld(GLFW_KEY_S);
+
 	if (s_HELD) {
 		camera.moveBackward();
 	}
+
+	/*-----------------------------------------*/
+
+	bool d_HELD;
+	d_HELD = input::isHeld(GLFW_KEY_D);
+
 	if (d_HELD) {
 		camera.moveRight();
 	}
+
+	/*-----------------------------------------*/
+
+	bool left_shift_PRESSED;
+	left_shift_PRESSED = input::isPressed(GLFW_KEY_LEFT_SHIFT);
+
+	if (left_shift_PRESSED) {
+		polygon_mode_checkbox.reverseCheckbox();
+	}
+
+	/*-----------------------------------------*/
 }
 void mouseResponder() {
 
@@ -57,7 +83,7 @@ void mouseResponder() {
 
 /*----------------------------------------------------------------------------------*/
 
-void update(float delta_time, Camera& camera) {
+void update(float delta_time, Camera& camera, CreateCheckbox& polygon_mode_checkbox) {
 	bool zero_HELD;
 	zero_HELD = input::isHeld(GLFW_KEY_0);
 
@@ -75,7 +101,7 @@ void update(float delta_time, Camera& camera) {
 	/*---------------------------------------------*/
 
 	if (isSceneState(sceneStates::STATE_CAMERA)) {
-		keyboardResponder(camera);
+		keyboardResponder(camera, polygon_mode_checkbox);
 		mouseResponder();
 	}
 	else if (isSceneState(sceneStates::STATE_HALTED)) {

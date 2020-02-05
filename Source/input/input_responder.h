@@ -8,6 +8,7 @@
 
 #include "input.h"
 #include "../Camera/camera.h"
+#include "../Rendering/ImGUI/utils.h"
 
 
 
@@ -19,7 +20,8 @@ bool isSceneState(sceneStates state);
 
 /*----------------------------------------------------------------------------------*/
 
-void keyboardResponder(Camera& camera);
+void keyboardResponder(Camera& camera, CreateCheckbox& polygon_mode_checkbox);
 void mouseResponder();
-void update(float delta_time, Camera& camera);
+
+void update(float delta_time, Camera& camera, CreateCheckbox& polygon_mode_checkbox);
 

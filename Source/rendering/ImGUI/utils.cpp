@@ -1,4 +1,4 @@
-#include "imgui_scene_manager.h"
+#include "utils.h"
 
 
 
@@ -7,6 +7,9 @@ void createImguiWindow(std::string name) {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
+
+	ImGui::SetNextWindowSize(ImVec2(144, 157.5), ImGuiCond_Appearing);
+	ImGui::SetNextWindowPos(ImVec2(8, 8), ImGuiCond_Appearing);
 
 	ImGui::Begin(name.data());
 }
@@ -40,21 +43,25 @@ const bool CreateButton::isToggledClick() {
 
 /*----------------------------------------------------------------------------------*/
 
-CreateCheckbox::CreateCheckbox(std::string name, std::string ID)
-	: mName(name), mID(ID), mChecked(false) {
+bool CreateCheckbox::mChecked = false;
 
-	static bool checked = false;
+CreateCheckbox::CreateCheckbox(std::string name, std::string ID)
+	: mName(name), mID(ID) {
 
 	ImGui::Text(mName.data());
-	ImGui::Checkbox(mID.data(), &checked);
-
-	checkboxLogic(checked);
+	ImGui::Checkbox(mID.data(), &mChecked);
 }
 
-void CreateCheckbox::checkboxLogic(const bool& checked) {
-	if (checked) {
-		mChecked = true;
-	}
+void CreateCheckbox::tickCheckbox() {
+	mChecked = true;
+}
+
+void CreateCheckbox::untickCheckbox() {
+	mChecked = false;
+}
+
+void CreateCheckbox::reverseCheckbox() {
+	mChecked = !mChecked;
 }
 
 const bool CreateCheckbox::isChecked() {
@@ -145,6 +152,7 @@ CreateCombo::CreateCombo(std::string name, std::string ID, std::vector<std::stri
 	static int selected_item = 0;
 
 	ImGui::Text(mName.data());
+	std::string foo = "selected_item";
 	ImGui::Combo(mID.data(), &selected_item, items.data(), items.size(), height);
 
 	mSelectedItem = selected_item;

@@ -1,0 +1,3 @@
+Textures/MetalTextures/metal_bricks1.jpg
+Textures/WoodTextures/wood_planks1.jpg
+Textures/BrickTextures/white_brick_wall1.jpg

@@ -33,11 +33,14 @@ class CreateCheckbox {										// USAGE:
 private:
 	std::string mName;										//  CreateCheckbox checkbox1("\nMy Checkbox: ", "###checkbox1");
 	std::string mID;										//  if (checkbox1.isChecked()) {
-	bool mChecked;											//		// [DO STUFF]
+	static bool mChecked;									//		// [DO STUFF]
 															//  }
 public:
 	CreateCheckbox(std::string name, std::string ID);
-	void checkboxLogic(const bool& checked);
+
+	void tickCheckbox();
+	void untickCheckbox();
+	void reverseCheckbox();
 
 	const bool isChecked();
 };

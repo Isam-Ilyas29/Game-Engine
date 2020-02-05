@@ -4,7 +4,7 @@
 /*----------------------------------------------------------------------------------*/
 
 Texture::Texture(const std::filesystem::path& path)
-	: mValid(false), mWidth(0), mHeight(0), mChannels(0), mID(0), mInternalFormat(0), mFormat(0) {
+	: mValid(false), mWidth(0), mHeight(0), mChannels(0), mData(nullptr), mInternalFormat(0), mFormat(0), mID(0) {
 
 	stbi_set_flip_vertically_on_load(true);
 
@@ -13,12 +13,12 @@ Texture::Texture(const std::filesystem::path& path)
 
 	switch (mChannels) {
 	case 3:
-		mInternalFormat = GL_RGB8;
+		mInternalFormat = GL_COMPRESSED_RGB;
 		mFormat = GL_RGB;
 		mValid = true;
 		break;
 	case 4:
-		mInternalFormat = GL_RGBA8;
+		mInternalFormat = GL_COMPRESSED_RGBA;
 		mFormat = GL_RGBA;
 		mValid = true;
 		break;
@@ -35,6 +35,8 @@ Texture::Texture(const std::filesystem::path& path)
 
 	if (mValid) {
 		mID = dataToTextureID(local_data, mWidth, mHeight, mInternalFormat, mFormat);
+
+		mData = local_data;
 	}
 }
 
@@ -67,10 +69,6 @@ GLuint Texture::dataToTextureID(unsigned char* data, int width, int height, GLui
 	return textureID;
 }
 
-GLuint Texture::getID() const {
-	return mID;
-}
-
 // Bind = true, Unbind = false
 void Texture::setTexture(bool bind_or_unbind, unsigned int tex_unit) const {
 	if (bind_or_unbind) {
@@ -81,6 +79,15 @@ void Texture::setTexture(bool bind_or_unbind, unsigned int tex_unit) const {
 		glActiveTexture(GL_TEXTURE0 + tex_unit);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
+}
+
+
+unsigned char* Texture::getData() const {
+	return mData;
+}
+
+GLuint Texture::getID() const {
+	return mID;
 }
 
 bool Texture::isValid() const {
@@ -97,5 +104,11 @@ int Texture::getWidth() const {
 
 int Texture::getHeight() const {
 	return mWidth;
+}
+
+bool Texture::previewImage(GLuint* out_texture) {
+	*out_texture = mID;
+
+	return mValid;
 }
 
