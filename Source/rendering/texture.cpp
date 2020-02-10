@@ -69,14 +69,15 @@ GLuint Texture::dataToTextureID(unsigned char* data, int width, int height, GLui
 	return textureID;
 }
 
-// Bind = true, Unbind = false
-void Texture::setTexture(bool bind_or_unbind, unsigned int tex_unit) const {
-	if (bind_or_unbind) {
-		glActiveTexture(GL_TEXTURE0 + tex_unit);
-		glBindTexture(GL_TEXTURE_2D, getID());
-	}
-	else {
-		glActiveTexture(GL_TEXTURE0 + tex_unit);
+
+void Texture::bind(unsigned int tex_unit) const {
+	glActiveTexture(GL_TEXTURE0 + tex_unit);
+	glBindTexture(GL_TEXTURE_2D, getID());
+}
+
+void Texture::unbind(std::vector<unsigned int> tex_units) {
+	for (size_t i = 0; i < tex_units.size(); i++) {
+		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 }

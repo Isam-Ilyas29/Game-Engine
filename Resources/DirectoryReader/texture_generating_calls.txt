@@ -1,4 +1,0 @@
-Texture transparent1(environment::ResourcePath("Textures/TransparentTextures/graffiti_texture1.png"));
-Texture texture1(environment::ResourcePath("Textures/MetalTextures/metal_bricks1.jpg"));
-Texture texture2(environment::ResourcePath("Textures/WoodTextures/wood_planks1.jpg"));
-Texture texture3(environment::ResourcePath("Textures/BrickTextures/white_brick_wall1.jpg"));

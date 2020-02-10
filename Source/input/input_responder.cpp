@@ -28,7 +28,7 @@ bool isSceneState(sceneStates state) {
 
 /*----------------------------------------------------------------------------------*/
 
-void keyboardResponder(Camera& camera, CreateCheckbox& polygon_mode_checkbox) {
+void keyboardResponder(Camera& camera) {
 
 	/*-----------------------------------------*/
 
@@ -68,14 +68,12 @@ void keyboardResponder(Camera& camera, CreateCheckbox& polygon_mode_checkbox) {
 
 	/*-----------------------------------------*/
 
-	bool left_shift_PRESSED;
-	left_shift_PRESSED = input::isPressed(GLFW_KEY_LEFT_SHIFT);
+	bool esc_PRESSED;
+	esc_PRESSED = input::isPressed(GLFW_KEY_ESCAPE);
 
-	if (left_shift_PRESSED) {
-		polygon_mode_checkbox.reverseCheckbox();
+	if (esc_PRESSED) {
+		context::window::closeWindow();
 	}
-
-	/*-----------------------------------------*/
 }
 void mouseResponder() {
 
@@ -83,7 +81,7 @@ void mouseResponder() {
 
 /*----------------------------------------------------------------------------------*/
 
-void update(float delta_time, Camera& camera, CreateCheckbox& polygon_mode_checkbox) {
+void update(float delta_time, Camera& camera) {
 	bool zero_HELD;
 	zero_HELD = input::isHeld(GLFW_KEY_0);
 
@@ -101,7 +99,7 @@ void update(float delta_time, Camera& camera, CreateCheckbox& polygon_mode_check
 	/*---------------------------------------------*/
 
 	if (isSceneState(sceneStates::STATE_CAMERA)) {
-		keyboardResponder(camera, polygon_mode_checkbox);
+		keyboardResponder(camera);
 		mouseResponder();
 	}
 	else if (isSceneState(sceneStates::STATE_HALTED)) {
@@ -109,3 +107,17 @@ void update(float delta_time, Camera& camera, CreateCheckbox& polygon_mode_check
 	}
 }
 
+/*----------------------------------------------------------------------------------*/
+
+bool polygon_mode_responder(bool polygon_mode_checked) {
+	bool return_checked;
+
+	bool left_shift_PRESSED;
+	left_shift_PRESSED = input::isReleased(GLFW_KEY_LEFT_SHIFT);
+
+	if (left_shift_PRESSED) {
+		return_checked = !polygon_mode_checked;
+		return return_checked;
+	}
+	return polygon_mode_checked;
+}

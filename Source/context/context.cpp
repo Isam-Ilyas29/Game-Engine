@@ -1,6 +1,6 @@
 #include "context.h"
 
-#include "glad/glad.h"
+#include <glad/glad.h>
 
 #include <imgui.h>
 #include "../Rendering/ImGUI/imgui_impl_glfw.h"
@@ -51,6 +51,7 @@ namespace context {
 
 	void glfwContext() {
 		glfwSwapInterval(1);
+
 		glfwSetKeyCallback(::window, inputContext);
 	}
 
@@ -68,6 +69,18 @@ namespace context {
 		ImGui_ImplOpenGL3_Init("#version 330 core");
 		
 		ImGui::StyleColorsDark();
+	}
+
+	void createImguiWindow(std::string name) {
+		// Feed input to imGUI, start new frame
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		ImGui::SetNextWindowSize(ImVec2(144, 157.5), ImGuiCond_Appearing);
+		ImGui::SetNextWindowPos(ImVec2(8, 8), ImGuiCond_Appearing);
+
+		ImGui::Begin(name.data());
 	}
 
 	void renderImgui() {
@@ -97,6 +110,9 @@ namespace context {
 			ImGui::SetWindowPos("###GUI1", ImVec2(8, 8));
 		}
 
+		void closeWindow() {
+			glfwSetWindowShouldClose(::window, true);
+		}
 
 		bool isClosed(GLFWwindow* window) {
 			return glfwWindowShouldClose(window);

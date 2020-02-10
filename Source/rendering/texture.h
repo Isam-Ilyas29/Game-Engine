@@ -24,7 +24,8 @@ public:
 
 	static GLuint dataToTextureID(unsigned char* data, int width, int height, GLuint internal_format, GLuint type);
 
-	void setTexture(bool bind_or_unbind, unsigned int tex_unit) const;
+	void bind(unsigned int tex_unit) const;
+	static void unbind(std::vector<unsigned int> tex_units);
 
 	bool isValid() const;
 

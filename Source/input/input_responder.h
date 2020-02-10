@@ -8,8 +8,6 @@
 
 #include "input.h"
 #include "../Camera/camera.h"
-#include "../Rendering/ImGUI/utils.h"
-
 
 
 enum class sceneStates;
@@ -20,8 +18,9 @@ bool isSceneState(sceneStates state);
 
 /*----------------------------------------------------------------------------------*/
 
-void keyboardResponder(Camera& camera, CreateCheckbox& polygon_mode_checkbox);
+void keyboardResponder(Camera& camera);
 void mouseResponder();
 
-void update(float delta_time, Camera& camera, CreateCheckbox& polygon_mode_checkbox);
+void update(float delta_time, Camera& camera);
+
 

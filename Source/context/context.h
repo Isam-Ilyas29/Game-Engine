@@ -16,13 +16,17 @@ namespace context {
 	void inputContext(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 	void imguiContext();
+	void createImguiWindow(std::string name);
 	void renderImgui();
 
 	namespace window {
 		bool setupWindow(std::string name, unsigned int width, unsigned int height);
 		void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
+		void closeWindow();
+
 		bool isClosed(GLFWwindow* window);
+
 		void swapBuffers();
 		void pollEvents();
 
