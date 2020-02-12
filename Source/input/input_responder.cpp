@@ -75,8 +75,20 @@ void keyboardResponder(Camera& camera) {
 		context::window::closeWindow();
 	}
 }
-void mouseResponder() {
 
+void mouseResponder(Camera& camera) {
+
+	if (input::isPressed(GLFW_MOUSE_BUTTON_2)) {
+		camera.beginCursorRotation();
+	}
+	if (input::isHeld(GLFW_MOUSE_BUTTON_2)) {
+		camera.cursorRotation(input::getXPos(), input::getYPos());
+	}
+}
+
+void scrollResponder(Camera& camera) {
+	
+	camera.zoom(input::getXOffset(), input::getYOffset());
 }
 
 /*----------------------------------------------------------------------------------*/
@@ -100,7 +112,8 @@ void update(float delta_time, Camera& camera) {
 
 	if (isSceneState(sceneStates::STATE_CAMERA)) {
 		keyboardResponder(camera);
-		mouseResponder();
+		mouseResponder(camera);
+		scrollResponder(camera);
 	}
 	else if (isSceneState(sceneStates::STATE_HALTED)) {
 		std::cout << "YOU ARE ISOLATED FROM ALL OTHER SCENE STATES!" << std::endl;

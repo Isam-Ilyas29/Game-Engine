@@ -146,7 +146,7 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		// Game loop
 		while (context::window::isClosed(context::window::getWindow()) == false) {
-			input::endFrame();
+
 			glPolygonMode(GL_FRONT_AND_BACK, polygon_mode ? GL_LINE : GL_FILL);
 
 			camera.perFrameTimeLogic();
@@ -228,9 +228,10 @@ bool gameloop::run(int argc, char* argv[]) {
 #ifdef DEBUG_MODE
 			context::renderImgui();
 #endif
+			context::window::swapBuffers();
 			context::window::pollEvents();
 			update(delta_time, camera);
-			context::window::swapBuffers();
+			input::endFrame();
 		}
 	}
 

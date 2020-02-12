@@ -8,6 +8,7 @@
 
 namespace input {
 
+    // Keys and Mouse Buttons
     struct keyStates {
         std::unordered_set<int> pressed;
         std::unordered_set<int> held;
@@ -21,6 +22,19 @@ namespace input {
     bool isPressed(int key);
     bool isHeld(int key);
     bool isReleased(int key);
+
+
+    // Cursor
+    void onCursorPos(double xpos, double ypos);
+
+    double getXPos();
+    double getYPos();
+
+    // Scroll
+    void onScroll(double xoffset, double yoffset);
+
+    double getXOffset();
+    double getYOffset();
 }
 
 

@@ -56,6 +56,54 @@ void Camera::moveRight() {
 
 /*----------------------------------------------------------------------------------*/
 
+void Camera::beginCursorRotation() {
+	mFirstMouse = true;
+}
+void Camera::cursorRotation(double xPos, double yPos) {
+	if (mFirstMouse) {
+		mLastX = xPos;
+		mLastY = yPos;
+		mFirstMouse = false;
+	}
+
+	float xoffset = xPos - mLastX;
+	float yoffset = mLastY - yPos;	// Reversed since y-coordinates go from bottom to top
+	mLastX = xPos;
+	mLastY = yPos;
+
+	const float sensitivity = 0.05f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	mYaw += xoffset;
+	mPitch += yoffset;
+
+	// Makes sure that when pitch is out of bounds, screen doesn't get flipped
+	if (mPitch > 89.0f)
+		mPitch = 89.0f;
+	if (mPitch < -89.0f)
+		mPitch = -89.0f;
+
+	glm::vec3 front;
+	front.x = cos(glm::radians(mYaw)) * cos(glm::radians(mPitch));
+	front.y = sin(glm::radians(mPitch));
+	front.z = sin(glm::radians(mYaw)) * cos(glm::radians(mPitch));
+	mCameraFront = glm::normalize(front);
+}
+
+/*----------------------------------------------------------------------------------*/
+
+void Camera::zoom(double xoffset, double yoffset) {
+	if (mFOV >= 1.0f && mFOV <= 45.0f)
+		mFOV -= yoffset;
+	if (mFOV <= 1.0f)
+		mFOV = 1.0f;
+	if (mFOV >= 45.0f)
+		mFOV = 45.0f;
+}
+
+/*----------------------------------------------------------------------------------*/
+
 glm::mat4 Camera::getMat4Projection() {
 	glm::mat4 projection = glm::perspective(glm::radians(mFOV), context::window::aspectRatio(), 0.1f, mRenderDistance);
 

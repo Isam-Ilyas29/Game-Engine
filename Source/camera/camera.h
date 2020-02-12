@@ -35,6 +35,11 @@ public:
 	void moveBackward();
 	void moveRight();
 
+	void beginCursorRotation();
+	void cursorRotation(double xpos, double ypos);
+
+	void zoom(double xoffset, double yoffset);
+
 	glm::mat4 getMat4Projection();
 	glm::mat4 getMat4View();
 	glm::mat4 getMat4Transform();

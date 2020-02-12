@@ -12,6 +12,7 @@ namespace {
 
 namespace input {
 
+    // Keys and Mouse buttons
     void endFrame() {
         state.released.clear();
 
@@ -43,18 +44,50 @@ namespace input {
             break;
         }
     }
-    keyStates const& getState() {  
+    keyStates const& getState() {
         return state;
     }
 
-    bool isPressed(int key) { 
+    bool isPressed(int key) {
         return state.pressed.find(key) != state.pressed.end();
     }
-    bool isHeld(int key) {  
+    bool isHeld(int key) {
         return state.held.find(key) != state.held.end();
     }
-    bool isReleased(int key) {  
+    bool isReleased(int key) {
         return state.released.find(key) != state.released.end();
+    }
+
+    // Curosr
+    double xPos;
+    double yPos;
+
+    void onCursorPos(double xpos, double ypos) {
+        xPos = xpos;
+        yPos = ypos;
+    }
+
+    double getXPos() {
+        return xPos;
+    }
+    double getYPos() {
+        return yPos;
+    }
+
+    // Scroll
+    double xOffset;
+    double yOffset;
+
+    void onScroll(double xoffset, double yoffset) {
+        xOffset = xoffset;
+        yOffset = yoffset;
+    }
+
+    double getXOffset() {
+        return xOffset;
+    }
+    double getYOffset() {
+        return yOffset;
     }
 }
 

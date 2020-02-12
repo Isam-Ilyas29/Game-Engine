@@ -19,7 +19,7 @@ bool isSceneState(sceneStates state);
 /*----------------------------------------------------------------------------------*/
 
 void keyboardResponder(Camera& camera);
-void mouseResponder();
+void mouseResponder(Camera& camera);
 
 void update(float delta_time, Camera& camera);
 

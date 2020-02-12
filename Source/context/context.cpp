@@ -6,6 +6,8 @@
 #include "../Rendering/ImGUI/imgui_impl_glfw.h"
 #include "../Rendering/ImGUI/imgui_impl_opengl3.h"
 
+#include "../Input/input_responder.h"
+
 
 /*----------------------------------------------------------------------------------*/
 
@@ -49,16 +51,32 @@ namespace context {
 		return true;
 	}
 
+
 	void glfwContext() {
 		glfwSwapInterval(1);
 
-		glfwSetKeyCallback(::window, inputContext);
+		glfwSetKeyCallback(::window, keyboardContext);
+		glfwSetMouseButtonCallback(::window, mouseButtonContext);
+		glfwSetCursorPosCallback(::window, cursorPosContext);
+		glfwSetScrollCallback(::window, scrollContext);
 	}
 
-	void inputContext(GLFWwindow* window, int key, int scancode, int action, int mods) {
+
+	void keyboardContext(GLFWwindow* window, int key, int scancode, int action, int mods) {
 		input::onInput(key, action);
 	}
 
+	void mouseButtonContext(GLFWwindow* window, int button, int action, int mods) {
+		input::onInput(button, action);
+	}
+
+	void cursorPosContext(GLFWwindow* window, double xpos, double ypos) {
+		input::onCursorPos(xpos, ypos);
+	}
+
+	void scrollContext(GLFWwindow* window, double xoffset, double yoffset) {
+		input::onScroll(xoffset, yoffset);
+	}
 
 	void imguiContext() {
 		IMGUI_CHECKVERSION();

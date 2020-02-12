@@ -13,7 +13,11 @@ namespace context {
 	bool initialiseGlad();
 
 	void glfwContext();
-	void inputContext(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+	void keyboardContext(GLFWwindow* window, int key, int scancode, int action, int mods);
+	void mouseButtonContext(GLFWwindow* window, int button, int action, int mods);
+	void cursorPosContext(GLFWwindow* window, double xpos, double ypos);
+	void scrollContext(GLFWwindow* window, double xoffset, double yoffset);
 
 	void imguiContext();
 	void createImguiWindow(std::string name);

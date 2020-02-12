@@ -23,13 +23,13 @@ Texture::Texture(const std::filesystem::path& path)
 		mValid = true;
 		break;
 	default:
-		std::cout << "ERROR::TEXTURE::ONLY_SUPPORT_RGB_&_RGBA" << "  |  " << path.filename() << " IS INVALID." << std::endl;
+		std::cerr << "ERROR::TEXTURE::ONLY_SUPPORT_RGB_&_RGBA" << "  |  " << path.filename() << " IS INVALID." << std::endl;
 		mValid = false;
 		break;
 	}
 
 	if (!(mInternalFormat && mFormat)) {
-		std::cout << "ERROR::TEXTURE::TYPE_NOT_SUPPORTED" << std::endl;
+		std::cerr << "ERROR::TEXTURE::TYPE_NOT_SUPPORTED" << std::endl;
 		mValid = false;
 	}
 
@@ -88,7 +88,10 @@ unsigned char* Texture::getData() const {
 }
 
 GLuint Texture::getID() const {
-	return mID;
+	if (mID > 0) {
+		return mID;
+	}
+	return 0;
 }
 
 bool Texture::isValid() const {
