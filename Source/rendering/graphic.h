@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include <iostream>
 #include <vector>
@@ -35,6 +36,23 @@ public:
 	void textureCoordAttrib();
 };
 
+
 void screenColour(double r, double g, double b, double a);
+
+
+class Transform final {
+private:
+	glm::mat4 mTransform;
+
+	std::vector<glm::vec3> mPositions;
+	glm::quat mRotation;
+	glm::vec3 mScale;
+
+public:
+	Transform(glm::vec3 positions[], glm::quat rotation, glm::vec3 scale = glm::vec3(1.f));
+
+	void createModel();
+	glm::mat4 getModel();
+};
 
 glm::mat4 getMat4Model(unsigned int i, glm::vec3 cube_positions[]);

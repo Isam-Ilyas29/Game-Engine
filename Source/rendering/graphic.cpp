@@ -89,7 +89,30 @@ void screenColour(double r, double g, double b, double a) {
 
 /*----------------------------------------------------------------------------------*/
 
-glm::mat4 getMat4Model(unsigned int i, std::vector<glm::vec3>& cube_positions) {
+Transform::Transform(glm::vec3 positions[], glm::quat rotation, glm::vec3 scale)
+	: mTransform(glm::mat4(1.f)), mRotation(rotation) {
+
+	for (size_t i = 0; i < 10; i++) {
+		mPositions.push_back(positions[i]);
+	}
+
+	createModel();
+}
+
+void Transform::createModel() {
+	for (size_t i = 0; i < 10; i++) {
+		glm::mat4 mTransform = glm::mat4(1.0f);
+		mTransform = glm::translate(mTransform, mPositions[i]);
+		mTransform = glm::rotate(mTransform, glm::radians(20.0f * i), glm::vec3(1.0f, 0.3f, 0.5f));
+	}
+}
+
+glm::mat4 Transform::getModel() {
+	return mTransform;
+}
+
+
+glm::mat4 getMat4Model(size_t i, std::vector<glm::vec3>& cube_positions) {
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, cube_positions[i]);
 	float angle = 20.0f * i;

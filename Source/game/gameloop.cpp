@@ -198,7 +198,7 @@ bool gameloop::run(int argc, char* argv[]) {
 			ImGui::End();
 #endif
 
-			// Projection + View + Transform
+			// Projection + View + Transform [MATRICES]
 			glm::mat4 projection = camera.getMat4Projection();
 			shader.setMat4("projection", projection);
 
@@ -210,8 +210,9 @@ bool gameloop::run(int argc, char* argv[]) {
 			shader.modMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(transform));
 
 			// Renders boxes
-			for (unsigned int i = 0; i < 10; i++) {
-				glm::mat4 model = getMat4Model(i, cube_positions);
+			for (size_t i = 0; i < (sizeof(cube_positions) / sizeof(*cube_positions)); i++) {
+				Transform transform(cube_positions, glm::vec3(1.0f, 0.3f, 0.5f));
+				glm::mat4 model = transform.getModel();
 
 				shader.setMat4("model", model);
 
