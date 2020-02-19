@@ -21,6 +21,6 @@ bool isSceneState(sceneStates state);
 void keyboardResponder(Camera& camera);
 void mouseResponder(Camera& camera);
 
-void update(float delta_time, Camera& camera);
+void update(float delta_time, Camera& camera, bool should_isolate);
 
 

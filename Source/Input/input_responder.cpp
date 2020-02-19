@@ -1,6 +1,9 @@
 #include "input_responder.h"
 
-#include "../Tools/tool.h"
+#include <imgui.h>
+#include "../Rendering/ImGUI/imgui_impl_glfw.h"
+#include "../Rendering/ImGUI/imgui_impl_opengl3.h"
+
 #include "../Context/context.h"
 
 
@@ -76,7 +79,7 @@ void keyboardResponder(Camera& camera) {
 	}
 }
 
-void mouseResponder(Camera& camera) {
+void mouseResponder(Camera& camera) {	//Mouse and cursor
 
 	if (input::isPressed(GLFW_MOUSE_BUTTON_2)) {
 		camera.beginCursorRotation();
@@ -87,17 +90,16 @@ void mouseResponder(Camera& camera) {
 }
 
 void scrollResponder(Camera& camera) {
-	
-	camera.zoom(input::getXOffset(), input::getYOffset());
+	// TODO:
 }
 
 /*----------------------------------------------------------------------------------*/
 
-void update(float delta_time, Camera& camera) {
+void update(float delta_time, Camera& camera, bool should_isolate) {
 	bool zero_HELD;
 	zero_HELD = input::isHeld(GLFW_KEY_0);
 
-	if (zero_HELD) {
+	if (zero_HELD || should_isolate) {
 		disableSceneState(sceneStates::STATE_CAMERA);
 
 		enableSceneState(sceneStates::STATE_HALTED);
@@ -122,15 +124,3 @@ void update(float delta_time, Camera& camera) {
 
 /*----------------------------------------------------------------------------------*/
 
-bool polygon_mode_responder(bool polygon_mode_checked) {
-	bool return_checked;
-
-	bool left_shift_PRESSED;
-	left_shift_PRESSED = input::isReleased(GLFW_KEY_LEFT_SHIFT);
-
-	if (left_shift_PRESSED) {
-		return_checked = !polygon_mode_checked;
-		return return_checked;
-	}
-	return polygon_mode_checked;
-}

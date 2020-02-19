@@ -21,6 +21,7 @@ namespace context {
 	}
 }
 
+
 // VERTEX
 /*----------------------------------------------------------------------------------*/
 
@@ -42,21 +43,17 @@ VertAttribObject::~VertAttribObject() {
 	}
 }
 
-
 void VertAttribObject::bindVBO(const std::vector<float>& vertices, unsigned int VBO) {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices.front(), GL_STATIC_DRAW);
 }
-
 void VertAttribObject::bindVBO(float vertices[], size_t size, unsigned int VBO) {
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 }
-
 void VertAttribObject::bindVAO(unsigned int VAO) {
 	glBindVertexArray(VAO);
 }
-
 void VertAttribObject::bindEBO(const std::vector<unsigned int>& indices, unsigned int EBO) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices.front(), GL_STATIC_DRAW);
@@ -80,6 +77,25 @@ void VertAttribObject::textureCoordAttrib() {
 	glEnableVertexAttribArray(2);
 }
 
+
+/*----------------------------------------------------------------------------------*/
+
+Transform::Transform(unsigned int rotation_axis, glm::vec3 position, glm::quat rotation, glm::vec3 scale)
+	: mRotationAxis(rotation_axis), mPosition(position), mTransform(glm::mat4(1.f)), mRotation(rotation), mScale(scale) {
+
+	createModel();
+}
+
+void Transform::createModel() {
+	mTransform = glm::translate(mTransform, mPosition);
+	mTransform = mTransform * glm::toMat4(mRotation);
+	mTransform = glm::scale(mTransform, mScale);
+}
+
+const glm::mat4 Transform::getModel() const {
+	return mTransform;
+}
+
 /*----------------------------------------------------------------------------------*/
 
 void screenColour(double r, double g, double b, double a) {
@@ -88,45 +104,3 @@ void screenColour(double r, double g, double b, double a) {
 }
 
 /*----------------------------------------------------------------------------------*/
-
-Transform::Transform(glm::vec3 positions[], glm::quat rotation, glm::vec3 scale)
-	: mTransform(glm::mat4(1.f)), mRotation(rotation) {
-
-	for (size_t i = 0; i < 10; i++) {
-		mPositions.push_back(positions[i]);
-	}
-
-	createModel();
-}
-
-void Transform::createModel() {
-	for (size_t i = 0; i < 10; i++) {
-		glm::mat4 mTransform = glm::mat4(1.0f);
-		mTransform = glm::translate(mTransform, mPositions[i]);
-		mTransform = glm::rotate(mTransform, glm::radians(20.0f * i), glm::vec3(1.0f, 0.3f, 0.5f));
-	}
-}
-
-glm::mat4 Transform::getModel() {
-	return mTransform;
-}
-
-
-glm::mat4 getMat4Model(size_t i, std::vector<glm::vec3>& cube_positions) {
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, cube_positions[i]);
-	float angle = 20.0f * i;
-	model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-
-	return model;
-}
-
-glm::mat4 getMat4Model(unsigned int i, glm::vec3 cube_positions[]) {
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, cube_positions[i]);
-	float angle = 20.0f * i;
-	model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-
-	return model;
-}
-

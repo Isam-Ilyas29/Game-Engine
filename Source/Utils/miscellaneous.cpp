@@ -1,13 +1,8 @@
-#include "tool.h"
+#include "miscellaneous.h"
 
 
-float delta_time = 0.0f;
-float last_frame = 0.0f;
 
-bool polygon_mode = false;
-
-
-float framesPerSecond() {
+float framesPerSecond(double delta_time) {
 	float frame_rate = 1.0 / delta_time;
 	return frame_rate;
 }

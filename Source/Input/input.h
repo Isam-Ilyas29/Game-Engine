@@ -29,12 +29,6 @@ namespace input {
 
     double getXPos();
     double getYPos();
-
-    // Scroll
-    void onScroll(double xoffset, double yoffset);
-
-    double getXOffset();
-    double getYOffset();
 }
 
 

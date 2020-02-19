@@ -73,21 +73,5 @@ namespace input {
     double getYPos() {
         return yPos;
     }
-
-    // Scroll
-    double xOffset;
-    double yOffset;
-
-    void onScroll(double xoffset, double yoffset) {
-        xOffset = xoffset;
-        yOffset = yoffset;
-    }
-
-    double getXOffset() {
-        return xOffset;
-    }
-    double getYOffset() {
-        return yOffset;
-    }
 }
 

@@ -253,10 +253,6 @@
 			}
 		}
 
-		// if (left_shift_PRESSED) {
-		//	 polygon_mode_checked = !polygon_mode_checked;
-		// }
-
 		/*----------------------------------------------------------------------------------*/
 
 		void controlsText(bool help) {
@@ -280,7 +276,6 @@
 				}
 			}
 		}
-
 
 		void aboutText(bool help) {
 

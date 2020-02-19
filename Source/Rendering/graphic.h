@@ -11,11 +11,15 @@
 
 
 
+/*----------------------------------------------------------------------------------*/
+
 namespace context {
 	namespace graphics {
 		bool initialiseGraphics();
 	}
 }
+
+/*----------------------------------------------------------------------------------*/
 
 // Vertex and Attribute Objects
 class VertAttribObject final {
@@ -37,22 +41,30 @@ public:
 };
 
 
-void screenColour(double r, double g, double b, double a);
+/*----------------------------------------------------------------------------------*/
 
-
-class Transform final {
+class Transform {
 private:
 	glm::mat4 mTransform;
 
-	std::vector<glm::vec3> mPositions;
+	glm::vec3 mPosition;
 	glm::quat mRotation;
 	glm::vec3 mScale;
 
+	unsigned int mRotationAxis;
+
 public:
-	Transform(glm::vec3 positions[], glm::quat rotation, glm::vec3 scale = glm::vec3(1.f));
+	Transform(unsigned int rotation_axis, glm::vec3 positions, glm::quat rotation, glm::vec3 scale = glm::vec3(1.f));
+	Transform(const Transform&) = delete;
+	Transform& operator=(const Transform&) = delete;
 
 	void createModel();
-	glm::mat4 getModel();
+	const glm::mat4 getModel() const;
 };
 
-glm::mat4 getMat4Model(unsigned int i, glm::vec3 cube_positions[]);
+/*----------------------------------------------------------------------------------*/
+
+void screenColour(double r, double g, double b, double a);
+
+/*----------------------------------------------------------------------------------*/
+

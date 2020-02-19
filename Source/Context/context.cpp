@@ -61,21 +61,16 @@ namespace context {
 		glfwSetScrollCallback(::window, scrollContext);
 	}
 
-
 	void keyboardContext(GLFWwindow* window, int key, int scancode, int action, int mods) {
 		input::onInput(key, action);
 	}
-
 	void mouseButtonContext(GLFWwindow* window, int button, int action, int mods) {
 		input::onInput(button, action);
 	}
-
 	void cursorPosContext(GLFWwindow* window, double xpos, double ypos) {
 		input::onCursorPos(xpos, ypos);
 	}
-
 	void scrollContext(GLFWwindow* window, double xoffset, double yoffset) {
-		input::onScroll(xoffset, yoffset);
 	}
 
 	void imguiContext() {
@@ -88,7 +83,6 @@ namespace context {
 		
 		ImGui::StyleColorsDark();
 	}
-
 	void createImguiWindow(std::string name) {
 		// Feed input to imGUI, start new frame
 		ImGui_ImplOpenGL3_NewFrame();
@@ -100,7 +94,6 @@ namespace context {
 
 		ImGui::Begin(name.data());
 	}
-
 	void renderImgui() {
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -118,20 +111,17 @@ namespace context {
 			glfwContext();
 			return success;
 		}
-
-		// Whenever the window is resized (by OS or user resize) this callback function executes
 		void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
 			// Makes sure the viewport matches the new window dimensions
 			glViewport(0, 0, width, height);
 
 			ImGui::SetWindowSize("###GUI1", ImVec2(0.24 * width, 0.35 * height));
 			ImGui::SetWindowPos("###GUI1", ImVec2(8, 8));
-		}
+		}   // Whenever the window is resized (by OS or user resize) this callback function executes
 
 		void closeWindow() {
 			glfwSetWindowShouldClose(::window, true);
 		}
-
 		bool isClosed(GLFWwindow* window) {
 			return glfwWindowShouldClose(window);
 		}
@@ -139,7 +129,6 @@ namespace context {
 		void swapBuffers() {
 			glfwSwapBuffers(::window);
 		}
-
 		void pollEvents() {
 			glfwPollEvents();
 		}

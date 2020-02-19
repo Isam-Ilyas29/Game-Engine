@@ -6,13 +6,9 @@
 #include <fstream>
 
 
-extern float delta_time;
-extern float last_frame;
 
-extern bool polygon_mode;
+float framesPerSecond(double delta_time);
 
-
-float framesPerSecond();
 
 std::vector<std::string> readFile(std::string path);
-
+ 

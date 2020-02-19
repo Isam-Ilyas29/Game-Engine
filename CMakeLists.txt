@@ -15,8 +15,10 @@ set(SOURCES
     Source/Game/gameloop.cpp
     Source/Context/context.h
     Source/Context/context.cpp
-    Source/Tools/tool.h
-    Source/Tools/tool.cpp
+    Source/Utils/miscellaneous.h
+    Source/Utils/miscellaneous.cpp
+    Source/utils/time.h
+    Source/utils/time.cpp
     Source/Environment/environment.cpp
     Source/Environment/environment.h
     Source/Rendering/shader.h

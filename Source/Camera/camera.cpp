@@ -2,7 +2,6 @@
 
 #include "camera.h"
 #include "../Context/context.h"
-#include "../Tools/tool.h"
 
 #include <GLFW/glfw3.h>
 
@@ -10,10 +9,18 @@
 
 /*----------------------------------------------------------------------------------*/
 
-Camera::Camera(bool first_mouse, float yaw, float pitch, float lastX, float lastY, float FOV, float render_distance)
-	:mFirstMouse(first_mouse), mYaw(yaw), mPitch(pitch), mLastX(lastX), mLastY(lastY), mFOV(FOV), mRenderDistance(render_distance), mCameraSpeed(0.0f) {
+const glm::vec3 Camera::mRight = glm::vec3(1.f, 0.f, 0.f);
+const glm::vec3 Camera::mUp = glm::vec3(0.f, 1.f, 0.f);
+const glm::vec3 Camera::mFront = glm::vec3(0.f, 0.f, 1.f);
+
+Camera::Camera(float yaw, float pitch, float lastX, float lastY, float FOV, float render_distance)
+	: mClick(true), mYaw(yaw), mPitch(pitch), mLastX(lastX), mLastY(lastY), mFOV(FOV), mRenderDistance(render_distance) {
 	
 	// Default settings
+	mSpeed = 2.5f;
+
+	mCameraVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
+
 	mCameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 	mCameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 	mCameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -21,7 +28,7 @@ Camera::Camera(bool first_mouse, float yaw, float pitch, float lastX, float last
 	mSpawnPostion = glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
-void Camera::operator()(glm::vec3 camera_pos, glm::vec3 camera_front, glm::vec3 camera_up, glm::vec3 spawn_postion) {
+void Camera::operator() (glm::vec3 camera_pos, glm::vec3 camera_front, glm::vec3 camera_up, glm::vec3 spawn_postion) {
 	mCameraPos = camera_pos;
 	mCameraFront = camera_front;
 	mCameraUp = camera_up;
@@ -31,39 +38,51 @@ void Camera::operator()(glm::vec3 camera_pos, glm::vec3 camera_front, glm::vec3 
 
 /*----------------------------------------------------------------------------------*/
 
-void Camera::perFrameTimeLogic() {
-	float current_frame = glfwGetTime();
-	delta_time = current_frame - last_frame;
-	last_frame = current_frame;
+void Camera::update(double delta_time) {
+	mCameraSpeed = mSpeed * delta_time;
 
-	mCameraSpeed = 2.5 * delta_time;
+	// Movement
+	if (glm::length(mCameraVelocity) > 0.0f) {
+		mCameraVelocity = glm::normalize(mCameraVelocity) * mCameraSpeed;
+		mCameraPos += mCameraVelocity;
+	}
+
+	mCameraVelocity = glm::vec3(0.f, 0.f, 0.f);
 }
 
 /*----------------------------------------------------------------------------------*/
 
 void Camera::moveForward() {
-	mCameraPos += mCameraSpeed * mCameraFront;
+	glm::vec3 forward;
+	forward = mCameraFront;
+	mCameraVelocity += forward;
 }
 void Camera::moveLeft() {
-	mCameraPos -= glm::normalize(glm::cross(mCameraFront, mCameraUp)) * mCameraSpeed;
+	glm::vec3 left;
+	left = glm::normalize(glm::cross(mCameraFront, mCameraUp));
+	mCameraVelocity -= left;
 }
 void Camera::moveBackward() {
-	mCameraPos -= mCameraSpeed * mCameraFront;
+	glm::vec3 backward;
+	backward = mCameraFront;
+	mCameraVelocity -= backward;
 }
 void Camera::moveRight() {
-	mCameraPos += glm::normalize(glm::cross(mCameraFront, mCameraUp)) * mCameraSpeed;
+	glm::vec3 right;
+	right = glm::normalize(glm::cross(mCameraFront, mCameraUp));
+	mCameraVelocity += right;
 }
 
 /*----------------------------------------------------------------------------------*/
 
 void Camera::beginCursorRotation() {
-	mFirstMouse = true;
+	mClick = true;
 }
 void Camera::cursorRotation(double xPos, double yPos) {
-	if (mFirstMouse) {
+	if (mClick) {
 		mLastX = xPos;
 		mLastY = yPos;
-		mFirstMouse = false;
+		mClick = false;
 	}
 
 	float xoffset = xPos - mLastX;

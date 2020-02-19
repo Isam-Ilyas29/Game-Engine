@@ -8,7 +8,7 @@
 class Camera {
 private:
 	// Camera
-	bool mFirstMouse;
+	bool mClick;
 	float mYaw;
 	float mPitch;
 	float mLastX;
@@ -18,6 +18,8 @@ private:
 
 	float mCameraSpeed;
 
+	glm::vec3 mCameraVelocity;
+
 	glm::vec3 mCameraPos;
 	glm::vec3 mCameraFront;
 	glm::vec3 mCameraUp;
@@ -25,10 +27,15 @@ private:
 	glm::vec3 mSpawnPostion;
 
 public:
-	Camera(bool first_mouse, float yaw, float pitch, float lastX, float lastY, float FOV, float render_distance);
+	Camera(float yaw, float pitch, float lastX, float lastY, float FOV, float render_distance);
 	void operator() (glm::vec3 camera_pos, glm::vec3 camera_front, glm::vec3 camera_up, glm::vec3 spawn_postion);
 
-	void perFrameTimeLogic();
+	float mSpeed;
+	static const glm::vec3 mRight;
+	static const glm::vec3 mUp;
+	static const glm::vec3 mFront;
+
+	void update(double delta_time);
 
 	void moveForward();
 	void moveLeft();

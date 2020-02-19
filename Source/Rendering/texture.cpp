@@ -74,7 +74,6 @@ void Texture::bind(unsigned int tex_unit) const {
 	glActiveTexture(GL_TEXTURE0 + tex_unit);
 	glBindTexture(GL_TEXTURE_2D, getID());
 }
-
 void Texture::unbind(std::vector<unsigned int> tex_units) {
 	for (size_t i = 0; i < tex_units.size(); i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
@@ -83,29 +82,25 @@ void Texture::unbind(std::vector<unsigned int> tex_units) {
 }
 
 
+bool Texture::isValid() const {
+	return mValid;
+}
+
 unsigned char* Texture::getData() const {
 	return mData;
 }
-
 GLuint Texture::getID() const {
 	if (mID > 0) {
 		return mID;
 	}
 	return 0;
 }
-
-bool Texture::isValid() const {
-	return mValid;
-}
-
 GLuint Texture::getFormat() const {
 	return mFormat;
 }
-
 int Texture::getWidth() const {
 	return mHeight;
 }
-
 int Texture::getHeight() const {
 	return mWidth;
 }
