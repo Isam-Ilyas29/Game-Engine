@@ -251,6 +251,7 @@
 					polygon_mode = false;
 				}
 			}
+
 		}
 
 		/*----------------------------------------------------------------------------------*/
@@ -269,7 +270,7 @@
 					ImGui::TextWrapped("\n");
 					ImGui::TextWrapped("- 'Escape' = Quit game");
 					ImGui::TextWrapped("\n");
-					ImGui::TextWrapped("- 'Left Shift' = Toggle outline and fill mode [NOT IMPLEMENTED YET]");
+					ImGui::TextWrapped("- 'Left Shift' = Toggle outline and fill mode");
 					ImGui::TextWrapped("\n");
 					ImGui::TextWrapped("- '0 (Zero)' = Hold to disbale all other input methods / controls.");
 					ImGui::TextWrapped("\n");

@@ -4,10 +4,11 @@
 #include "../Rendering/graphic.h"
 #include "../Rendering/shader.h"
 #include "../Rendering/texture.h"
+#include "../Rendering/ImGUI/editor.h"
 #include "../Input/input_responder.h"
 #include "../Utils/miscellaneous.h"
-#include "../Rendering/ImGUI/editor.h"
 #include "../Utils/time.h"
+#include "../Utils/random_generator.h"
 
 
 
@@ -106,25 +107,27 @@ bool gameloop::run(int argc, char* argv[]) {
 		glGenBuffers(1, &VBO);
 		glGenVertexArrays(1, &VAO);
 
-		VertAttribObject vertex_and_attrib_object(VAO, VBO);
+		VertexData vertex_data;
 
-		vertex_and_attrib_object.bindVBO(vertices, sizeof(vertices), VBO);
-		vertex_and_attrib_object.bindVAO(VAO);
+		vertex_data.setVBO(VBO);
+		vertex_data.setVAO(VAO);
 
-		vertex_and_attrib_object.positionAttrib();
-		vertex_and_attrib_object.textureCoordAttrib();
+		vertex_data.bindVBO(vertices, sizeof(vertices), VBO);
+		vertex_data.bindVAO(VAO);
+
+		vertex_data.positionAttrib(5 * sizeof(float));
+		vertex_data.textureAttrib(5 * sizeof(float));
 
 		/*----------------------------------------------------------------------------------*/
 
 		// Textures
 
-		std::vector<std::string> textures = readFile("../Resources/DirectoryReader/textures_list.txt");
+		std::vector<std::string> textures = readFile(environment::ResourcePath("DirectoryReader/textures_list.txt"));
 
 		Texture transparent1(environment::ResourcePath("Textures/T_Transparent/graffiti_texture1.png"));
 
 		auto texture1 = std::make_unique<Texture>(environment::ResourcePath("Textures/T_Metal/metal_bricks1.jpg"));
 		auto texture2 = std::make_unique<Texture>(environment::ResourcePath("Textures/T_Wood/wood_planks1.jpg"));
-		auto texture3 = std::make_unique<Texture>(environment::ResourcePath("Textures/T_Rock/natural_rock1.jpg"));
 
 		Texture error_texture(environment::ResourcePath("Textures/error_texture1.png"));
 
@@ -133,7 +136,6 @@ bool gameloop::run(int argc, char* argv[]) {
 		loaded_textures.push_back(NULL);
 		loaded_textures.push_back(std::move(texture1));
 		loaded_textures.push_back(std::move(texture2));
-		loaded_textures.push_back(std::move(texture3));
 
 		shader.use();
 		shader.setInt("transparent1", 1);

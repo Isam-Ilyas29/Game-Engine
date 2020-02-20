@@ -71,6 +71,7 @@ namespace context {
 		input::onCursorPos(xpos, ypos);
 	}
 	void scrollContext(GLFWwindow* window, double xoffset, double yoffset) {
+		input::onScroll(xoffset, yoffset);
 	}
 
 	void imguiContext() {

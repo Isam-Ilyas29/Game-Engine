@@ -22,22 +22,25 @@ namespace context {
 /*----------------------------------------------------------------------------------*/
 
 // Vertex and Attribute Objects
-class VertAttribObject final {
+class VertexData final {
 private:
-	unsigned int mVAO, mVBO, mEBO;
+	unsigned int mVAO, mVBO, mEBO = 0;
 
 public:
-	VertAttribObject(unsigned int VAO, unsigned int VBO, unsigned int EBO = 0);
-	~VertAttribObject();
+	void setVBO(unsigned int VBO);
+	void setEBO(unsigned int EBO);
+	void setVAO(unsigned int VAO);
 
-	void bindVAO(unsigned int VAO);
+	~VertexData();
+
 	void bindVBO(const std::vector<float>& vertices, unsigned int VBO);		// Accepts Vertices
 	void bindVBO(float vertices[], size_t size, unsigned int VBO);			// Accepts Arrays
 	void bindEBO(const std::vector<unsigned int>& indices, unsigned int EBO);
+	void bindVAO(unsigned int VAO);
 
-	void positionAttrib();
-	void colourAttrib();
-	void textureCoordAttrib();
+	void positionAttrib(size_t stride);
+	void colourAttrib(size_t stride);
+	void textureAttrib(size_t stride);
 };
 
 

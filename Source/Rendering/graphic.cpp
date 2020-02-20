@@ -23,57 +23,59 @@ namespace context {
 
 
 // VERTEX
-/*----------------------------------------------------------------------------------*/
 
-VertAttribObject::VertAttribObject(unsigned int VAO, unsigned int VBO, unsigned int EBO) {
-	mVAO = VAO;
+void VertexData::setVBO(unsigned int VBO) {
 	mVBO = VBO;
+}
+void VertexData::setVAO(unsigned int VAO) {
+	mVAO = VAO;
+}
+void VertexData::setEBO(unsigned int EBO) {
 	mEBO = EBO;
 }
 
-VertAttribObject::~VertAttribObject() {
+VertexData::~VertexData() {
+	if (mVBO != 0) {
+		glDeleteBuffers(1, &mVBO);
+	}
+	if (mEBO != 0) {
+		glDeleteBuffers(1, &mEBO);
+	}
 	if (mVAO != 0) {
 		glDeleteVertexArrays(1, &mVAO);
 	}
-	if (mEBO != 0) {
-		glDeleteVertexArrays(1, &mEBO);
-	}
-	if (mEBO != 0) {
-		glDeleteVertexArrays(1, &mEBO);
-	}
 }
 
-void VertAttribObject::bindVBO(const std::vector<float>& vertices, unsigned int VBO) {
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+void VertexData::bindVBO(const std::vector<float>& vertices, unsigned int VBO) {		// Accepts Vertices
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);											
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices.front(), GL_STATIC_DRAW);
 }
-void VertAttribObject::bindVBO(float vertices[], size_t size, unsigned int VBO) {
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+void VertexData::bindVBO(float vertices[], size_t size, unsigned int VBO) {				// Accepts Arrays
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);									   
 	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 }
-void VertAttribObject::bindVAO(unsigned int VAO) {
-	glBindVertexArray(VAO);
-}
-void VertAttribObject::bindEBO(const std::vector<unsigned int>& indices, unsigned int EBO) {
+void VertexData::bindEBO(const std::vector<unsigned int>& indices, unsigned int EBO) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices.front(), GL_STATIC_DRAW);
 }
+void VertexData::bindVAO(unsigned int VAO) {
+	glBindVertexArray(VAO);
+}
 
 // ATTRIBUTES
-/*----------------------------------------------------------------------------------*/
 
-void VertAttribObject::positionAttrib() {
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+void VertexData::positionAttrib(size_t stride) {
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
 	glEnableVertexAttribArray(0);
 }
 
-void VertAttribObject::colourAttrib() {
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+void VertexData::colourAttrib(size_t stride) {
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 }
 
-void VertAttribObject::textureCoordAttrib() {
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+void VertexData::textureAttrib(size_t stride) {
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 }
 
@@ -87,9 +89,13 @@ Transform::Transform(unsigned int rotation_axis, glm::vec3 position, glm::quat r
 }
 
 void Transform::createModel() {
-	mTransform = glm::translate(mTransform, mPosition);
-	mTransform = mTransform * glm::toMat4(mRotation);
-	mTransform = glm::scale(mTransform, mScale);
+	auto const originalMat = glm::mat4(1.0f);
+
+	auto const scale = glm::scale(originalMat, mScale);
+	auto const translate = glm::translate(originalMat, mPosition);
+	auto const rotate = glm::toMat4(mRotation);
+
+	mTransform = translate * rotate * scale;
 }
 
 const glm::mat4 Transform::getModel() const {

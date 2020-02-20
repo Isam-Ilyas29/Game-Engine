@@ -90,7 +90,7 @@ void mouseResponder(Camera& camera) {	//Mouse and cursor
 }
 
 void scrollResponder(Camera& camera) {
-	// TODO:
+	camera.zoom(input::getXOffset(), input::getYOffset());
 }
 
 /*----------------------------------------------------------------------------------*/

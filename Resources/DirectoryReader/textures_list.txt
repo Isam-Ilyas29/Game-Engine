@@ -1,3 +1,2 @@
 Textures/T_Metal/metal_bricks1.jpg
 Textures/T_Wood/wood_planks1.jpg
-Textures/T_Rock/natural_rock1.jpg

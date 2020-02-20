@@ -8,7 +8,7 @@ add_subdirectory(Libraries/stb_image)
 add_subdirectory(Libraries/glm)
 add_subdirectory(Libraries/imgui)
 
-#Source files
+# Source files
 set(SOURCES 
     Source/main.cpp
     Source/Game/gameloop.h
@@ -17,8 +17,10 @@ set(SOURCES
     Source/Context/context.cpp
     Source/Utils/miscellaneous.h
     Source/Utils/miscellaneous.cpp
-    Source/utils/time.h
-    Source/utils/time.cpp
+    Source/Utils/time.h
+    Source/Utils/time.cpp
+    Source/Utils/random_generator.h
+    Source/Utils/random_generator.cpp
     Source/Environment/environment.cpp
     Source/Environment/environment.h
     Source/Rendering/shader.h
@@ -50,7 +52,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:Release>:RELEASE_M
 set(EXECUTABLE_PATH "${CMAKE_SOURCE_DIR}/ExeDirectory")
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${EXECUTABLE_PATH}")
 
-#Compiler warnings
+# Compiler warnings
 target_compile_options(${PROJECT_NAME} PRIVATE 
     $<$<CXX_COMPILER_ID:MSVC>:/W4>
     $<$<NOT:$<BOOL:$<CXX_COMPILER_ID:MSVC>>>:-Wall -Wextra>
@@ -65,7 +67,7 @@ target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 
 set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
-#Libraries
+# Libraries
 target_link_libraries(${PROJECT_NAME} 
     glfw
     glad
@@ -81,7 +83,7 @@ add_dependencies(${PROJECT_NAME}
     imgui
 )
 
-#Windows + Linux Support
+# Windows + Linux Support
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
      set(PLATFORM_LIBS OpenGL32)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
