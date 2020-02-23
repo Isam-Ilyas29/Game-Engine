@@ -6,6 +6,8 @@
 
 /*----------------------------------------------------------------------------------*/
 
+// Context for graphics (glad)
+
 namespace context {
 
 	namespace graphics {
@@ -21,6 +23,7 @@ namespace context {
 	}
 }
 
+/*----------------------------------------------------------------------------------*/
 
 // VERTEX
 
@@ -64,23 +67,25 @@ void VertexData::bindVAO(unsigned int VAO) {
 
 // ATTRIBUTES
 
-void VertexData::positionAttrib(size_t stride) {
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+void VertexData::positionAttrib(unsigned int location, size_t stride) {
+	glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
 	glEnableVertexAttribArray(0);
 }
 
-void VertexData::colourAttrib(size_t stride) {
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+void VertexData::colourAttrib(unsigned int location, size_t stride) {
+	glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 }
 
-void VertexData::textureAttrib(size_t stride) {
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+void VertexData::textureAttrib(unsigned int location, size_t stride) {
+	glVertexAttribPointer(location, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 }
 
 
 /*----------------------------------------------------------------------------------*/
+
+// Transform class
 
 Transform::Transform(unsigned int rotation_axis, glm::vec3 position, glm::quat rotation, glm::vec3 scale)
 	: mRotationAxis(rotation_axis), mPosition(position), mTransform(glm::mat4(1.f)), mRotation(rotation), mScale(scale) {
@@ -104,9 +109,24 @@ const glm::mat4 Transform::getModel() const {
 
 /*----------------------------------------------------------------------------------*/
 
-void screenColour(double r, double g, double b, double a) {
+// Set background colour
+
+void setBackgroundColour(double r, double g, double b, double a) {
 	glClearColor(r, g, b, a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+/*----------------------------------------------------------------------------------*/
+
+// Error handling
+
+void gladHandleError(const char* name, void* function_pointer, int len_args) {
+	GLenum error_code;
+	error_code = glad_glGetError();
+
+	if (error_code != GL_NO_ERROR) {
+		std::cerr << "GLAD ERROR " << error_code << "in " << name << std::endl;
+	}
 }
 
 /*----------------------------------------------------------------------------------*/

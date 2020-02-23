@@ -4,6 +4,7 @@
 // Note: this file may seem messy but ensure you read through comments thoroughly to grasp on whats going on
 
 #ifdef DEBUG_MODE
+
 	namespace collapsingHeader {
 
 		void texture(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent1, bool editor) {
@@ -176,10 +177,10 @@
 					ImGui::Checkbox("###apply_background1", &apply_background);
 
 					if (apply_background) {
-						screenColour(colour.x, colour.y, colour.z, colour.w);
+						setBackgroundColour(colour.x, colour.y, colour.z, colour.w);
 					}
 					else {
-						screenColour(0.2f, 0.3f, 0.3f, 1.0f);
+						setBackgroundColour(0.2f, 0.3f, 0.3f, 1.0f);
 					}
 
 					ImGui::Text("\n");
@@ -188,10 +189,10 @@
 
 					// Background colour picker
 					if (apply_background) {
-						screenColour(colour.x, colour.y, colour.z, colour.w);
+						setBackgroundColour(colour.x, colour.y, colour.z, colour.w);
 					}
 					else {
-						screenColour(0.2f, 0.3f, 0.3f, 1.0f);
+						setBackgroundColour(0.2f, 0.3f, 0.3f, 1.0f);
 					}
 				}
 			}
@@ -199,10 +200,10 @@
 
 				// Background colour picker (Keeps all current data to be processed as colour picker is not visible on screen [same is done when collapsing header is closed])
 				if (apply_background) {
-					screenColour(colour.x, colour.y, colour.z, colour.w);
+					setBackgroundColour(colour.x, colour.y, colour.z, colour.w);
 				}
 				else {
-					screenColour(0.2f, 0.3f, 0.3f, 1.0f);
+					setBackgroundColour(0.2f, 0.3f, 0.3f, 1.0f);
 				}
 			}
 		}
@@ -295,7 +296,17 @@
 				}
 			}
 		}
+	} // namespace collapsingHeader
+
+	bool isMouseOverUI() {
+		if (ImGui::IsWindowHovered()) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
+
 #endif
 
 

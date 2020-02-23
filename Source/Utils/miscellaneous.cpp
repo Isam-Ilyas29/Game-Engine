@@ -5,7 +5,7 @@
 bool polygon_mode = false;
 
 
-float framesPerSecond(double delta_time) {
+double getFramesPerSecond(double delta_time) {
 	float frame_rate = 1.0 / delta_time;
 	return frame_rate;
 }

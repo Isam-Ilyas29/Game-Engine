@@ -118,7 +118,7 @@ void update(float delta_time, Camera& camera, bool should_isolate) {
 		scrollResponder(camera);
 	}
 	else if (isSceneState(sceneStates::STATE_HALTED)) {
-		std::cout << "YOU ARE ISOLATED FROM ALL OTHER SCENE STATES!" << std::endl;
+		//std::cout << "YOU ARE ISOLATED FROM ALL OTHER SCENE STATES!" << std::endl;
 	}
 }
 

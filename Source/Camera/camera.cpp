@@ -113,7 +113,12 @@ void Camera::cursorRotation(double xPos, double yPos) {
 /*----------------------------------------------------------------------------------*/
 
 void Camera::zoom(double xoffset, double yoffset) {
-	// TODO:
+	if (mFOV >= 1.0f && mFOV <= 45.0f)
+		mFOV -= yoffset;
+	if (mFOV <= 1.0f)
+		mFOV = 1.0f;
+	if (mFOV >= 45.0f)
+		mFOV = 45.0f;
 }
 
 /*----------------------------------------------------------------------------------*/

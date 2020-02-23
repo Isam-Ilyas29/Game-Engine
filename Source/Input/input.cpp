@@ -13,16 +13,7 @@ namespace {
 namespace input {
 
     // Keys and Mouse buttons
-    void endFrame() {
-        state.released.clear();
-
-        for (auto i = state.pressed.cbegin(); i != state.pressed.cend(); i++) {
-            state.held.insert(*i);
-        }
-
-        state.pressed.clear();
-    }
-    void onInput(int key, int action) {
+    void onButton(int key, int action) {
         switch (action) {
 
         case GLFW_PRESS:
@@ -58,21 +49,6 @@ namespace input {
         return state.released.find(key) != state.released.end();
     }
 
-    // Curosr
-    double xPos;
-    double yPos;
-
-    void onCursorPos(double xpos, double ypos) {
-        xPos = xpos;
-        yPos = ypos;
-    }
-
-    double getXPos() {
-        return xPos;
-    }
-    double getYPos() {
-        return yPos;
-    }
 
     // Scroll
     double xOffset;
@@ -89,5 +65,40 @@ namespace input {
     double getYOffset() {
         return yOffset;
     }
-}
+
+
+    // Cursor
+    double xPos;
+    double yPos;
+
+    void onCursorPos(double xpos, double ypos) {
+        xPos = xpos;
+        yPos = ypos;
+    }
+
+    double getXPos() {
+        return xPos;
+    }
+    double getYPos() {
+        return yPos;
+    }
+
+
+    // End frame
+    void endFrame() {
+        // Buttons
+        state.released.clear();
+
+        for (auto i = state.pressed.cbegin(); i != state.pressed.cend(); i++) {
+            state.held.insert(*i);
+        }
+
+        state.pressed.clear();
+
+        // Scroll
+        xOffset = 0.0;
+        yOffset = 0.0;
+    }
+
+} // namespace input
 

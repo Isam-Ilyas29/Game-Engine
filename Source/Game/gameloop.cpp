@@ -20,6 +20,12 @@ bool gameloop::run(int argc, char* argv[]) {
 
 	/*----------------------------------------------------------------------------------*/
 
+	// Error handling
+
+	glad_set_post_callback((GLADcallback)&gladHandleError);
+
+	/*----------------------------------------------------------------------------------*/
+
 	// Context
 
 	context::initialiseGLFW();
@@ -42,6 +48,8 @@ bool gameloop::run(int argc, char* argv[]) {
 		Shader shader(environment::ResourcePath("Shaders/shader.vs"), environment::ResourcePath("Shaders/shader.fs"));
 
 		/*----------------------------------------------------------------------------------*/
+
+		// Creating vertex data
 
 		float vertices[] = {
 		   -0.5f, -0.5f, -0.5f,  0.f, 0.f,
@@ -103,6 +111,8 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		/*----------------------------------------------------------------------------------*/
 
+		// Sending Vertex data to GPU
+
 		unsigned int VBO, VAO;
 		glGenBuffers(1, &VBO);
 		glGenVertexArrays(1, &VAO);
@@ -115,11 +125,11 @@ bool gameloop::run(int argc, char* argv[]) {
 		vertex_data.bindVBO(vertices, sizeof(vertices), VBO);
 		vertex_data.bindVAO(VAO);
 
-		vertex_data.positionAttrib(5 * sizeof(float));
-		vertex_data.textureAttrib(5 * sizeof(float));
+		vertex_data.positionAttrib(0, 5 * sizeof(float));
+		vertex_data.textureAttrib(2, 5 * sizeof(float));
 
 		/*----------------------------------------------------------------------------------*/
-
+		
 		// Textures
 
 		std::vector<std::string> textures = readFile(environment::ResourcePath("DirectoryReader/textures_list.txt"));
@@ -172,6 +182,8 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		Time last_frame = Time::now();
 
+		bool should_isolte = false;
+
 		/*----------------------------------------------------------------------------------*/
 
 		// Game loop
@@ -199,7 +211,7 @@ bool gameloop::run(int argc, char* argv[]) {
 					ImGui::TextWrapped("\n");
 
 					ImGui::TextWrapped("\Ping: %lf", delta_time.getMilliseconds());
-					ImGui::TextWrapped("\nFPS: %lf", framesPerSecond(delta_time.getSeconds()));
+					ImGui::TextWrapped("\nFPS: %lf", getFramesPerSecond(delta_time.getSeconds()));
 
 					ImGui::EndTabItem();
 				}
@@ -235,13 +247,7 @@ bool gameloop::run(int argc, char* argv[]) {
 				collapsingHeader::miscellaneous(true);
 			}
 
-			bool is_mouse_over_ui;
-			if (ImGui::IsWindowHovered()) {
-				is_mouse_over_ui = true;
-			}
-			else {
-				is_mouse_over_ui = false;
-			}
+			should_isolte = isMouseOverUI();
 
 			ImGui::End();
 #endif
@@ -276,7 +282,7 @@ bool gameloop::run(int argc, char* argv[]) {
 #endif
 			context::window::swapBuffers();
 			context::window::pollEvents();
-			update(delta_time.getSeconds(), camera, is_mouse_over_ui);
+			update(delta_time.getSeconds(), camera, should_isolte);
 			input::endFrame();
 		}
 	}

@@ -18,4 +18,6 @@
 		void controlsText(bool help);
 		void aboutText(bool help);
 	}
+
+	bool isMouseOverUI();
 #endif

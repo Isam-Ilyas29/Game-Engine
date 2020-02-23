@@ -62,10 +62,10 @@ namespace context {
 	}
 
 	void keyboardContext(GLFWwindow* window, int key, int scancode, int action, int mods) {
-		input::onInput(key, action);
+		input::onButton(key, action);
 	}
 	void mouseButtonContext(GLFWwindow* window, int button, int action, int mods) {
-		input::onInput(button, action);
+		input::onButton(button, action);
 	}
 	void cursorPosContext(GLFWwindow* window, double xpos, double ypos) {
 		input::onCursorPos(xpos, ypos);

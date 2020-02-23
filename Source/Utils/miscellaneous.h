@@ -10,7 +10,7 @@
 extern bool polygon_mode;
 
 
-float framesPerSecond(double delta_time);
+double getFramesPerSecond(double delta_time);
 
 
 std::vector<std::string> readFile(std::filesystem::path path);

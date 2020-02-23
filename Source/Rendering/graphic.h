@@ -13,6 +13,8 @@
 
 /*----------------------------------------------------------------------------------*/
 
+// Context for graphics (glad)
+
 namespace context {
 	namespace graphics {
 		bool initialiseGraphics();
@@ -21,7 +23,8 @@ namespace context {
 
 /*----------------------------------------------------------------------------------*/
 
-// Vertex and Attribute Objects
+// Vertex and Attribute class
+
 class VertexData final {
 private:
 	unsigned int mVAO, mVBO, mEBO = 0;
@@ -38,13 +41,15 @@ public:
 	void bindEBO(const std::vector<unsigned int>& indices, unsigned int EBO);
 	void bindVAO(unsigned int VAO);
 
-	void positionAttrib(size_t stride);
-	void colourAttrib(size_t stride);
-	void textureAttrib(size_t stride);
+	void positionAttrib(unsigned int location, size_t stride);
+	void colourAttrib(unsigned int location, size_t stride);
+	void textureAttrib(unsigned int location, size_t stride);
 };
 
 
 /*----------------------------------------------------------------------------------*/
+
+// Transform class
 
 class Transform {
 private:
@@ -67,7 +72,15 @@ public:
 
 /*----------------------------------------------------------------------------------*/
 
-void screenColour(double r, double g, double b, double a);
+// Set background colour
+
+void setBackgroundColour(double r, double g, double b, double a);
+
+/*----------------------------------------------------------------------------------*/
+
+// Error handling
+
+void gladHandleError(const char* name, void* function_pointer, int len_args);
 
 /*----------------------------------------------------------------------------------*/
 
