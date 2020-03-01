@@ -23,6 +23,7 @@
 
 #pragma once
 
+
 // Backend API
 IMGUI_IMPL_API bool     ImGui_ImplOpenGL3_Init(const char* glsl_version = NULL);
 IMGUI_IMPL_API void     ImGui_ImplOpenGL3_Shutdown();
@@ -61,4 +62,3 @@ IMGUI_IMPL_API void     ImGui_ImplOpenGL3_DestroyDeviceObjects();
         #define IMGUI_IMPL_OPENGL_LOADER_GL3W       // Default to GL3W
     #endif
 #endif
-

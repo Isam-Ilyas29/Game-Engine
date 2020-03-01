@@ -1,4 +1,5 @@
-#include "environment.h"
+#include "environment.hpp"
+
 
 namespace environment{
 	std::filesystem::path exeDirectory;

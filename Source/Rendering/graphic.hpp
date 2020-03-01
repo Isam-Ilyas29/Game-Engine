@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../Utils/std_types.hpp"
+
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -8,7 +10,7 @@
 
 #include <iostream>
 #include <vector>
-
+#include <filesystem>
 
 
 /*----------------------------------------------------------------------------------*/
@@ -20,6 +22,14 @@ namespace context {
 		bool initialiseGraphics();
 	}
 }
+
+/*----------------------------------------------------------------------------------*/
+
+// Error handling
+
+#define GLAD_CHECK_ERROR() gladCheckError(__FILE__, __LINE__)
+
+void gladCheckError(const char* file, u32 line_number);
 
 /*----------------------------------------------------------------------------------*/
 
@@ -36,9 +46,9 @@ public:
 
 	~VertexData();
 
-	void bindVBO(const std::vector<float>& vertices, unsigned int VBO);		// Accepts Vertices
-	void bindVBO(float vertices[], size_t size, unsigned int VBO);			// Accepts Arrays
-	void bindEBO(const std::vector<unsigned int>& indices, unsigned int EBO);
+	void bindVBO(const std::vector<f32>& vertices, unsigned int VBO);		// Accepts Vertices
+	void bindVBO(f32 vertices[], size_t size, unsigned int VBO);			// Accepts Arrays
+	void bindEBO(const std::vector<u8>& indices, unsigned int EBO);
 	void bindVAO(unsigned int VAO);
 
 	void positionAttrib(unsigned int location, size_t stride);
@@ -59,10 +69,10 @@ private:
 	glm::quat mRotation;
 	glm::vec3 mScale;
 
-	unsigned int mRotationAxis;
+	u16 mRotationAxis;
 
 public:
-	Transform(unsigned int rotation_axis, glm::vec3 positions, glm::quat rotation, glm::vec3 scale = glm::vec3(1.f));
+	Transform(u16 rotation_axis, glm::vec3 positions, glm::quat rotation, glm::vec3 scale = glm::vec3(1.f));
 	Transform(const Transform&) = delete;
 	Transform& operator=(const Transform&) = delete;
 
@@ -74,13 +84,6 @@ public:
 
 // Set background colour
 
-void setBackgroundColour(double r, double g, double b, double a);
+void setBackgroundColour(f64 r, f64 g, f64 b, f64 a);
 
 /*----------------------------------------------------------------------------------*/
-
-// Error handling
-
-void gladHandleError(const char* name, void* function_pointer, int len_args);
-
-/*----------------------------------------------------------------------------------*/
-

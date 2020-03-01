@@ -38,7 +38,7 @@
 #include <iostream>
 
 #include <imgui.h>
-#include "imgui_impl_glfw.h"
+#include "imgui_impl_glfw.hpp"
 
 // GLFW
 #include <GLFW/glfw3.h>
@@ -52,6 +52,7 @@
 #define GLFW_HAS_WINDOW_ALPHA         (GLFW_VERSION_MAJOR * 1000 + GLFW_VERSION_MINOR * 100 >= 3300) // 3.3+ glfwSetWindowOpacity
 #define GLFW_HAS_PER_MONITOR_DPI      (GLFW_VERSION_MAJOR * 1000 + GLFW_VERSION_MINOR * 100 >= 3300) // 3.3+ glfwGetMonitorContentScale
 #define GLFW_HAS_VULKAN               (GLFW_VERSION_MAJOR * 1000 + GLFW_VERSION_MINOR * 100 >= 3200) // 3.2+ glfwCreateWindowSurface
+
 
 // Data
 enum GlfwClientApi

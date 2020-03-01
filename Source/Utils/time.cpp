@@ -1,13 +1,12 @@
-#include "time.h"
+#include "time.hpp"
 
 
-
-Time Time::setMilliseconds(int milli_seconds) {
-	return Time(int(milli_seconds) * 1000);
+Time Time::setMilliseconds(s32 milli_seconds) {
+	return Time(s64(milli_seconds) * 1000);
 }
-Time Time::setSeconds(float seconds) {
+Time Time::setSeconds(f32 seconds) {
 	seconds = seconds * 1000.0f * 1000.0f;
-	return Time(int(seconds));
+	return Time(s32(seconds));
 }
 
 Time Time::now() {
@@ -57,12 +56,12 @@ bool Time::operator>=(Time const& rhs) {
 	return micro_seconds >= rhs.micro_seconds;
 }
 
-float Time::getSeconds() const {
-	return float(micro_seconds.count()) / (1000.f * 1000.f);
+f32 Time::getSeconds() const {
+	return f32(micro_seconds.count()) / (1000.f * 1000.f);
 }
 
-float Time::getMilliseconds() const {
-	return float(micro_seconds.count()) / (1000);
+f32 Time::getMilliseconds() const {
+	return f32(micro_seconds.count()) / (1000);
 }
 
 float Time::getMicroseconds() const {

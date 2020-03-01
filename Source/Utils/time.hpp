@@ -1,6 +1,9 @@
 #pragma once
 
+#include "std_types.hpp"
+
 #include <chrono>
+
 
 class Time
 {
@@ -8,8 +11,8 @@ private:
 	std::chrono::microseconds micro_seconds;
 
 public:
-	static Time setMilliseconds(int milliSeconds);
-	static Time setSeconds(float seconds);
+	static Time setMilliseconds(s32 milliSeconds);
+	static Time setSeconds(f32 seconds);
 
 	static Time now();
 
@@ -30,9 +33,9 @@ public:
 	bool operator>(Time const& rhs);
 	bool operator>=(Time const& rhs);
 
-	float getSeconds() const;
-	float getMilliseconds() const;
-	float getMicroseconds() const;
+	f32 getSeconds() const;
+	f32 getMilliseconds() const;
+	f32 getMicroseconds() const;
 };
 
 Time operator+(Time const& lhs, Time const& rhs);

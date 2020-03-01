@@ -1,6 +1,6 @@
-#include "input.h"
+#include "input.hpp"
 
-#include "../Context/context.h"
+#include "../Context/context.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -13,7 +13,7 @@ namespace {
 namespace input {
 
     // Keys and Mouse buttons
-    void onButton(int key, int action) {
+    void onButton(u16 key, u16 action) {
         switch (action) {
 
         case GLFW_PRESS:
@@ -39,47 +39,47 @@ namespace input {
         return state;
     }
 
-    bool isPressed(int key) {
+    bool isPressed(u16 key) {
         return state.pressed.find(key) != state.pressed.end();
     }
-    bool isHeld(int key) {
+    bool isHeld(u16 key) {
         return state.held.find(key) != state.held.end();
     }
-    bool isReleased(int key) {
+    bool isReleased(u16 key) {
         return state.released.find(key) != state.released.end();
     }
 
 
     // Scroll
-    double xOffset;
-    double yOffset;
+    f64 xOffset;
+    f64 yOffset;
 
-    void onScroll(double xoffset, double yoffset) {
+    void onScroll(f64 xoffset, f64 yoffset) {
         xOffset = xoffset;
         yOffset = yoffset;
     }
 
-    double getXOffset() {
+    f64 getXOffset() {
         return xOffset;
     }
-    double getYOffset() {
+    f64 getYOffset() {
         return yOffset;
     }
 
 
     // Cursor
-    double xPos;
-    double yPos;
+    f64 xPos;
+    f64 yPos;
 
-    void onCursorPos(double xpos, double ypos) {
+    void onCursorPos(f64 xpos, f64 ypos) {
         xPos = xpos;
         yPos = ypos;
     }
 
-    double getXPos() {
+    f64 getXPos() {
         return xPos;
     }
-    double getYPos() {
+    f64 getYPos() {
         return yPos;
     }
 
@@ -101,4 +101,3 @@ namespace input {
     }
 
 } // namespace input
-

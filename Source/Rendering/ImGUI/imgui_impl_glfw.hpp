@@ -18,6 +18,7 @@
 
 #pragma once
 
+
 struct GLFWwindow;
 
 IMGUI_IMPL_API bool     ImGui_ImplGlfw_InitForOpenGL(GLFWwindow* window, bool install_callbacks);

@@ -3,6 +3,7 @@
 #include <string>
 #include <filesystem>
 
+
 namespace environment {
     extern std::filesystem::path exeDirectory;
     extern std::filesystem::path resourcesPath;

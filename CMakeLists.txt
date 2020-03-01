@@ -11,35 +11,36 @@ add_subdirectory(Libraries/imgui)
 # Source files
 set(SOURCES 
     Source/main.cpp
-    Source/Game/gameloop.h
+    Source/Game/gameloop.hpp
     Source/Game/gameloop.cpp
-    Source/Context/context.h
+    Source/Context/context.hpp
     Source/Context/context.cpp
-    Source/Utils/miscellaneous.h
+    Source/Utils/miscellaneous.hpp
     Source/Utils/miscellaneous.cpp
-    Source/Utils/time.h
+    Source/Utils/time.hpp
     Source/Utils/time.cpp
-    Source/Utils/random_generator.h
+    Source/Utils/random_generator.hpp
     Source/Utils/random_generator.cpp
+    Source/Utils/std_types.hpp
+    Source/Environment/environment.hpp
     Source/Environment/environment.cpp
-    Source/Environment/environment.h
-    Source/Rendering/shader.h
+    Source/Rendering/shader.hpp
     Source/Rendering/shader.cpp
-    Source/Rendering/graphic.h
+    Source/Rendering/graphic.hpp
     Source/Rendering/graphic.cpp
-    Source/Rendering/texture.h
+    Source/Rendering/texture.hpp
     Source/Rendering/texture.cpp
-    Source/Input/input_responder.h
+    Source/Input/input_responder.hpp
     Source/Input/input_responder.cpp
-    Source/Input/input.h
+    Source/Input/input.hpp
     Source/Input/input.cpp
-    Source/Camera/camera.h
+    Source/Camera/camera.hpp
     Source/Camera/camera.cpp
-    Source/Rendering/ImGUI/imgui_impl_glfw.h
+    Source/Rendering/ImGUI/imgui_impl_glfw.hpp
     Source/Rendering/ImGUI/imgui_impl_glfw.cpp 
-    Source/Rendering/ImGUI/imgui_impl_opengl3.h 
+    Source/Rendering/ImGUI/imgui_impl_opengl3.hpp
     Source/Rendering/ImGUI/imgui_impl_opengl3.cpp
-    Source/Rendering/ImGUI/editor.h
+    Source/Rendering/ImGUI/editor.hpp
     Source/Rendering/ImGUI/editor.cpp
 )
 list(TRANSFORM SOURCES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")

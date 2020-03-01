@@ -1,6 +1,8 @@
 #pragma once
 
-#include "../Input/input.h"
+#include "../Utils/std_types.hpp"
+
+#include "../Input/input.hpp"
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -14,7 +16,7 @@ namespace context {
 
 	void glfwContext();
 
-	void keyboardContext(GLFWwindow* window, int key, int scancode, int action, int mods);
+	void keyboardContext(GLFWwindow* window, int key, int scancode, int action, int mods); 
 	void mouseButtonContext(GLFWwindow* window, int button, int action, int mods);
 	void cursorPosContext(GLFWwindow* window, double xpos, double ypos);
 	void scrollContext(GLFWwindow* window, double xoffset, double yoffset);
@@ -24,7 +26,7 @@ namespace context {
 	void renderImgui();
 
 	namespace window {
-		bool setupWindow(std::string name, unsigned int width, unsigned int height);
+		bool setupWindow(std::string name, u16 width, u16 height);
 		void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
 		void closeWindow();
@@ -41,5 +43,3 @@ namespace context {
 		float aspectRatio();
 	}
 }
-
-

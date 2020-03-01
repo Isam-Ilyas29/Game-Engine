@@ -1,15 +1,14 @@
-#include "gameloop.h"
+#include "gameloop.hpp"
 
-#include "../Context/context.h"
-#include "../Rendering/graphic.h"
-#include "../Rendering/shader.h"
-#include "../Rendering/texture.h"
-#include "../Rendering/ImGUI/editor.h"
-#include "../Input/input_responder.h"
-#include "../Utils/miscellaneous.h"
-#include "../Utils/time.h"
-#include "../Utils/random_generator.h"
-
+#include "../Context/context.hpp"
+#include "../Rendering/graphic.hpp"
+#include "../Rendering/shader.hpp"
+#include "../Rendering/texture.hpp"
+#include "../Rendering/ImGUI/editor.hpp"
+#include "../Input/input_responder.hpp"
+#include "../Utils/miscellaneous.hpp"
+#include "../Utils/time.hpp"
+#include "../Utils/random_generator.hpp"
 
 
 bool gameloop::run(int argc, char* argv[]) {
@@ -17,12 +16,6 @@ bool gameloop::run(int argc, char* argv[]) {
 	std::filesystem::path exeFile = argv[0];
 	environment::exeDirectory = exeFile.parent_path();
 	environment::resourcesPath = environment::exeDirectory.parent_path() / "Resources";
-
-	/*----------------------------------------------------------------------------------*/
-
-	// Error handling
-
-	glad_set_post_callback((GLADcallback)&gladHandleError);
 
 	/*----------------------------------------------------------------------------------*/
 
@@ -51,7 +44,7 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		// Creating vertex data
 
-		float vertices[] = {
+		f32 vertices[] = {
 		   -0.5f, -0.5f, -0.5f,  0.f, 0.f,
 			0.5f, -0.5f, -0.5f,  1.f, 0.f,
 			0.5f,  0.5f, -0.5f,  1.f, 1.f,
@@ -125,15 +118,17 @@ bool gameloop::run(int argc, char* argv[]) {
 		vertex_data.bindVBO(vertices, sizeof(vertices), VBO);
 		vertex_data.bindVAO(VAO);
 
-		vertex_data.positionAttrib(0, 5 * sizeof(float));
-		vertex_data.textureAttrib(2, 5 * sizeof(float));
+		vertex_data.positionAttrib(0, 5 * sizeof(f32));
+		vertex_data.textureAttrib(2, 5 * sizeof(f32));
 
 		/*----------------------------------------------------------------------------------*/
 		
 		// Textures
 
+		// Dropdown list of .txt file which contains all texture paths
 		std::vector<std::string> textures = readFile(environment::ResourcePath("DirectoryReader/textures_list.txt"));
 
+		// Initialise texture objects
 		Texture transparent1(environment::ResourcePath("Textures/T_Transparent/graffiti_texture1.png"));
 
 		auto texture1 = std::make_unique<Texture>(environment::ResourcePath("Textures/T_Metal/metal_bricks1.jpg"));
@@ -141,12 +136,14 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		Texture error_texture(environment::ResourcePath("Textures/error_texture1.png"));
 
+		// Add to a vector Texture unique ptrs
 		std::vector<std::unique_ptr<Texture>> loaded_textures;
 
 		loaded_textures.push_back(NULL);
 		loaded_textures.push_back(std::move(texture1));
 		loaded_textures.push_back(std::move(texture2));
 
+		// Use shader
 		shader.use();
 		shader.setInt("transparent1", 1);
 
@@ -178,7 +175,7 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		/*----------------------------------------------------------------------------------*/
 
-		Camera camera(-90.f, 0.f, (800.f / 2.f), (600.f / 2.f), 45.f, 100.f);
+		Camera camera(-90.f, 0.f, (800.f / 2.f), (600.f / 2.f), 45.f, 100.f, 2.25f);
 
 		Time last_frame = Time::now();
 
@@ -186,10 +183,81 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		/*----------------------------------------------------------------------------------*/
 
+		// [TEMP] RNG Test: 
+
+		int lower_bound_int = -500;
+		int upper_bound_int = 500;
+		int random_int = NDRNG::intInRange(lower_bound_int, upper_bound_int);
+		std::cout << "Random integer in range (" << lower_bound_int << ", " << upper_bound_int << ") is: " << random_int << std::endl;
+
+		std::cout << "\n";
+
+		float lower_bound_float = -200.5f;
+		float upper_bound_float = 200.5f;
+		float random_float = NDRNG::floatInRange(lower_bound_float, upper_bound_float);
+		std::cout << "Random float in range (" << lower_bound_float << ", " << upper_bound_float << ") is: " << random_float << std::endl;
+
+		// [TEMP] RandomBatch Test:
+
+		RandomBatch DRNG(3);
+
+		DRNG.debugOutput();
+
+		/*----------------------------------------------------------*/
+
+		// 1	[Current = 1; Next = 2;]
+
+		u16 current = DRNG.getCurrentIterator();
+		u16 next = DRNG.getNextIterator();
+		u16 ran_i = DRNG.intInRange(-100, 100);
+		f32 ran_f = DRNG.floatInRange(-50.5f, 50.5f);
+
+		std::cout << "\n" << '1' << std::endl;
+		std::cout << "Current Iterator: " << current << std::endl;
+		std::cout << "Next: Iterator " << next << std::endl;
+		std::cout << "Int random: " << ran_i << std::endl;
+		std::cout << "Float random: " << ran_f << std::endl;
+
+		/*----------------------------------------------------------*/
+
+		// 2	[Current = 2; Next = 3;]
+
+		DRNG.moveIterator();
+
+		current = DRNG.getCurrentIterator();
+		next = DRNG.getNextIterator();
+		ran_i = DRNG.intInRange(-100, 100);
+		ran_f = DRNG.floatInRange(-50.5f, 50.5f);
+
+		std::cout << "\n" << '2' << std::endl;
+		std::cout << "Current: Iterator " << current << std::endl;
+		std::cout << "Next: Iterator " << next << std::endl;
+		std::cout << "Int random: " << ran_i << std::endl;
+		std::cout << "Float random: " << ran_f << std::endl;
+
+		/*----------------------------------------------------------*/
+
+		// 3	[Current = 3; Next = 1;]
+
+		DRNG.moveIterator();
+
+		current = DRNG.getCurrentIterator();
+		next = DRNG.getNextIterator();
+		ran_i = DRNG.intInRange(-100, 100);
+		ran_f = DRNG.floatInRange(-50.5f, 50.5f);
+
+		std::cout << "\n" << '3' << std::endl;
+		std::cout << "Current: Iterator " << current << std::endl;
+		std::cout << "Next: Iterator " << next << std::endl;
+		std::cout << "Int random: " << ran_i << std::endl;
+		std::cout << "Float random: " << ran_f << std::endl;
+
+		/*----------------------------------------------------------------------------------*/
+
 		// Game loop
 		while (context::window::isClosed(context::window::getWindow()) == false) {
 
-			glPolygonMode(GL_FRONT_AND_BACK, polygon_mode ? GL_LINE : GL_FILL);
+			glPolygonMode(GL_FRONT_AND_BACK, wireframe_mode ? GL_LINE : GL_FILL);
 
 			// Initialise DT
 			Time delta_time = Time::now() - last_frame;
@@ -260,7 +328,7 @@ bool gameloop::run(int argc, char* argv[]) {
 			shader.setMat4("view", view);
 
 			glm::mat4 transform = camera.getMat4Transform();
-			unsigned int transform_loc = glGetUniformLocation(shader.mID, "transform");
+			u16 transform_loc = glGetUniformLocation(shader.mID, "transform");
 			shader.modMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(transform));
 
 			// Renders boxes
@@ -273,7 +341,7 @@ bool gameloop::run(int argc, char* argv[]) {
 			}
 
 			// Unbind all texture units 
-			std::vector<unsigned int> texture_units = { 0, 1, 2 };
+			std::vector<u16> texture_units = { 0, 1, 2 };
 			Texture::unbind(texture_units);
 
 
@@ -290,4 +358,3 @@ bool gameloop::run(int argc, char* argv[]) {
 	glfwTerminate();
 	return true;
 }
-

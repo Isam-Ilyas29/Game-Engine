@@ -1,7 +1,6 @@
-#include "graphic.h"
+#include "graphic.hpp"
 
 #include <GLFW/glfw3.h>
-
 
 
 /*----------------------------------------------------------------------------------*/
@@ -20,6 +19,18 @@ namespace context {
 			glEnable(GL_DEPTH_TEST);
 			return true;
 		}
+	}
+}
+
+/*----------------------------------------------------------------------------------*/
+
+// Error handling
+
+void gladCheckError(const char* file, u32 line_number) {
+	GLenum error_code = glad_glGetError(); /// or glGetError() 
+
+	if (error_code != GL_NO_ERROR) {
+		std::cerr << '[' << std::filesystem::path(file).generic_string() << ']' << " [" << "Line. " << line_number << ']' << " [GLAD ERROR] " << error_code << std::endl;
 	}
 }
 
@@ -49,15 +60,15 @@ VertexData::~VertexData() {
 	}
 }
 
-void VertexData::bindVBO(const std::vector<float>& vertices, unsigned int VBO) {		// Accepts Vertices
+void VertexData::bindVBO(const std::vector<f32>& vertices, unsigned int VBO) {		// Accepts Vertices
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);											
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices.front(), GL_STATIC_DRAW);
 }
-void VertexData::bindVBO(float vertices[], size_t size, unsigned int VBO) {				// Accepts Arrays
+void VertexData::bindVBO(f32 vertices[], size_t size, unsigned int VBO) {				// Accepts Arrays
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);									   
 	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 }
-void VertexData::bindEBO(const std::vector<unsigned int>& indices, unsigned int EBO) {
+void VertexData::bindEBO(const std::vector<u8>& indices, unsigned int EBO) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices.front(), GL_STATIC_DRAW);
 }
@@ -69,17 +80,17 @@ void VertexData::bindVAO(unsigned int VAO) {
 
 void VertexData::positionAttrib(unsigned int location, size_t stride) {
 	glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
-	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(location);
 }
 
 void VertexData::colourAttrib(unsigned int location, size_t stride) {
 	glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(location);
 }
 
 void VertexData::textureAttrib(unsigned int location, size_t stride) {
 	glVertexAttribPointer(location, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(location);
 }
 
 
@@ -87,7 +98,7 @@ void VertexData::textureAttrib(unsigned int location, size_t stride) {
 
 // Transform class
 
-Transform::Transform(unsigned int rotation_axis, glm::vec3 position, glm::quat rotation, glm::vec3 scale)
+Transform::Transform(u16 rotation_axis, glm::vec3 position, glm::quat rotation, glm::vec3 scale)
 	: mRotationAxis(rotation_axis), mPosition(position), mTransform(glm::mat4(1.f)), mRotation(rotation), mScale(scale) {
 
 	createModel();
@@ -111,22 +122,9 @@ const glm::mat4 Transform::getModel() const {
 
 // Set background colour
 
-void setBackgroundColour(double r, double g, double b, double a) {
+void setBackgroundColour(f64 r, f64 g, f64 b, f64 a) {
 	glClearColor(r, g, b, a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
-/*----------------------------------------------------------------------------------*/
-
-// Error handling
-
-void gladHandleError(const char* name, void* function_pointer, int len_args) {
-	GLenum error_code;
-	error_code = glad_glGetError();
-
-	if (error_code != GL_NO_ERROR) {
-		std::cerr << "GLAD ERROR " << error_code << "in " << name << std::endl;
-	}
 }
 
 /*----------------------------------------------------------------------------------*/

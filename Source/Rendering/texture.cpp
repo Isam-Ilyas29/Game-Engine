@@ -1,4 +1,4 @@
-#include "texture.h"
+#include "texture.hpp"
 
 
 /*----------------------------------------------------------------------------------*/
@@ -70,11 +70,11 @@ GLuint Texture::dataToTextureID(unsigned char* data, int width, int height, GLui
 }
 
 
-void Texture::bind(unsigned int tex_unit) const {
+void Texture::bind(u16 tex_unit) const {
 	glActiveTexture(GL_TEXTURE0 + tex_unit);
 	glBindTexture(GL_TEXTURE_2D, getID());
 }
-void Texture::unbind(std::vector<unsigned int> tex_units) {
+void Texture::unbind(std::vector<u16> tex_units) {
 	for (size_t i = 0; i < tex_units.size(); i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, 0);
@@ -110,4 +110,3 @@ bool Texture::previewImage(GLuint* out_texture) {
 
 	return mValid;
 }
-

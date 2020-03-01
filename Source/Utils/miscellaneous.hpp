@@ -1,5 +1,7 @@
 #pragma once
 
+#include "std_types.hpp"
+
 #include <vector>
 #include <string>
 #include <iostream>
@@ -7,10 +9,10 @@
 #include <filesystem>
 
 
-extern bool polygon_mode;
+extern bool wireframe_mode;
 
 
-double getFramesPerSecond(double delta_time);
+f64 getFramesPerSecond(f64 delta_time);
 
 
 std::vector<std::string> readFile(std::filesystem::path path);

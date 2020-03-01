@@ -1,10 +1,11 @@
-#include "input_responder.h"
+#include "input_responder.hpp"
 
 #include <imgui.h>
-#include "../Rendering/ImGUI/imgui_impl_glfw.h"
-#include "../Rendering/ImGUI/imgui_impl_opengl3.h"
+#include "../Rendering/ImGUI/imgui_impl_glfw.hpp"
+#include "../Rendering/ImGUI/imgui_impl_opengl3.hpp"
 
-#include "../Context/context.h"
+#include "../Context/context.hpp"
+#include "../Utils/miscellaneous.hpp"
 
 
 // Scene states and has the correspoding functions and bitset
@@ -71,6 +72,16 @@ void keyboardResponder(Camera& camera) {
 
 	/*-----------------------------------------*/
 
+	bool l_shift_PRESSED;
+	l_shift_PRESSED = input::isPressed(GLFW_KEY_LEFT_SHIFT);
+
+	if (l_shift_PRESSED) {
+		std::cout << "lShift Pressed!" << std::endl;
+		wireframe_mode = !wireframe_mode;
+	}
+
+	/*-----------------------------------------*/
+
 	bool esc_PRESSED;
 	esc_PRESSED = input::isPressed(GLFW_KEY_ESCAPE);
 
@@ -95,7 +106,7 @@ void scrollResponder(Camera& camera) {
 
 /*----------------------------------------------------------------------------------*/
 
-void update(float delta_time, Camera& camera, bool should_isolate) {
+void update(f32 delta_time, Camera& camera, bool should_isolate) {
 	bool zero_HELD;
 	zero_HELD = input::isHeld(GLFW_KEY_0);
 
@@ -123,4 +134,3 @@ void update(float delta_time, Camera& camera, bool should_isolate) {
 }
 
 /*----------------------------------------------------------------------------------*/
-

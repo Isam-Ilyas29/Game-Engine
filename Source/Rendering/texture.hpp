@@ -1,12 +1,15 @@
 #pragma once
 
-#include "../Environment/environment.h"
+#include "../Utils/std_types.hpp"
+
+#include "../Environment/environment.hpp"
 
 #include <glad/glad.h>
 #include <stb_image.h>
 
 #include <iostream>
 #include <vector>
+
 
 class Texture {
 private:
@@ -24,8 +27,8 @@ public:
 
 	static GLuint dataToTextureID(unsigned char* data, int width, int height, GLuint internal_format, GLuint type);
 
-	void bind(unsigned int tex_unit) const;
-	static void unbind(std::vector<unsigned int> tex_units);
+	void bind(u16 tex_unit) const;
+	static void unbind(std::vector<u16> tex_units);
 
 	bool isValid() const;
 
@@ -37,4 +40,3 @@ public:
 
 	bool previewImage(GLuint* out_texture);
 };
-

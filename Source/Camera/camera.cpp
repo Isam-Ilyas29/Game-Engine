@@ -1,10 +1,9 @@
 #include <iostream>
 
-#include "camera.h"
-#include "../Context/context.h"
+#include "camera.hpp"
+#include "../Context/context.hpp"
 
 #include <GLFW/glfw3.h>
-
 
 
 /*----------------------------------------------------------------------------------*/
@@ -13,9 +12,11 @@ const glm::vec3 Camera::mRight = glm::vec3(1.f, 0.f, 0.f);
 const glm::vec3 Camera::mUp = glm::vec3(0.f, 1.f, 0.f);
 const glm::vec3 Camera::mFront = glm::vec3(0.f, 0.f, 1.f);
 
-Camera::Camera(float yaw, float pitch, float lastX, float lastY, float FOV, float render_distance)
-	: mClick(true), mYaw(yaw), mPitch(pitch), mLastX(lastX), mLastY(lastY), mFOV(FOV), mRenderDistance(render_distance) {
+Camera::Camera(f32 yaw, f32 pitch, f32 lastX, f32 lastY, f32 FOV, f32 render_distance, f32 zoom_scale)
+	: mClick(true), mYaw(yaw), mPitch(pitch), mLastX(lastX), mLastY(lastY), mFOV(FOV), mRenderDistance(render_distance), mCameraZoomScale(zoom_scale) {
 	
+	mCameraSpeed = 0.f;
+
 	// Default settings
 	mSpeed = 2.5f;
 
@@ -38,7 +39,7 @@ void Camera::operator() (glm::vec3 camera_pos, glm::vec3 camera_front, glm::vec3
 
 /*----------------------------------------------------------------------------------*/
 
-void Camera::update(double delta_time) {
+void Camera::update(f64 delta_time) {
 	mCameraSpeed = mSpeed * delta_time;
 
 	// Movement
@@ -78,19 +79,19 @@ void Camera::moveRight() {
 void Camera::beginCursorRotation() {
 	mClick = true;
 }
-void Camera::cursorRotation(double xPos, double yPos) {
+void Camera::cursorRotation(f64 xPos, f64 yPos) {
 	if (mClick) {
 		mLastX = xPos;
 		mLastY = yPos;
 		mClick = false;
 	}
 
-	float xoffset = xPos - mLastX;
-	float yoffset = mLastY - yPos;	// Reversed since y-coordinates go from bottom to top
+	f32 xoffset = xPos - mLastX;
+	f32 yoffset = mLastY - yPos;	// Reversed since y-coordinates go from bottom to top
 	mLastX = xPos;
 	mLastY = yPos;
 
-	const float sensitivity = 0.05f;
+	const f32 sensitivity = 0.05f;
 	xoffset *= sensitivity;
 	yoffset *= sensitivity;
 
@@ -112,9 +113,9 @@ void Camera::cursorRotation(double xPos, double yPos) {
 
 /*----------------------------------------------------------------------------------*/
 
-void Camera::zoom(double xoffset, double yoffset) {
+void Camera::zoom(f64 xoffset, f64 yoffset) {
 	if (mFOV >= 1.0f && mFOV <= 45.0f)
-		mFOV -= yoffset;
+		mFOV -= yoffset * mCameraZoomScale;
 	if (mFOV <= 1.0f)
 		mFOV = 1.0f;
 	if (mFOV >= 45.0f)
@@ -139,9 +140,7 @@ glm::mat4 Camera::getMat4View() {
 glm::mat4 Camera::getMat4Transform() {
 	glm::mat4 transform = glm::mat4(1.0f);
 	transform = glm::translate(transform, mSpawnPostion);
-	transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+	transform = glm::rotate(transform, (f32)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
 
 	return transform;
 }
-
-

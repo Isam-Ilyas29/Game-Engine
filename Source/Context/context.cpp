@@ -1,21 +1,21 @@
-#include "context.h"
+#include "context.hpp"
 
 #include <glad/glad.h>
 
 #include <imgui.h>
-#include "../Rendering/ImGUI/imgui_impl_glfw.h"
-#include "../Rendering/ImGUI/imgui_impl_opengl3.h"
+#include "../Rendering/ImGUI/imgui_impl_glfw.hpp"
+#include "../Rendering/ImGUI/imgui_impl_opengl3.hpp"
 
-#include "../Input/input_responder.h"
+#include "../Input/input_responder.hpp"
 
 
 /*----------------------------------------------------------------------------------*/
 
 namespace {
 	GLFWwindow* window;
-	std::string name;
-	unsigned int scr_width = 0;
-	unsigned int scr_height = 0;
+	std::string name= "None";
+	u16 scr_width = 0;
+	u16 scr_height = 0;
 
 	void windowLoader(GLFWwindow* window) {
 		glfwMakeContextCurrent(window);
@@ -37,8 +37,8 @@ namespace context {
 
 	void initialiseGLFW() {
 		glfwInit();
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	}
 
@@ -102,7 +102,7 @@ namespace context {
 
 	namespace window {
 
-		bool setupWindow(std::string name, unsigned int width, unsigned int height) {
+		bool setupWindow(std::string name, u16 width, u16 height) {
 			::name = name;  ::scr_width = width; ::scr_height = height;
 			::window = glfwCreateWindow(::scr_width, ::scr_height, ::name.data(), NULL, NULL);
 
@@ -151,4 +151,3 @@ namespace context {
 		}
 	}
 }
-

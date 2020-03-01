@@ -1,4 +1,4 @@
-#include "editor.h"
+#include "editor.hpp"
 
 
 // Note: this file may seem messy but ensure you read through comments thoroughly to grasp on whats going on
@@ -10,7 +10,7 @@
 		void texture(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent1, bool editor) {
 
 			static const char* current_item = "None";
-			static int selected_value = 0;
+			static u8 selected_value = 0;
 			static bool apply_texture;
 			static bool graffiti_texture;
 
@@ -22,18 +22,18 @@
 					// Copes items of passed in vector into another vector of 'const char*'
 					std::vector<const char*> items;
 					items.push_back("None");
-					for (size_t i = 0; i < textures.size(); i++) {
-						items.push_back(textures[i].data());
+					for (size_t i1 = 0; i1 < textures.size(); i1++) {
+						items.push_back(textures[i1].data());
 					}
 
 					// Texture loader combo (custom design):
 					ImGui::TextWrapped("\nTexture Picker: ");
 					if (ImGui::BeginCombo("###texture_picker1", current_item, ImGuiComboFlags_NoArrowButton)) {
-						for (int i1 = 0; i1 < items.size(); i1++) {
-							bool is_selected = (current_item == items[i1]);
-							if (ImGui::Selectable(items[i1], is_selected)) {
-								selected_value = i1;		//Index of selected item
-								current_item = items[i1];	//Name of selected item
+						for (size_t i2 = 0; i2 < items.size(); i2++) {
+							bool is_selected = (current_item == items[i2]);
+							if (ImGui::Selectable(items[i2], is_selected)) {
+								selected_value = i2;		//Index of selected item
+								current_item = items[i2];	//Name of selected item
 							}
 							if (is_selected) {
 								ImGui::SetItemDefaultFocus();
@@ -62,15 +62,15 @@
 						}
 					}
 
-					for (size_t i2 = 0; i2 < loaded_textures.size(); i2++) {
-						bool correct_texture = (i2 == selected_value);
+					for (size_t i3 = 0; i3 < loaded_textures.size(); i3++) {
+						bool correct_texture = (i3 == selected_value);
 
 						// Makes sure if selected item is none no image preview will be loaded and in else statement it default loads the error texture
 						if (correct_texture && selected_value != 0) {
 							// Image previewer
 							GLuint imgui_preview_image_texture = 0;
 
-							bool image = loaded_textures[i2 ]->previewImage(&imgui_preview_image_texture);
+							bool image = loaded_textures[i3]->previewImage(&imgui_preview_image_texture);
 							IM_ASSERT(image);
 
 							ImGui::TextWrapped("\nImage Preview: ");
@@ -84,7 +84,7 @@
 							ImGui::Checkbox("###apply_texture1", &apply_texture);
 
 							if (apply_texture) {
-								loaded_textures[i2]->bind(0);
+								loaded_textures[i3]->bind(0);
 							}
 							else {
 								error_texture.bind(0);
@@ -111,12 +111,12 @@
 				else {
 
 					// Texture loader combo:
-					for (size_t i2 = 0; i2 < loaded_textures.size(); i2++) {
-						bool correct_texture = (i2 == selected_value);
+					for (size_t i4 = 0; i4 < loaded_textures.size(); i4++) {
+						bool correct_texture = (i4 == selected_value);
 
 						if (correct_texture) {
 							if (apply_texture) {
-								loaded_textures[i2]->bind(0);
+								loaded_textures[i4]->bind(0);
 							}
 							else {
 								error_texture.bind(0);
@@ -134,12 +134,12 @@
 			}
 			else {
 				// Texture loader combo (Keeps all current data to be processed as combo is not visible on screen [same is done when collapsing header is closed]):
-				for (size_t i = 0; i < loaded_textures.size(); i++) {
-					bool correct_texture = (i == selected_value);
+				for (size_t i5 = 0; i5 < loaded_textures.size(); i5++) {
+					bool correct_texture = (i5 == selected_value);
 
 					if (correct_texture) {
 						if (apply_texture) {
-							loaded_textures[i]->bind(0);
+							loaded_textures[i5]->bind(0);
 						}
 						else {
 							error_texture.bind(0);
@@ -211,7 +211,7 @@
 
 		void miscellaneous(bool editor) {
 
-			static bool polygon_mode_checked;
+			static bool wireframe_mode_checked;
 
 			// If function call specified editor mode then it will display the collapsing header, else it will show current state but no option to edit over it
 
@@ -220,13 +220,13 @@
 
 					// Polygon toggle checkbox: 
 					ImGui::TextWrapped("Polygon Toggle: ");
-					ImGui::Checkbox("###polygon_mode_checkbox1", &polygon_mode_checked);
+					ImGui::Checkbox("###polygon_mode_checkbox1", &wireframe_mode_checked);
 
-					if (polygon_mode_checked) {
-						polygon_mode = true;
+					if (wireframe_mode_checked) {
+						wireframe_mode = true;
 					}
 					else {
-						polygon_mode = false;
+						wireframe_mode = false;
 					}
 
 					ImGui::Text("\n");
@@ -234,22 +234,22 @@
 				else {
 
 					// Polygon toggle checkbox: 
-					if (polygon_mode_checked) {
-						polygon_mode = true;
+					if (wireframe_mode_checked) {
+						wireframe_mode = true;
 					}
 					else {
-						polygon_mode = false;
+						wireframe_mode = false;
 					}
 				}
 			}
 			else {
 
 				// Polygon toggle checkbox (Keeps all current data to be processed as checkbox is not visible on screen) [same is done when collapsing header is closed]: 
-				if (polygon_mode_checked) {
-					polygon_mode = true;
+				if (wireframe_mode_checked) {
+					wireframe_mode = true;
 				}
 				else {
-					polygon_mode = false;
+					wireframe_mode = false;
 				}
 			}
 
@@ -308,5 +308,3 @@
 	}
 
 #endif
-
-

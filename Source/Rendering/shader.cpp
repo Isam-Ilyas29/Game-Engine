@@ -1,4 +1,4 @@
-#include "shader.h"
+#include "shader.hpp"
 
 #include <glad/glad.h>
 
@@ -100,29 +100,29 @@ void Shader::use() {
 void Shader::setBool(const std::string& name, bool value) const {
     glUniform1i(glGetUniformLocation(mID, name.data()), (int)value);
 }
-void Shader::setInt(const std::string& name, int value) const {
+void Shader::setInt(const std::string& name, u16 value) const {
     glUniform1i(glGetUniformLocation(mID, name.data()), value);
 }
-void Shader::setFloat(const std::string& name, float value) const {
+void Shader::setFloat(const std::string& name, f32 value) const {
     glUniform1f(glGetUniformLocation(mID, name.data()), value);
 }
 /*------------------------------------------------------------------------*/
 void Shader::setVec2(const std::string& name, const glm::vec2& value) const {
     glUniform2fv(glGetUniformLocation(mID, name.data()), 1, &value[0]);
 }
-void Shader::setVec2(const std::string& name, float x, float y) const {
+void Shader::setVec2(const std::string& name, f32 x, f32 y) const {
     glUniform2f(glGetUniformLocation(mID, name.data()), x, y);
 }
 void Shader::setVec3(const std::string& name, const glm::vec3& value) const {
     glUniform3fv(glGetUniformLocation(mID, name.data()), 1, &value[0]);
 }
-void Shader::setVec3(const std::string& name, float x, float y, float z) const {
+void Shader::setVec3(const std::string& name, f32 x, f32 y, f32 z) const {
     glUniform3f(glGetUniformLocation(mID, name.data()), x, y, z);
 }
 void Shader::setVec4(const std::string& name, const glm::vec4& value) const {
     glUniform4fv(glGetUniformLocation(mID, name.data()), 1, &value[0]);
 }
-void Shader::setVec4(const std::string& name, float x, float y, float z, float w){
+void Shader::setVec4(const std::string& name, f32 x, f32 y, f32 z, f32 w){
     glUniform4f(glGetUniformLocation(mID, name.data()), x, y, z, w);
 }
 // ------------------------------------------------------------------------
@@ -137,14 +137,14 @@ void Shader::setMat4(const std::string& name, const glm::mat4& mat) const {
 }
 /*------------------------------------------------------------------------*/
 
-void Shader::modMatrix4fv(GLint location, GLsizei count, GLboolean transpose, const GLfloat* value) {
+void Shader::modMatrix4fv(u16 location, u16 count, unsigned char transpose, const f32* value) {
     glUniformMatrix4fv(location, count, transpose, value);
 }
 
 /*------------------------------------------------------------------------*/
 
 // Utility function for checking shader compilation/linking errors.
-void Shader::checkCompileErrors(unsigned int shader, std::string type) {
+void Shader::checkCompileErrors(u8 shader, std::string type) {
     int success;
     char infoLog[1024];
     if (type != "PROGRAM") {

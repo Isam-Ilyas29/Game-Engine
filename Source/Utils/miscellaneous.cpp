@@ -1,11 +1,10 @@
-#include "miscellaneous.h"
+#include "miscellaneous.hpp"
 
 
+bool wireframe_mode = false;
 
-bool polygon_mode = false;
 
-
-double getFramesPerSecond(double delta_time) {
+f64 getFramesPerSecond(f64 delta_time) {
 	float frame_rate = 1.0 / delta_time;
 	return frame_rate;
 }
@@ -33,4 +32,3 @@ std::vector<std::string> readFile(std::filesystem::path path) {
 
 	return vector;
 }
-
