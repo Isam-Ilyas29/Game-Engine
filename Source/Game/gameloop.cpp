@@ -207,14 +207,14 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		// 1	[Current = 1; Next = 2;]
 
-		u16 current = DRNG.getCurrentIterator();
-		u16 next = DRNG.getNextIterator();
-		u16 ran_i = DRNG.intInRange(-100, 100);
+		u16 current = DRNG.getCurrentIndex();
+		u16 next = DRNG.getNextIndex();
+		s16 ran_i = DRNG.intInRange(-100, 100);
 		f32 ran_f = DRNG.floatInRange(-50.5f, 50.5f);
 
 		std::cout << "\n" << '1' << std::endl;
-		std::cout << "Current Iterator: " << current << std::endl;
-		std::cout << "Next: Iterator " << next << std::endl;
+		std::cout << "Current Index: " << current << std::endl;
+		std::cout << "Next: Index " << next << std::endl;
 		std::cout << "Int random: " << ran_i << std::endl;
 		std::cout << "Float random: " << ran_f << std::endl;
 
@@ -222,16 +222,16 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		// 2	[Current = 2; Next = 3;]
 
-		DRNG.moveIterator();
+		DRNG.moveForward();
 
-		current = DRNG.getCurrentIterator();
-		next = DRNG.getNextIterator();
+		current = DRNG.getCurrentIndex();
+		next = DRNG.getNextIndex();
 		ran_i = DRNG.intInRange(-100, 100);
 		ran_f = DRNG.floatInRange(-50.5f, 50.5f);
 
 		std::cout << "\n" << '2' << std::endl;
-		std::cout << "Current: Iterator " << current << std::endl;
-		std::cout << "Next: Iterator " << next << std::endl;
+		std::cout << "Current: Index " << current << std::endl;
+		std::cout << "Next: Index " << next << std::endl;
 		std::cout << "Int random: " << ran_i << std::endl;
 		std::cout << "Float random: " << ran_f << std::endl;
 
@@ -239,16 +239,16 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		// 3	[Current = 3; Next = 1;]
 
-		DRNG.moveIterator();
+		DRNG.moveForward();
 
-		current = DRNG.getCurrentIterator();
-		next = DRNG.getNextIterator();
+		current = DRNG.getCurrentIndex();
+		next = DRNG.getNextIndex();
 		ran_i = DRNG.intInRange(-100, 100);
 		ran_f = DRNG.floatInRange(-50.5f, 50.5f);
 
 		std::cout << "\n" << '3' << std::endl;
-		std::cout << "Current: Iterator " << current << std::endl;
-		std::cout << "Next: Iterator " << next << std::endl;
+		std::cout << "Current: Index " << current << std::endl;
+		std::cout << "Next: Index " << next << std::endl;
 		std::cout << "Int random: " << ran_i << std::endl;
 		std::cout << "Float random: " << ran_f << std::endl;
 

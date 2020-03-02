@@ -31,14 +31,16 @@ GenerateSeed<T>::GenerateSeed(T&& x) : mRNG(x){} // move
 */
 
 
+// NDRNG
+
 template<typename T>
-class GenerateSeed {
+class GenerateSeedNDRNG {
 private:
     T mRNG;
 
 public:
     template<typename... Args>
-    GenerateSeed(Args&&...args)
+    GenerateSeedNDRNG(Args&&...args)
         : mRNG(std::forward<Args>(args)...) { }
 
     template<typename Iterator>
@@ -50,29 +52,53 @@ public:
     }
 };
 
+// DRNG
+
+class GenerateSeedDRNG {
+private:
+    std::minstd_rand mRNG;
+
+public:
+    GenerateSeedDRNG(int i)
+        : mRNG(i) {}
+
+    template <typename T>
+    void generate(T b, T e) {
+        std::generate(b, e, [&]() {return std::uniform_int_distribution<u32>{}(mRNG); });
+    }
+};
+
+/*----------------------------------------------------------------------------------*/
+
+auto getGenerator(int i);
+
+/*----------------------------------------------------------------------------------*/
 
 class RandomBatch {
 private:
-    std::vector<u16> mBatch;
-    std::vector<u16>::iterator mCurrent;
-    std::vector<u16>::iterator mNext;
+    u16 mAmount;
+    u16 mCurrent = 1;
 
 public:
-    RandomBatch(u16 amount);
+    RandomBatch(int amount);
 
     int intInRange(int lower_bound, int upper_bound);
     float floatInRange(float lower_bound, float upper_bound);
 
-    void moveIterator();
-    void resetIterator();
+    void moveForward();
+    void reset();
 
     void debugOutput();
-    u16 getCurrentIterator() const;
-    u16 getNextIterator() const;
+    u16 getCurrentIndex() const;
+    u16 getNextIndex() const;
 };
+
+/*----------------------------------------------------------------------------------*/
 
 namespace NDRNG {
 
     int intInRange(int lower_bound, int upper_bound);
     float floatInRange(float lower_bound, float upper_bound);
 }
+
+/*----------------------------------------------------------------------------------*/
