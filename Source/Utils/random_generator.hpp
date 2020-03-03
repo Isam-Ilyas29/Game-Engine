@@ -59,8 +59,8 @@ private:
     std::minstd_rand mRNG;
 
 public:
-    GenerateSeedDRNG(int i)
-        : mRNG(i) {}
+    GenerateSeedDRNG(int seed)
+        : mRNG(seed) {}
 
     template <typename T>
     void generate(T b, T e) {
@@ -78,6 +78,8 @@ class RandomBatch {
 private:
     u16 mAmount;
     u16 mCurrent = 1;
+    
+    std::vector<s64> seeds;
 
 public:
     RandomBatch(int amount);
@@ -97,6 +99,11 @@ public:
 
 namespace NDRNG {
 
+    // For entire range of 's32' and 'f64'
+    s32 intInRange();
+    f32 floatInRange();
+
+    // For desired ranges
     int intInRange(int lower_bound, int upper_bound);
     float floatInRange(float lower_bound, float upper_bound);
 }

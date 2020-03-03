@@ -199,58 +199,189 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		// [TEMP] RandomBatch Test:
 
-		RandomBatch DRNG(3);
+		/*----------------------------------------------------------*/
 
-		DRNG.debugOutput();
+		// DRNG 1
+
+		RandomBatch DRNG1(3);
+
+		std::cout << "\n\nDRNG1 : \n" << std::endl;
+		DRNG1.debugOutput();
 
 		/*----------------------------------------------------------*/
 
 		// 1	[Current = 1; Next = 2;]
 
-		u16 current = DRNG.getCurrentIndex();
-		u16 next = DRNG.getNextIndex();
-		s16 ran_i = DRNG.intInRange(-100, 100);
-		f32 ran_f = DRNG.floatInRange(-50.5f, 50.5f);
+		u16 current1 = DRNG1.getCurrentIndex();
+		u16 next1 = DRNG1.getNextIndex();
+		s16 ran_i1 = DRNG1.intInRange(-100, 100);
+		f32 ran_f1 = DRNG1.floatInRange(-50.5f, 50.5f);
 
-		std::cout << "\n" << '1' << std::endl;
-		std::cout << "Current Index: " << current << std::endl;
-		std::cout << "Next: Index " << next << std::endl;
-		std::cout << "Int random: " << ran_i << std::endl;
-		std::cout << "Float random: " << ran_f << std::endl;
+		std::cout << "\n\n" << '1' << std::endl;
+		std::cout << "Current Index: " << current1 << std::endl;
+		std::cout << "Next: Index " << next1 << std::endl;
+		std::cout << "Int random: " << ran_i1 << std::endl;
+		std::cout << "Float random: " << ran_f1 << std::endl;
 
 		/*----------------------------------------------------------*/
 
 		// 2	[Current = 2; Next = 3;]
 
-		DRNG.moveForward();
+		DRNG1.moveForward();
 
-		current = DRNG.getCurrentIndex();
-		next = DRNG.getNextIndex();
-		ran_i = DRNG.intInRange(-100, 100);
-		ran_f = DRNG.floatInRange(-50.5f, 50.5f);
+		current1 = DRNG1.getCurrentIndex();
+		next1 = DRNG1.getNextIndex();
+		ran_i1 = DRNG1.intInRange(-100, 100);
+		ran_f1 = DRNG1.floatInRange(-50.5f, 50.5f);
 
 		std::cout << "\n" << '2' << std::endl;
-		std::cout << "Current: Index " << current << std::endl;
-		std::cout << "Next: Index " << next << std::endl;
-		std::cout << "Int random: " << ran_i << std::endl;
-		std::cout << "Float random: " << ran_f << std::endl;
+		std::cout << "Current: Index " << current1 << std::endl;
+		std::cout << "Next: Index " << next1 << std::endl;
+		std::cout << "Int random: " << ran_i1 << std::endl;
+		std::cout << "Float random: " << ran_f1 << std::endl;
 
 		/*----------------------------------------------------------*/
 
 		// 3	[Current = 3; Next = 1;]
 
-		DRNG.moveForward();
+		DRNG1.moveForward();
 
-		current = DRNG.getCurrentIndex();
-		next = DRNG.getNextIndex();
-		ran_i = DRNG.intInRange(-100, 100);
-		ran_f = DRNG.floatInRange(-50.5f, 50.5f);
+		current1 = DRNG1.getCurrentIndex();
+		next1 = DRNG1.getNextIndex();
+		ran_i1 = DRNG1.intInRange(-100, 100);
+		ran_f1 = DRNG1.floatInRange(-50.5f, 50.5f);
 
 		std::cout << "\n" << '3' << std::endl;
-		std::cout << "Current: Index " << current << std::endl;
-		std::cout << "Next: Index " << next << std::endl;
-		std::cout << "Int random: " << ran_i << std::endl;
-		std::cout << "Float random: " << ran_f << std::endl;
+		std::cout << "Current: Index " << current1 << std::endl;
+		std::cout << "Next: Index " << next1 << std::endl;
+		std::cout << "Int random: " << ran_i1 << std::endl;
+		std::cout << "Float random: " << ran_f1 << std::endl;
+
+		/*----------------------------------------------------------*/
+
+		// 4	[Current = 1; Next = 2;]
+
+		DRNG1.moveForward();
+
+		current1 = DRNG1.getCurrentIndex();
+		next1 = DRNG1.getNextIndex();
+		ran_i1 = DRNG1.intInRange(-100, 100);
+		ran_f1 = DRNG1.floatInRange(-50.5f, 50.5f);
+
+		std::cout << "\n" << '4' << std::endl;
+		std::cout << "Current: Index " << current1 << std::endl;
+		std::cout << "Next: Index " << next1 << std::endl;
+		std::cout << "Int random: " << ran_i1 << std::endl;
+		std::cout << "Float random: " << ran_f1 << std::endl;
+
+		/*----------------------------------------------------------*/
+
+		// 5	[Current = 2; Next = 3;]
+
+		DRNG1.moveForward();
+
+		current1 = DRNG1.getCurrentIndex();
+		next1 = DRNG1.getNextIndex();
+		ran_i1 = DRNG1.intInRange(-100, 100);
+		ran_f1 = DRNG1.floatInRange(-50.5f, 50.5f);
+
+		std::cout << "\n" << '5' << std::endl;
+		std::cout << "Current: Index " << current1 << std::endl;
+		std::cout << "Next: Index " << next1 << std::endl;
+		std::cout << "Int random: " << ran_i1 << std::endl;
+		std::cout << "Float random: " << ran_f1 << std::endl;
+
+		/*----------------------------------------------------------*/
+
+		// DRNG 2
+
+		RandomBatch DRNG2(3);
+
+		std::cout << "\n\nDRNG2 : \n" << std::endl;
+		DRNG2.debugOutput();
+
+		/*----------------------------------------------------------*/
+
+		// 1	[Current = 1; Next = 2;]
+
+		u16 current2 = DRNG2.getCurrentIndex();
+		u16 next2 = DRNG2.getNextIndex();
+		s16 ran_i2 = DRNG2.intInRange(-100, 100);
+		f32 ran_f2 = DRNG2.floatInRange(-50.5f, 50.5f);
+
+		std::cout << "\n\n" << '1' << std::endl;
+		std::cout << "Current Index: " << current2 << std::endl;
+		std::cout << "Next: Index " << next2 << std::endl;
+		std::cout << "Int random: " << ran_i2 << std::endl;
+		std::cout << "Float random: " << ran_f2 << std::endl;
+
+		/*----------------------------------------------------------*/
+
+		// 2	[Current = 2; Next = 3;]
+
+		DRNG2.moveForward();
+
+		current2 = DRNG2.getCurrentIndex();
+		next2 = DRNG2.getNextIndex();
+		ran_i2 = DRNG2.intInRange(-100, 100);
+		ran_f2 = DRNG2.floatInRange(-50.5f, 50.5f);
+
+		std::cout << "\n" << '2' << std::endl;
+		std::cout << "Current: Index " << current2 << std::endl;
+		std::cout << "Next: Index " << next2 << std::endl;
+		std::cout << "Int random: " << ran_i2 << std::endl;
+		std::cout << "Float random: " << ran_f2 << std::endl;
+
+		/*----------------------------------------------------------*/
+
+		// 3	[Current = 3; Next = 1;]
+
+		DRNG2.moveForward();
+
+		current2 = DRNG2.getCurrentIndex();
+		next2 = DRNG2.getNextIndex();
+		ran_i2 = DRNG2.intInRange(-100, 100);
+		ran_f2 = DRNG2.floatInRange(-50.5f, 50.5f);
+
+		std::cout << "\n" << '3' << std::endl;
+		std::cout << "Current: Index " << current2 << std::endl;
+		std::cout << "Next: Index " << next2 << std::endl;
+		std::cout << "Int random: " << ran_i2 << std::endl;
+		std::cout << "Float random: " << ran_f2 << std::endl;
+
+		/*----------------------------------------------------------*/
+
+		// 4	[Current = 1; Next = 2;]
+
+		DRNG2.moveForward();
+
+		current2 = DRNG2.getCurrentIndex();
+		next2 = DRNG2.getNextIndex();
+		ran_i2 = DRNG2.intInRange(-100, 100);
+		ran_f2 = DRNG2.floatInRange(-50.5f, 50.5f);
+
+		std::cout << "\n" << '4' << std::endl;
+		std::cout << "Current: Index " << current2 << std::endl;
+		std::cout << "Next: Index " << next2 << std::endl;
+		std::cout << "Int random: " << ran_i2 << std::endl;
+		std::cout << "Float random: " << ran_f2 << std::endl;
+
+		/*----------------------------------------------------------*/
+
+		// 5	[Current = 2; Next = 3;]
+
+		DRNG2.moveForward();
+
+		current2 = DRNG2.getCurrentIndex();
+		next2 = DRNG2.getNextIndex();
+		ran_i2 = DRNG2.intInRange(-100, 100);
+		ran_f2 = DRNG2.floatInRange(-50.5f, 50.5f);
+
+		std::cout << "\n" << '5' << std::endl;
+		std::cout << "Current: Index " << current2 << std::endl;
+		std::cout << "Next: Index " << next2 << std::endl;
+		std::cout << "Int random: " << ran_i2 << std::endl;
+		std::cout << "Float random: " << ran_f2 << std::endl;
 
 		/*----------------------------------------------------------------------------------*/
 

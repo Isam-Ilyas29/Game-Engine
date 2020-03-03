@@ -2,6 +2,8 @@
 
 #include "std_types.hpp"
 
+#include <climits>
+
 
 /*----------------------------------------------------------------------------------*/
 
@@ -20,13 +22,18 @@ auto getGenerator(int seed) {
 /*----------------------------------------------------------------------------------*/
 
 RandomBatch::RandomBatch(int amount)
-    : mAmount(amount) { }
+    : mAmount(amount) { 
+
+    for (size_t i = 0; i < amount; i++) {
+        seeds.push_back(NDRNG::intInRange());
+    }
+}
 
 int RandomBatch::intInRange(int lower_bound, int upper_bound) {
-    return std::uniform_int_distribution<>{lower_bound, upper_bound}(getGenerator(mCurrent));
+    return std::uniform_int_distribution<>{lower_bound, upper_bound}(getGenerator(seeds[mCurrent -1]));
 }
 float RandomBatch::floatInRange(float lower_bound, float upper_bound) {
-    return std::uniform_real_distribution<>{lower_bound, upper_bound}(getGenerator(mCurrent));
+    return std::uniform_real_distribution<>{lower_bound, upper_bound}(getGenerator(seeds[mCurrent - 1]));
 }
 
 void RandomBatch::moveForward() {
@@ -52,12 +59,27 @@ u16 RandomBatch::getNextIndex() const {
 
 namespace NDRNG {
 
+    // For entire range of 's32' and 'f64'
+
+    s32 intInRange() {
+        std::uniform_int_distribution<> distribution(std::numeric_limits<s32>::min(), std::numeric_limits<s32>::max());
+
+        return distribution(::generate);
+    }
+    f32 floatInRange() {
+        std::uniform_real_distribution<> distribution(std::numeric_limits<f32>::lowest(), std::numeric_limits<f32>::max());
+
+        return distribution(::generate);
+    }
+
+
+    // For desired ranges
+
     int intInRange(int lower_bound, int upper_bound) {
         std::uniform_int_distribution<> distribution(lower_bound, upper_bound);
 
         return distribution(::generate);
     }
-
     float floatInRange(float lower_bound, float upper_bound) {
         std::uniform_real_distribution<> distribution(lower_bound, upper_bound);
 
