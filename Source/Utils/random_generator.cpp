@@ -1,6 +1,4 @@
-#include "random_generator.hpp"
-
-#include "std_types.hpp"
+#include "Utils/random_generator.hpp"
 
 #include <climits>
 

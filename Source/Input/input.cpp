@@ -1,6 +1,6 @@
-#include "input.hpp"
+#include "Input/input.hpp"
 
-#include "../Context/context.hpp"
+#include "Context/context.hpp"
 
 #include <GLFW/glfw3.h>
 

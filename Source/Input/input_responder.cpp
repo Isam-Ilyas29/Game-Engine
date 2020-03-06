@@ -1,11 +1,11 @@
-#include "input_responder.hpp"
+#include "Input/input_responder.hpp"
 
 #include <imgui.h>
-#include "../Rendering/ImGUI/imgui_impl_glfw.hpp"
-#include "../Rendering/ImGUI/imgui_impl_opengl3.hpp"
+#include "Rendering/ImGUI/imgui_impl_glfw.hpp"
+#include "Rendering/ImGUI/imgui_impl_opengl3.hpp"
 
-#include "../Context/context.hpp"
-#include "../Utils/miscellaneous.hpp"
+#include "Context/context.hpp"
+#include "Utils/miscellaneous.hpp"
 
 
 // Scene states and has the correspoding functions and bitset

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Utils/std_types.hpp"
+#include "Utils/std_types.hpp"
 
-#include "../Environment/environment.hpp"
+#include "Environment/environment.hpp"
 
 #include <glad/glad.h>
 #include <stb_image.h>

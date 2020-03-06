@@ -1,4 +1,4 @@
-#include "editor.hpp"
+#include "Rendering/ImGUI/editor.hpp"
 
 
 // Note: this file may seem messy but ensure you read through comments thoroughly to grasp on whats going on

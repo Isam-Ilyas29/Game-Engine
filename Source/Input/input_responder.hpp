@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Utils/std_types.hpp"
+#include "Utils/std_types.hpp"
 
 #include <iostream>
 #include <bitset>
@@ -8,8 +8,8 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-#include "input.hpp"
-#include "../Camera/camera.hpp"
+#include "Input/input.hpp"
+#include "Camera/camera.hpp"
 
 
 enum class sceneStates;

@@ -8,48 +8,24 @@ add_subdirectory(Libraries/stb_image)
 add_subdirectory(Libraries/glm)
 add_subdirectory(Libraries/imgui)
 
+# Disable GLFW compiler warnings
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+
 # Source files
-set(SOURCES 
-    Source/main.cpp
-    Source/Game/gameloop.hpp
-    Source/Game/gameloop.cpp
-    Source/Context/context.hpp
-    Source/Context/context.cpp
-    Source/Utils/miscellaneous.hpp
-    Source/Utils/miscellaneous.cpp
-    Source/Utils/time.hpp
-    Source/Utils/time.cpp
-    Source/Utils/random_generator.hpp
-    Source/Utils/random_generator.cpp
-    Source/Utils/std_types.hpp
-    Source/Environment/environment.hpp
-    Source/Environment/environment.cpp
-    Source/Rendering/shader.hpp
-    Source/Rendering/shader.cpp
-    Source/Rendering/graphic.hpp
-    Source/Rendering/graphic.cpp
-    Source/Rendering/texture.hpp
-    Source/Rendering/texture.cpp
-    Source/Input/input_responder.hpp
-    Source/Input/input_responder.cpp
-    Source/Input/input.hpp
-    Source/Input/input.cpp
-    Source/Camera/camera.hpp
-    Source/Camera/camera.cpp
-    Source/Rendering/ImGUI/imgui_impl_glfw.hpp
-    Source/Rendering/ImGUI/imgui_impl_glfw.cpp 
-    Source/Rendering/ImGUI/imgui_impl_opengl3.hpp
-    Source/Rendering/ImGUI/imgui_impl_opengl3.cpp
-    Source/Rendering/ImGUI/editor.hpp
-    Source/Rendering/ImGUI/editor.cpp
-)
-list(TRANSFORM SOURCES PREPEND "${CMAKE_CURRENT_SOURCE_DIR}/")
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/Source/*.*pp")
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${SOURCES})
 add_executable(${PROJECT_NAME} ${SOURCES})
 
+target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Source")
+
+# ifdefs for DEBUG and RELEASE
 target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:Debug>:DEBUG_MODE>")
 target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:Release>:RELEASE_MODE>")
 
+# ExeDirectory
 set(EXECUTABLE_PATH "${CMAKE_SOURCE_DIR}/ExeDirectory")
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${EXECUTABLE_PATH}")
 
@@ -58,6 +34,17 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     $<$<CXX_COMPILER_ID:MSVC>:/W4>
     $<$<NOT:$<BOOL:$<CXX_COMPILER_ID:MSVC>>>:-Wall -Wextra>
 )
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_options(${PROJECT_NAME} PRIVATE 
+        $<$<CXX_COMPILER_ID:MSVC>:/WX>
+        $<$<NOT:$<BOOL:$<CXX_COMPILER_ID:MSVC>>>:-Werror>
+	)
+endif()
+
+# Disable GLM compiler warnings
+target_compile_definitions(glm INTERFACE GLM_FORCE_SILENT_WARNINGS GLM_FORCE_RADIANS)
+
+target_include_directories(${PROJECT_NAME} INTERFACE SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/glm/include")
 
 foreach(CONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${CONFIG} CONFIG)
@@ -70,13 +57,6 @@ set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT
 
 # Libraries
 target_link_libraries(${PROJECT_NAME} 
-    glfw
-    glad
-    stb_image
-    glm
-    imgui
-)
-add_dependencies(${PROJECT_NAME} 
     glfw
     glad
     stb_image

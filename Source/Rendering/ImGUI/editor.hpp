@@ -1,11 +1,11 @@
 #include <imgui.h>
-#include "imgui_impl_glfw.hpp"
-#include "imgui_impl_opengl3.hpp"
+#include "Rendering/ImGUI/imgui_impl_glfw.hpp"
+#include "Rendering/ImGUI/imgui_impl_opengl3.hpp"
 
-#include "../../Utils/miscellaneous.hpp"
-#include "../graphic.hpp"
-#include "../texture.hpp"
-#include "../../Input/input_responder.hpp"
+#include "Utils/miscellaneous.hpp"
+#include "Rendering/graphic.hpp"
+#include "Rendering/texture.hpp"
+#include "Input/input_responder.hpp"
 
 
 #ifdef DEBUG_MODE

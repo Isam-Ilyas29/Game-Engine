@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Utils/std_types.hpp"
+#include "Utils/std_types.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -13,8 +13,8 @@ private:
 	bool mClick;
 	f32 mYaw;
 	f32 mPitch;
-	f32 mLastX;
-	f32 mLastY;
+	f64 mLastX;
+	f64 mLastY;
 	f32 mFOV;
 	f32 mRenderDistance;
 	f32 mCameraZoomScale;

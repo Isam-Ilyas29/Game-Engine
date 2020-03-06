@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Utils/std_types.hpp"
+#include "Utils/std_types.hpp"
 
-#include "../Input/input.hpp"
+#include "Input/input.hpp"
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>

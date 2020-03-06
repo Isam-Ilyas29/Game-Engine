@@ -38,7 +38,7 @@
 #include <iostream>
 
 #include <imgui.h>
-#include "imgui_impl_glfw.hpp"
+#include "Rendering/ImGUI/imgui_impl_glfw.hpp"
 
 // GLFW
 #include <GLFW/glfw3.h>
