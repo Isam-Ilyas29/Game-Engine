@@ -129,14 +129,14 @@ bool gameloop::run(int argc, char* argv[]) {
 		std::vector<std::string> textures = readFile(environment::ResourcePath("DirectoryReader/textures_list.txt"));
 
 		// Initialise texture objects
-		Texture transparent1(environment::ResourcePath("Textures/T_Transparent/graffiti_texture1.png"));
+		auto transparent1 = std::make_shared<Texture>(environment::ResourcePath("Textures/T_Transparent/graffiti_texture1.png"));
 
 		auto texture1 = std::make_unique<Texture>(environment::ResourcePath("Textures/T_Metal/metal_bricks1.jpg"));
 		auto texture2 = std::make_unique<Texture>(environment::ResourcePath("Textures/T_Wood/wood_planks1.jpg"));
 
-		Texture error_texture(environment::ResourcePath("Textures/error_texture1.png"));
+		auto error_texture = std::make_shared<Texture>(environment::ResourcePath("Textures/error_texture1.png"));
 
-		// Add to a vector Texture unique ptrs
+		// Add all textures to vector
 		std::vector<std::unique_ptr<Texture>> loaded_textures;
 
 		loaded_textures.push_back(NULL);
@@ -183,6 +183,15 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		/*----------------------------------------------------------------------------------*/
 
+		// Editor 
+
+#ifdef  DEBUG_MODE
+		collapsingHeader::MiscellaneousUI miscellaneous;
+		collapsingHeader::ColourUI colour;
+#endif
+
+		/*----------------------------------------------------------------------------------*/
+
 		// Game loop
 		while (context::window::isClosed(context::window::getWindow()) == false) {
 
@@ -202,8 +211,8 @@ bool gameloop::run(int argc, char* argv[]) {
 
 				if (ImGui::BeginTabItem("Debug###debug1")) {
 					collapsingHeader::texture(textures, std::move(loaded_textures), error_texture, transparent1, false);
-					collapsingHeader::colour(false);
-					collapsingHeader::miscellaneous(false);
+					colour.process();
+					miscellaneous.process();
 
 					ImGui::TextWrapped("\n");
 
@@ -217,21 +226,23 @@ bool gameloop::run(int argc, char* argv[]) {
 					ImGui::TextWrapped("\n");
 
 					collapsingHeader::texture(textures, std::move(loaded_textures), error_texture, transparent1, true);
-					collapsingHeader::colour(true);
-					collapsingHeader::miscellaneous(true);
+					colour.display();
+					colour.process();
+					miscellaneous.display();
+					miscellaneous.process();
 
 					ImGui::EndTabItem();
 				}
 
 				if (ImGui::BeginTabItem("Help###help1")) {
 					collapsingHeader::texture(textures, std::move(loaded_textures), error_texture, transparent1, false);
-					collapsingHeader::colour(false);
-					collapsingHeader::miscellaneous(false);
+					colour.process();
+					miscellaneous.process();
 
 					ImGui::TextWrapped("\n");
 
-					collapsingHeader::controlsText(true);
-					collapsingHeader::aboutText(true);
+					collapsingHeader::controlsText();
+					collapsingHeader::aboutText();
 
 					ImGui::EndTabItem();
 				}
@@ -240,8 +251,10 @@ bool gameloop::run(int argc, char* argv[]) {
 			}
 			else {
 				collapsingHeader::texture(textures, std::move(loaded_textures), error_texture, transparent1, true);
-				collapsingHeader::colour(true);
-				collapsingHeader::miscellaneous(true);
+				colour.display();
+				colour.process();
+				miscellaneous.display();
+				miscellaneous.process();
 			}
 
 			should_isolte = isMouseOverUI();

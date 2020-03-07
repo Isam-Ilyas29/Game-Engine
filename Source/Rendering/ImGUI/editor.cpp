@@ -1,13 +1,27 @@
 #include "Rendering/ImGUI/editor.hpp"
 
 
-// Note: this file may seem messy but ensure you read through comments thoroughly to grasp on whats going on
-
 #ifdef DEBUG_MODE
 
 	namespace collapsingHeader {
 
-		void texture(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent1, bool editor) {
+		/*----------------------------------------------------------------------------------*/
+
+		/*------------------------------------------------------------*/
+
+		//TextureUI::TextureUI(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const std::shared_ptr<Texture> error_texture, const std::shared_ptr<Texture> transparent_texture)
+		//	: mTextures(textures), mLoadedTextures(loaded_textures), mErrorTexture(error_texture), mTransparentTexture(transparent_texture) { }
+
+		bool TextureUI::mApplyTexture;
+		bool TextureUI::mApplyTransparent;
+
+		void TextureUI::display() {
+		}
+		void TextureUI::process() {
+
+		}
+
+		void texture(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const std::shared_ptr<Texture> error_texture, const std::shared_ptr<Texture> transparent_texture, bool editor) {
 
 			static const char* current_item = "None";
 			static u8 selected_value = 0;
@@ -87,13 +101,13 @@
 								loaded_textures[i3]->bind(0);
 							}
 							else {
-								error_texture.bind(0);
+								error_texture->bind(0);
 							}
 
 							break;
 						}
 						else {
-							error_texture.bind(0);
+							error_texture->bind(0);
 						}
 					}
 
@@ -103,7 +117,7 @@
 					ImGui::SameLine();
 					ImGui::Checkbox("###graffiti_texture1", &graffiti_texture);
 					if (graffiti_texture) {
-						transparent1.bind(1);
+						transparent_texture->bind(1);
 					}
 
 					ImGui::Text("\n");
@@ -119,7 +133,7 @@
 								loaded_textures[i4]->bind(0);
 							}
 							else {
-								error_texture.bind(0);
+								error_texture->bind(0);
 							}
 
 							break;
@@ -128,7 +142,7 @@
 
 					// Graffiti toggle
 					if (graffiti_texture) {
-						transparent1.bind(1);
+						transparent_texture->bind(1);
 					}
 				}
 			}
@@ -142,7 +156,7 @@
 							loaded_textures[i5]->bind(0);
 						}
 						else {
-							error_texture.bind(0);
+							error_texture->bind(0);
 						}
 
 						break;
@@ -151,151 +165,96 @@
 
 				// Graffiti toggle
 				if (graffiti_texture) {
-					transparent1.bind(1);
+					transparent_texture->bind(1);
 				}
 			}
 		}
 
+		/*------------------------------------------------------------*/
 
-		void colour(bool editor) {
+		ImVec4 ColourUI::colour = ImVec4(0.2f, 0.3f, 0.3f, 1.0f);
+		bool ColourUI::apply_background;
 
-			static ImVec4 colour = ImVec4(0.2f, 0.3f, 0.3f, 1.0f);
-			static bool apply_background;
+		void ColourUI::display() {
+			if (ImGui::CollapsingHeader("Colour")) {
+				ImGui::TextWrapped("\nBackground Colour Picker: ");
+				ImGui::ColorEdit3("###background_colour_picker1", (float*)&colour);
 
-			// If function call specified editor mode then it will display the collapsing header, else it will show current state but no option to edit over it
+				ImGui::TextWrapped("\n");
+				ImGui::TextWrapped("Apply: ");
+				ImGui::SameLine();
+				ImGui::Checkbox("###apply_background1", &apply_background);
 
-			if (editor) {
-				if (ImGui::CollapsingHeader("Colour")) {
-
-					// Background colour picker
-					ImGui::TextWrapped("\nBackground Colour Picker: ");
-					ImGui::ColorEdit3("###background_colour_picker1", (float*)&colour);
-
-					ImGui::TextWrapped("\n");
-					ImGui::TextWrapped("Apply: ");
-					ImGui::SameLine();
-					ImGui::Checkbox("###apply_background1", &apply_background);
-
-					if (apply_background) {
-						setBackgroundColour(colour.x, colour.y, colour.z, colour.w);
-					}
-					else {
-						setBackgroundColour(0.2f, 0.3f, 0.3f, 1.0f);
-					}
-
-					ImGui::Text("\n");
-				}
-				else {
-
-					// Background colour picker
-					if (apply_background) {
-						setBackgroundColour(colour.x, colour.y, colour.z, colour.w);
-					}
-					else {
-						setBackgroundColour(0.2f, 0.3f, 0.3f, 1.0f);
-					}
-				}
+				ImGui::Text("\n");
+			}
+		}
+		void ColourUI::process() {
+			if (apply_background) {
+				setBackgroundColour(colour.x, colour.y, colour.z, colour.w);
 			}
 			else {
-
-				// Background colour picker (Keeps all current data to be processed as colour picker is not visible on screen [same is done when collapsing header is closed])
-				if (apply_background) {
-					setBackgroundColour(colour.x, colour.y, colour.z, colour.w);
-				}
-				else {
-					setBackgroundColour(0.2f, 0.3f, 0.3f, 1.0f);
-				}
+				setBackgroundColour(0.2f, 0.3f, 0.3f, 1.0f);
 			}
 		}
 
+		/*------------------------------------------------------------*/
 
-		void miscellaneous(bool editor) {
+		bool MiscellaneousUI::mWireframeModeChecked;
 
-			static bool wireframe_mode_checked;
+		void MiscellaneousUI::display() {
+			if (ImGui::CollapsingHeader("Miscellaneous")) {
 
-			// If function call specified editor mode then it will display the collapsing header, else it will show current state but no option to edit over it
-
-			if (editor) {
-				if (ImGui::CollapsingHeader("Miscellaneous")) {
-
-					// Polygon toggle checkbox: 
-					ImGui::TextWrapped("Polygon Toggle: ");
-					ImGui::Checkbox("###polygon_mode_checkbox1", &wireframe_mode_checked);
-
-					if (wireframe_mode_checked) {
-						wireframe_mode = true;
-					}
-					else {
-						wireframe_mode = false;
-					}
-
-					ImGui::Text("\n");
-				}
-				else {
-
-					// Polygon toggle checkbox: 
-					if (wireframe_mode_checked) {
-						wireframe_mode = true;
-					}
-					else {
-						wireframe_mode = false;
-					}
-				}
+				// Polygon toggle checkbox: 
+				ImGui::TextWrapped("Polygon Toggle: ");
+				ImGui::Checkbox("###polygon_mode_checkbox1", &mWireframeModeChecked);
+				ImGui::Text("\n");
+			}
+		}
+		void MiscellaneousUI::process() {
+			if (mWireframeModeChecked) {
+				wireframe_mode = true;
 			}
 			else {
-
-				// Polygon toggle checkbox (Keeps all current data to be processed as checkbox is not visible on screen) [same is done when collapsing header is closed]: 
-				if (wireframe_mode_checked) {
-					wireframe_mode = true;
-				}
-				else {
-					wireframe_mode = false;
-				}
+				wireframe_mode = false;
 			}
-
 		}
 
 		/*----------------------------------------------------------------------------------*/
 
-		void controlsText(bool help) {
-		
-			// If function call specified help mode then it will display the collapsing header, else pass
+		void controlsText() {
+			if (ImGui::CollapsingHeader("Controls")) {
 
-			if (help) {
-				if (ImGui::CollapsingHeader("Controls")) {
-
-					ImGui::TextWrapped("- 'W' = Move Forward");
-					ImGui::TextWrapped("- 'A' = Move Left");
-					ImGui::TextWrapped("- 'S' = Move Backward");
-					ImGui::TextWrapped("- 'D' = Move Right");
-					ImGui::TextWrapped("\n");
-					ImGui::TextWrapped("- 'Escape' = Quit game");
-					ImGui::TextWrapped("\n");
-					ImGui::TextWrapped("- 'Left Shift' = Toggle outline and fill mode");
-					ImGui::TextWrapped("\n");
-					ImGui::TextWrapped("- '0 (Zero)' = Hold to disbale all other input methods / controls.");
-					ImGui::TextWrapped("\n");
-				}
+				ImGui::TextWrapped("- 'W' = Move Forward");
+				ImGui::TextWrapped("- 'A' = Move Left");
+				ImGui::TextWrapped("- 'S' = Move Backward");
+				ImGui::TextWrapped("- 'D' = Move Right");
+				ImGui::TextWrapped("\n");
+				ImGui::TextWrapped("- 'Escape' = Quit game");
+				ImGui::TextWrapped("\n");
+				ImGui::TextWrapped("- 'Left Shift' = Toggle outline and fill mode");
+				ImGui::TextWrapped("\n");
+				ImGui::TextWrapped("- '0 (Zero)' = Hold to disbale all other input methods / controls.");
+				ImGui::TextWrapped("\n");
 			}
 		}
 
-		void aboutText(bool help) {
+		/*------------------------------------------------------------*/
 
-			// If function call specified help mode then it will display the collapsing header, else pass
+		void aboutText() {
+			if (ImGui::CollapsingHeader("About")) {
 
-			if (help) {
-				if (ImGui::CollapsingHeader("About")) {
-
-					ImGui::TextWrapped("This is a game engine which is currently being developed in C++ and OpenGL.");
-					ImGui::TextWrapped("\n");
-					ImGui::TextWrapped("Devloper: Isam Ilyas");
-					ImGui::TextWrapped("\n");
-					ImGui::TextWrapped("To learn more please visit: ");
-					ImGui::TextWrapped("https://github.com/Isam-Ilyas29/OpenGL-Graphics-Engine");
-					ImGui::TextWrapped("\n");
-				}
+				ImGui::TextWrapped("This is a game engine which is currently being developed in C++ and OpenGL.");
+				ImGui::TextWrapped("\n");
+				ImGui::TextWrapped("Devloper: Isam Ilyas");
+				ImGui::TextWrapped("\n");
+				ImGui::TextWrapped("To learn more please visit: ");
+				ImGui::TextWrapped("https://github.com/Isam-Ilyas29/OpenGL-Graphics-Engine");
+				ImGui::TextWrapped("\n");
 			}
 		}
+
+		/*----------------------------------------------------------------------------------*/
+
 	} // namespace collapsingHeader
 
 	bool isMouseOverUI() {
