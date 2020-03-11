@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Utils/std_types.hpp"
+#include "Core/std_types.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -13,8 +13,8 @@ private:
 	bool mClick;
 	f32 mYaw;
 	f32 mPitch;
-	f64 mLastX;
-	f64 mLastY;
+	f32 mLastX;
+	f32 mLastY;
 	f32 mFOV;
 	f32 mRenderDistance;
 	f32 mCameraZoomScale;
@@ -38,7 +38,7 @@ public:
 	static const glm::vec3 mUp;
 	static const glm::vec3 mFront;
 
-	void update(f64 delta_time);
+	void update(f32 delta_time);
 
 	void moveForward();
 	void moveLeft();
@@ -46,9 +46,9 @@ public:
 	void moveRight();
 
 	void beginCursorRotation();
-	void cursorRotation(f64 xpos, f64 ypos);
+	void cursorRotation(f32 xpos, f32 ypos);
 
-	void zoom(f64 xoffset, f64 yoffset);
+	void zoom(f32 xoffset, f32 yoffset);
 
 	glm::mat4 getMat4Projection();
 	glm::mat4 getMat4View();

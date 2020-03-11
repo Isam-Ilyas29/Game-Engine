@@ -13,7 +13,7 @@
 
 namespace {
 	GLFWwindow* window;
-	std::string name= "None";
+	std::string name = "None";
 	u16 scr_width = 0;
 	u16 scr_height = 0;
 
@@ -74,10 +74,11 @@ namespace context {
 		input::onScroll(xoffset, yoffset);
 	}
 
+
+#ifdef DEBUG_MODE
 	void imguiContext() {
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO();
 
 		ImGui_ImplGlfw_InitForOpenGL(::window, true);
 		ImGui_ImplOpenGL3_Init("#version 330 core");
@@ -99,6 +100,8 @@ namespace context {
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
+#endif
+
 
 	namespace window {
 
@@ -116,8 +119,10 @@ namespace context {
 			// Makes sure the viewport matches the new window dimensions
 			glViewport(0, 0, width, height);
 
-			ImGui::SetWindowSize("###GUI1", ImVec2(0.24 * width, 0.35 * height));
-			ImGui::SetWindowPos("###GUI1", ImVec2(8, 8));
+#ifdef DEBUG_MODE
+			ImGui::SetWindowSize("###GUI1", ImVec2(0.24f * width, 0.35f * height));
+			ImGui::SetWindowPos("###GUI1", ImVec2(8.f, 8.f));
+#endif
 		}   // Whenever the window is resized (by OS or user resize) this callback function executes
 
 		void closeWindow() {

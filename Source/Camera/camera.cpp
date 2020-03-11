@@ -39,7 +39,7 @@ void Camera::operator() (glm::vec3 camera_pos, glm::vec3 camera_front, glm::vec3
 
 /*----------------------------------------------------------------------------------*/
 
-void Camera::update(f64 delta_time) {
+void Camera::update(f32 delta_time) {
 	mCameraSpeed = mSpeed * delta_time;
 
 	// Movement
@@ -79,7 +79,7 @@ void Camera::moveRight() {
 void Camera::beginCursorRotation() {
 	mClick = true;
 }
-void Camera::cursorRotation(f64 xPos, f64 yPos) {
+void Camera::cursorRotation(f32 xPos, f32 yPos) {
 	if (mClick) {
 		mLastX = xPos;
 		mLastY = yPos;
@@ -113,7 +113,7 @@ void Camera::cursorRotation(f64 xPos, f64 yPos) {
 
 /*----------------------------------------------------------------------------------*/
 
-void Camera::zoom(f64 xoffset, f64 yoffset) {
+void Camera::zoom(f32 xoffset, f32 yoffset) {
 	if (mFOV >= 1.0f && mFOV <= 45.0f)
 		mFOV -= yoffset * mCameraZoomScale;
 	if (mFOV <= 1.0f)

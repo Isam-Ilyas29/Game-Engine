@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Utils/std_types.hpp"
+#include "Core/std_types.hpp"
 
 #include "Environment/environment.hpp"
+#include "Rendering/graphic.hpp"
 
 #include <glad/glad.h>
 #include <stb_image.h>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Utils/std_types.hpp"
+#include "Core/std_types.hpp"
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -11,6 +11,7 @@
 #include <iostream>
 #include <vector>
 #include <filesystem>
+#include <array>
 
 
 /*----------------------------------------------------------------------------------*/
@@ -27,7 +28,12 @@ namespace context {
 
 // Error handling
 
-#define GLAD_CHECK_ERROR() gladCheckError(__FILE__, __LINE__)
+#define GLAD_CHECK_ERROR(expression)			\
+	do {										\
+		expression;								\
+		gladCheckError(__FILE__, __LINE__);		\
+	} while (0);								
+
 
 void gladCheckError(const char* file, u32 line_number);
 
@@ -46,7 +52,7 @@ public:
 
 	~VertexData();
 
-	void bindVBO(const std::vector<f32>& vertices, unsigned int VBO);		// Accepts Vertices
+	void bindVBO(const std::vector<f32>& vertices, unsigned int VBO);					// Accepts Vectors
 	void bindVBO(f32 vertices[], size_t size, unsigned int VBO);			// Accepts Arrays
 	void bindEBO(const std::vector<u8>& indices, unsigned int EBO);
 	void bindVAO(unsigned int VAO);
@@ -84,6 +90,6 @@ public:
 
 // Set background colour
 
-void setBackgroundColour(f64 r, f64 g, f64 b, f64 a);
+void setBackgroundColour(f32 r, f32 g, f32 b, f32 a);
 
 /*----------------------------------------------------------------------------------*/

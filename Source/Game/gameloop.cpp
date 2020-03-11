@@ -1,14 +1,14 @@
 #include "Game/gameloop.hpp"
 
+#include "Core/time.hpp"
+#include "Core/rng.hpp"
 #include "Context/context.hpp"
 #include "Rendering/graphic.hpp"
 #include "Rendering/shader.hpp"
 #include "Rendering/texture.hpp"
 #include "Rendering/ImGUI/editor.hpp"
 #include "Input/input_responder.hpp"
-#include "Utils/miscellaneous.hpp"
-#include "Utils/time.hpp"
-#include "Utils/random_generator.hpp"
+#include "Core/utils.hpp"
 
 
 bool gameloop::run(int argc, char* argv[]) {
@@ -33,7 +33,9 @@ bool gameloop::run(int argc, char* argv[]) {
 		return false;
 	}
 
+#ifdef DEBUG_MODE
 	context::imguiContext();
+#endif
 
 	/*----------------------------------------------------------------------------------*/
 
@@ -44,7 +46,7 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		// Creating vertex data
 
-		f32 vertices[] = {
+		std::array vertices = {
 		   -0.5f, -0.5f, -0.5f,  0.f, 0.f,
 			0.5f, -0.5f, -0.5f,  1.f, 0.f,
 			0.5f,  0.5f, -0.5f,  1.f, 1.f,
@@ -88,7 +90,7 @@ bool gameloop::run(int argc, char* argv[]) {
 		   -0.5f,  0.5f, -0.5f,  0.f, 1.f
 		};
 
-		glm::vec3 cube_positions[] = {
+		std::array cube_positions = {
 			glm::vec3(-2.f, -2.f, -5.f),
 			glm::vec3(0.f, -2.f, -5.f),
 			glm::vec3(2.f, -2.f, -5.f),
@@ -107,15 +109,15 @@ bool gameloop::run(int argc, char* argv[]) {
 		// Sending Vertex data to GPU
 
 		unsigned int VBO, VAO;
-		glGenBuffers(1, &VBO);
-		glGenVertexArrays(1, &VAO);
+		GLAD_CHECK_ERROR(glGenBuffers(1, &VBO));
+		GLAD_CHECK_ERROR(glGenVertexArrays(1, &VAO));
 
 		VertexData vertex_data;
 
 		vertex_data.setVBO(VBO);
 		vertex_data.setVAO(VAO);
 
-		vertex_data.bindVBO(vertices, sizeof(vertices), VBO);
+		vertex_data.bindVBO(vertices.data(), sizeof(vertices), VBO);
 		vertex_data.bindVAO(VAO);
 
 		vertex_data.positionAttrib(0, 5 * sizeof(f32));
@@ -129,12 +131,12 @@ bool gameloop::run(int argc, char* argv[]) {
 		std::vector<std::string> textures = readFile(environment::ResourcePath("DirectoryReader/textures_list.txt"));
 
 		// Initialise texture objects
-		auto transparent1 = std::make_shared<Texture>(environment::ResourcePath("Textures/T_Transparent/graffiti_texture1.png"));
+		Texture transparent1(environment::ResourcePath("Textures/T_Transparent/graffiti_texture1.png"));
 
 		auto texture1 = std::make_unique<Texture>(environment::ResourcePath("Textures/T_Metal/metal_bricks1.jpg"));
 		auto texture2 = std::make_unique<Texture>(environment::ResourcePath("Textures/T_Wood/wood_planks1.jpg"));
 
-		auto error_texture = std::make_shared<Texture>(environment::ResourcePath("Textures/error_texture1.png"));
+		Texture error_texture(environment::ResourcePath("Textures/error_texture1.png"));
 
 		// Add all textures to vector
 		std::vector<std::unique_ptr<Texture>> loaded_textures;
@@ -151,15 +153,15 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		// Cubes
 
-		auto transform1 = std::make_unique<Transform>(0, cube_positions[0], glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto transform2 = std::make_unique<Transform>(1, cube_positions[1], glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto transform3 = std::make_unique<Transform>(2, cube_positions[2], glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto transform4 = std::make_unique<Transform>(3, cube_positions[3], glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto transform5 = std::make_unique<Transform>(4, cube_positions[4], glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto transform6 = std::make_unique<Transform>(5, cube_positions[5], glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto transform7 = std::make_unique<Transform>(6, cube_positions[6], glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto transform8 = std::make_unique<Transform>(7, cube_positions[7], glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto transform9 = std::make_unique<Transform>(8, cube_positions[8], glm::quat(0.f, 1.0f, 0.3f, 0.5f));
+		auto transform1 = std::make_unique<Transform>(0, cube_positions.at(0), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
+		auto transform2 = std::make_unique<Transform>(1, cube_positions.at(1), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
+		auto transform3 = std::make_unique<Transform>(2, cube_positions.at(2), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
+		auto transform4 = std::make_unique<Transform>(3, cube_positions.at(3), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
+		auto transform5 = std::make_unique<Transform>(4, cube_positions.at(4), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
+		auto transform6 = std::make_unique<Transform>(5, cube_positions.at(5), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
+		auto transform7 = std::make_unique<Transform>(6, cube_positions.at(6), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
+		auto transform8 = std::make_unique<Transform>(7, cube_positions.at(7), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
+		auto transform9 = std::make_unique<Transform>(8, cube_positions.at(8), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
 
 		std::vector<std::unique_ptr<Transform>> cube_position_objects;
 
@@ -185,17 +187,16 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		// Editor 
 
-#ifdef  DEBUG_MODE
+		collapsingHeader::TextureUI texture;
 		collapsingHeader::MiscellaneousUI miscellaneous;
 		collapsingHeader::ColourUI colour;
-#endif
 
 		/*----------------------------------------------------------------------------------*/
 
 		// Game loop
 		while (context::window::isClosed(context::window::getWindow()) == false) {
 
-			glPolygonMode(GL_FRONT_AND_BACK, wireframe_mode ? GL_LINE : GL_FILL);
+			GLAD_CHECK_ERROR(glPolygonMode(GL_FRONT_AND_BACK, wireframe_mode ? GL_LINE : GL_FILL));
 
 			// Initialise DT
 			Time delta_time = Time::now() - last_frame;
@@ -205,19 +206,19 @@ bool gameloop::run(int argc, char* argv[]) {
 
 #ifdef DEBUG_MODE
 			// Render imGUI
+
 			context::createImguiWindow("My GUI###GUI1");
 
 			if (ImGui::BeginTabBar("###tab_bar1")) {
 
 				if (ImGui::BeginTabItem("Debug###debug1")) {
-					collapsingHeader::texture(textures, std::move(loaded_textures), error_texture, transparent1, false);
+					texture.process(std::move(loaded_textures), error_texture, transparent1);
 					colour.process();
 					miscellaneous.process();
 
 					ImGui::TextWrapped("\n");
 
-					ImGui::TextWrapped("\Ping: %lf", delta_time.getMilliseconds());
-					ImGui::TextWrapped("\nFPS: %lf", getFramesPerSecond(delta_time.getSeconds()));
+					ImGui::TextWrapped("FPS: %d", getFramesPerSecond(delta_time));
 
 					ImGui::EndTabItem();
 				}
@@ -225,7 +226,8 @@ bool gameloop::run(int argc, char* argv[]) {
 				if (ImGui::BeginTabItem("Editor###editor1")) {
 					ImGui::TextWrapped("\n");
 
-					collapsingHeader::texture(textures, std::move(loaded_textures), error_texture, transparent1, true);
+					texture.display(textures, std::move(loaded_textures), error_texture, transparent1);
+					texture.process(std::move(loaded_textures), error_texture, transparent1);
 					colour.display();
 					colour.process();
 					miscellaneous.display();
@@ -235,7 +237,7 @@ bool gameloop::run(int argc, char* argv[]) {
 				}
 
 				if (ImGui::BeginTabItem("Help###help1")) {
-					collapsingHeader::texture(textures, std::move(loaded_textures), error_texture, transparent1, false);
+					texture.process(std::move(loaded_textures), error_texture, transparent1);
 					colour.process();
 					miscellaneous.process();
 
@@ -250,7 +252,8 @@ bool gameloop::run(int argc, char* argv[]) {
 				ImGui::EndTabBar();
 			}
 			else {
-				collapsingHeader::texture(textures, std::move(loaded_textures), error_texture, transparent1, true);
+				texture.display(textures, std::move(loaded_textures), error_texture, transparent1);
+				texture.process(std::move(loaded_textures), error_texture, transparent1);
 				colour.display();
 				colour.process();
 				miscellaneous.display();
@@ -260,6 +263,9 @@ bool gameloop::run(int argc, char* argv[]) {
 			should_isolte = isMouseOverUI();
 
 			ImGui::End();
+#else
+			colour.process();
+			miscellaneous.process();
 #endif
 
 			// Projection + View + Transform [MATRICES]
@@ -270,7 +276,7 @@ bool gameloop::run(int argc, char* argv[]) {
 			shader.setMat4("view", view);
 
 			glm::mat4 transform = camera.getMat4Transform();
-			u16 transform_loc = glGetUniformLocation(shader.mID, "transform");
+			s32 transform_loc = glGetUniformLocation(shader.mID, "transform");
 			shader.modMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(transform));
 
 			// Renders boxes
@@ -278,8 +284,8 @@ bool gameloop::run(int argc, char* argv[]) {
 				glm::mat4 model = cube_position_objects[i]->getModel();
 				shader.setMat4("model", model);
 
-				glBindVertexArray(VAO);
-				glDrawArrays(GL_TRIANGLES, 0, 36);
+				GLAD_CHECK_ERROR(glBindVertexArray(VAO));
+				GLAD_CHECK_ERROR(glDrawArrays(GL_TRIANGLES, 0, 36));
 			}
 
 			// Unbind all texture units 

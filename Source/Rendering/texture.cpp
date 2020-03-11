@@ -41,29 +41,29 @@ Texture::Texture(const std::filesystem::path& path)
 }
 
 Texture::~Texture() {
-	glDeleteTextures(1, &mID);
+	GLAD_CHECK_ERROR(glDeleteTextures(1, &mID));
 }
 
 GLuint Texture::dataToTextureID(unsigned char* data, int width, int height, GLuint internal_format, GLuint format) {
 	GLuint textureID;
 
-	glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_2D, textureID);
+	GLAD_CHECK_ERROR(glGenTextures(1, &textureID));
+	GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, textureID));
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	GLAD_CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+	GLAD_CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+	GLAD_CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+	GLAD_CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
 	if (data) {
-		glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
+		GLAD_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, GL_UNSIGNED_BYTE, data));
+		GLAD_CHECK_ERROR(glGenerateMipmap(GL_TEXTURE_2D));
 
 		stbi_image_free(data);
 		data = nullptr;
 	}
 	else {
-		std::cerr << "Failed to load texture" << std::endl;
+		std::cerr << "Failed to load texture." << std::endl;
 	}
 
 	return textureID;
@@ -71,13 +71,13 @@ GLuint Texture::dataToTextureID(unsigned char* data, int width, int height, GLui
 
 
 void Texture::bind(u16 tex_unit) const {
-	glActiveTexture(GL_TEXTURE0 + tex_unit);
-	glBindTexture(GL_TEXTURE_2D, getID());
+	GLAD_CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + tex_unit));
+	GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, getID()));
 }
 void Texture::unbind(std::vector<u16> tex_units) {
 	for (size_t i = 0; i < tex_units.size(); i++) {
-		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		GLAD_CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + i));
+		GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
 	}
 }
 

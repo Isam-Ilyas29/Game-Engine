@@ -1,4 +1,4 @@
-#include "Utils/random_generator.hpp"
+#include "Core/rng.hpp"
 
 #include <climits>
 
@@ -19,8 +19,10 @@ auto getGenerator(int seed) {
 
 /*----------------------------------------------------------------------------------*/
 
-RandomBatch::RandomBatch(int amount)
+RandomBatch::RandomBatch(u16 amount)
     : mAmount(amount) { 
+
+    ASSERT(amount > 0, "RandomBatch amount is not valid.");
 
     for (size_t i = 0; i < amount; i++) {
         seeds.push_back(NDRNG::intInRange());
@@ -73,12 +75,12 @@ namespace NDRNG {
 
     // For desired ranges
 
-    int intInRange(int lower_bound, int upper_bound) {
+    int intInRange(s64 lower_bound, s64 upper_bound) {
         std::uniform_int_distribution<> distribution(lower_bound, upper_bound);
 
         return distribution(::generate);
     }
-    float floatInRange(float lower_bound, float upper_bound) {
+    float floatInRange(f64 lower_bound, f64 upper_bound) {
         std::uniform_real_distribution<> distribution(lower_bound, upper_bound);
 
         return distribution(::generate);

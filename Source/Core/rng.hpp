@@ -1,11 +1,12 @@
 #pragma once
 
-#include "Utils/std_types.hpp"
+#include "Core/std_types.hpp"
+#include "Core/Assert/assert.hpp"
 
 #include <iostream>
 #include <random>
 #include <vector>
-#include <assert.h>
+#include <cassert>
 
 
 /*
@@ -82,7 +83,7 @@ private:
     std::vector<s64> seeds;
 
 public:
-    RandomBatch(int amount);
+    RandomBatch(u16 amount);
 
     int intInRange(int lower_bound, int upper_bound);
     float floatInRange(float lower_bound, float upper_bound);
@@ -104,8 +105,8 @@ namespace NDRNG {
     f32 floatInRange();
 
     // For desired ranges
-    int intInRange(int lower_bound, int upper_bound);
-    float floatInRange(float lower_bound, float upper_bound);
+    int intInRange(s64 lower_bound, s64 upper_bound);
+    float floatInRange(f64 lower_bound, f64 upper_bound);
 }
 
 /*----------------------------------------------------------------------------------*/

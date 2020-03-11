@@ -1,6 +1,8 @@
 #pragma once
 
-#include "Utils/std_types.hpp"
+#include "Core/std_types.hpp"
+
+#include "Rendering/graphic.hpp"
 
 #include <glm/glm.hpp>
 #include <glad/glad.h>

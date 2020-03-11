@@ -42,55 +42,55 @@ Shader::Shader(std::filesystem::path vertex_path, std::filesystem::path fragment
 
     // Vertex shader
     vertex = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex, 1, &vShaderCode, NULL);
-    glCompileShader(vertex);
+    GLAD_CHECK_ERROR(glShaderSource(vertex, 1, &vShaderCode, NULL));
+    GLAD_CHECK_ERROR(glCompileShader(vertex));
 
     // Check for vertex shader compile errors, if any
-    glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
+    GLAD_CHECK_ERROR(glGetShaderiv(vertex, GL_COMPILE_STATUS, &success));
     if (!success) {
-        glGetShaderInfoLog(vertex, 512, NULL, info_log);
+        GLAD_CHECK_ERROR(glGetShaderInfoLog(vertex, 512, NULL, info_log));
         std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << info_log << std::endl;
     };
 
     // Fragment shader
     fragment = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment, 1, &fShaderCode, NULL);
-    glCompileShader(fragment);
+    GLAD_CHECK_ERROR(glShaderSource(fragment, 1, &fShaderCode, NULL));
+    GLAD_CHECK_ERROR(glCompileShader(fragment));
 
     // Check for shader compile errors
-    glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
+    GLAD_CHECK_ERROR(glGetShaderiv(fragment, GL_COMPILE_STATUS, &success));
     if (!success) {
-        glGetShaderInfoLog(fragment, 512, NULL, info_log);
+        GLAD_CHECK_ERROR(glGetShaderInfoLog(fragment, 512, NULL, info_log));
         std::cerr << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << info_log << std::endl;
     }
 
     // Shader program
     mID = glCreateProgram();
-    glAttachShader(mID, vertex);
-    glAttachShader(mID, fragment);
-    glLinkProgram(mID);
+    GLAD_CHECK_ERROR(glAttachShader(mID, vertex));
+    GLAD_CHECK_ERROR(glAttachShader(mID, fragment));
+    GLAD_CHECK_ERROR(glLinkProgram(mID));
 
     // Check for linking errors
-    glGetProgramiv(mID, GL_LINK_STATUS, &success);
+    GLAD_CHECK_ERROR(glGetProgramiv(mID, GL_LINK_STATUS, &success));
     if (!success) {
-        glGetProgramInfoLog(mID, 512, NULL, info_log);
+        GLAD_CHECK_ERROR(glGetProgramInfoLog(mID, 512, NULL, info_log));
         std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << info_log << std::endl;
     }
 
     // Delete shaders since they are linked to our program and are no longer necessery
-    glDeleteShader(vertex);
-    glDeleteShader(fragment);
+    GLAD_CHECK_ERROR(glDeleteShader(vertex));
+    GLAD_CHECK_ERROR(glDeleteShader(fragment));
 }
 
 Shader::~Shader() {
-    glDeleteProgram(mID);
+    GLAD_CHECK_ERROR(GLAD_CHECK_ERROR(glDeleteProgram(mID)));
 }
 
 
 // Activate the shader
 /*------------------------------------------------------------------------*/
 void Shader::use() {
-    glUseProgram(mID);
+    GLAD_CHECK_ERROR(glUseProgram(mID));
 }
 
 
@@ -98,47 +98,47 @@ void Shader::use() {
 
 /*------------------------------------------------------------------------*/
 void Shader::setBool(const std::string& name, bool value) const {
-    glUniform1i(glGetUniformLocation(mID, name.data()), (int)value);
+    GLAD_CHECK_ERROR(glUniform1i(glGetUniformLocation(mID, name.data()), (int)value));
 }
 void Shader::setInt(const std::string& name, u16 value) const {
-    glUniform1i(glGetUniformLocation(mID, name.data()), value);
+    GLAD_CHECK_ERROR(glUniform1i(glGetUniformLocation(mID, name.data()), value));
 }
 void Shader::setFloat(const std::string& name, f32 value) const {
-    glUniform1f(glGetUniformLocation(mID, name.data()), value);
+    GLAD_CHECK_ERROR(glUniform1f(glGetUniformLocation(mID, name.data()), value));
 }
 /*------------------------------------------------------------------------*/
 void Shader::setVec2(const std::string& name, const glm::vec2& value) const {
-    glUniform2fv(glGetUniformLocation(mID, name.data()), 1, &value[0]);
+    GLAD_CHECK_ERROR(glUniform2fv(glGetUniformLocation(mID, name.data()), 1, &value[0]));
 }
 void Shader::setVec2(const std::string& name, f32 x, f32 y) const {
-    glUniform2f(glGetUniformLocation(mID, name.data()), x, y);
+    GLAD_CHECK_ERROR((glGetUniformLocation(mID, name.data()), x, y));
 }
 void Shader::setVec3(const std::string& name, const glm::vec3& value) const {
-    glUniform3fv(glGetUniformLocation(mID, name.data()), 1, &value[0]);
+    GLAD_CHECK_ERROR((glGetUniformLocation(mID, name.data()), 1, &value[0]));
 }
 void Shader::setVec3(const std::string& name, f32 x, f32 y, f32 z) const {
-    glUniform3f(glGetUniformLocation(mID, name.data()), x, y, z);
+    GLAD_CHECK_ERROR((glGetUniformLocation(mID, name.data()), x, y, z));
 }
 void Shader::setVec4(const std::string& name, const glm::vec4& value) const {
-    glUniform4fv(glGetUniformLocation(mID, name.data()), 1, &value[0]);
+    GLAD_CHECK_ERROR(glUniform4fv(glGetUniformLocation(mID, name.data()), 1, &value[0]));
 }
 void Shader::setVec4(const std::string& name, f32 x, f32 y, f32 z, f32 w){
-    glUniform4f(glGetUniformLocation(mID, name.data()), x, y, z, w);
+    GLAD_CHECK_ERROR(glUniform4f(glGetUniformLocation(mID, name.data()), x, y, z, w));
 }
 // ------------------------------------------------------------------------
 void Shader::setMat2(const std::string& name, const glm::mat2& mat) const {
-    glUniformMatrix2fv(glGetUniformLocation(mID, name.data()), 1, GL_FALSE, &mat[0][0]);
+    GLAD_CHECK_ERROR(glUniformMatrix2fv(glGetUniformLocation(mID, name.data()), 1, GL_FALSE, &mat[0][0]));
 }
 void Shader::setMat3(const std::string& name, const glm::mat3& mat) const {
-    glUniformMatrix3fv(glGetUniformLocation(mID, name.data()), 1, GL_FALSE, &mat[0][0]);
+    GLAD_CHECK_ERROR(glUniformMatrix3fv(glGetUniformLocation(mID, name.data()), 1, GL_FALSE, &mat[0][0]));
 }
 void Shader::setMat4(const std::string& name, const glm::mat4& mat) const {
-    glUniformMatrix4fv(glGetUniformLocation(mID, name.data()), 1, GL_FALSE, &mat[0][0]);
+    GLAD_CHECK_ERROR(glUniformMatrix4fv(glGetUniformLocation(mID, name.data()), 1, GL_FALSE, &mat[0][0]));
 }
 /*------------------------------------------------------------------------*/
 
 void Shader::modMatrix4fv(u16 location, u16 count, unsigned char transpose, const f32* value) {
-    glUniformMatrix4fv(location, count, transpose, value);
+    GLAD_CHECK_ERROR(glUniformMatrix4fv(location, count, transpose, value));
 }
 
 /*------------------------------------------------------------------------*/
@@ -148,16 +148,16 @@ void Shader::checkCompileErrors(u8 shader, std::string type) {
     int success;
     char infoLog[1024];
     if (type != "PROGRAM") {
-        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+        GLAD_CHECK_ERROR(glGetShaderiv(shader, GL_COMPILE_STATUS, &success));
         if (!success) {
-            glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+            GLAD_CHECK_ERROR(glGetShaderInfoLog(shader, 1024, NULL, infoLog));
             std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
         }
     }
     else {
-        glGetProgramiv(shader, GL_LINK_STATUS, &success);
+        GLAD_CHECK_ERROR(glGetProgramiv(shader, GL_LINK_STATUS, &success));
         if (!success) {
-            glGetProgramInfoLog(shader, 1024, NULL, infoLog);
+            GLAD_CHECK_ERROR(glGetProgramInfoLog(shader, 1024, NULL, infoLog));
             std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
         }
     }

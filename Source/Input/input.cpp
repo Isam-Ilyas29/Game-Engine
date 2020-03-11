@@ -7,7 +7,7 @@
 
 namespace {
 
-    input::keyStates state;
+    input::states state;
 }
 
 namespace input {
@@ -35,7 +35,7 @@ namespace input {
             break;
         }
     }
-    keyStates const& getState() {
+    states const& getState() {
         return state;
     }
 
@@ -51,18 +51,18 @@ namespace input {
 
 
     // Scroll
-    f64 xOffset;
-    f64 yOffset;
+    f32 xOffset;
+    f32 yOffset;
 
-    void onScroll(f64 xoffset, f64 yoffset) {
+    void onScroll(f32 xoffset, f32 yoffset) {
         xOffset = xoffset;
         yOffset = yoffset;
     }
 
-    f64 getXOffset() {
+    f32 getXOffset() {
         return xOffset;
     }
-    f64 getYOffset() {
+    f32 getYOffset() {
         return yOffset;
     }
 
@@ -71,15 +71,15 @@ namespace input {
     f64 xPos;
     f64 yPos;
 
-    void onCursorPos(f64 xpos, f64 ypos) {
+    void onCursorPos(f32 xpos, f32 ypos) {
         xPos = xpos;
         yPos = ypos;
     }
 
-    f64 getXPos() {
+    f32 getXPos() {
         return xPos;
     }
-    f64 getYPos() {
+    f32 getYPos() {
         return yPos;
     }
 
@@ -96,8 +96,8 @@ namespace input {
         state.pressed.clear();
 
         // Scroll
-        xOffset = 0.0;
-        yOffset = 0.0;
+        xOffset = 0.f;
+        yOffset = 0.f;
     }
 
 } // namespace input

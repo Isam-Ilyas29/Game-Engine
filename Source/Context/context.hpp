@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Utils/std_types.hpp"
+#include "Core/std_types.hpp"
 
 #include "Input/input.hpp"
 
@@ -21,9 +21,11 @@ namespace context {
 	void cursorPosContext(GLFWwindow* window, double xpos, double ypos);
 	void scrollContext(GLFWwindow* window, double xoffset, double yoffset);
 
+#ifdef DEBUG_MODE
 	void imguiContext();
 	void createImguiWindow(std::string name);
 	void renderImgui();
+#endif
 
 	namespace window {
 		bool setupWindow(std::string name, u16 width, u16 height);

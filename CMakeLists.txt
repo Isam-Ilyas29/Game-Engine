@@ -21,9 +21,8 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Source")
 
-# ifdefs for DEBUG and RELEASE
+#ifdef for DEBUG
 target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:Debug>:DEBUG_MODE>")
-target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:Release>:RELEASE_MODE>")
 
 # ExeDirectory
 set(EXECUTABLE_PATH "${CMAKE_SOURCE_DIR}/ExeDirectory")

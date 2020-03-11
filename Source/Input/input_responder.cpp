@@ -5,7 +5,7 @@
 #include "Rendering/ImGUI/imgui_impl_opengl3.hpp"
 
 #include "Context/context.hpp"
-#include "Utils/miscellaneous.hpp"
+#include "Core/utils.hpp"
 
 
 // Scene states and has the correspoding functions and bitset
@@ -88,6 +88,8 @@ void keyboardResponder(Camera& camera) {
 	if (esc_PRESSED) {
 		context::window::closeWindow();
 	}
+
+	/*-----------------------------------------*/
 }
 
 void mouseResponder(Camera& camera) {	//Mouse and cursor

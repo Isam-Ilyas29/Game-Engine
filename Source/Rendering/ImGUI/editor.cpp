@@ -1,269 +1,223 @@
 #include "Rendering/ImGUI/editor.hpp"
 
 
+namespace collapsingHeader {
+
+	/*----------------------------------------------------------------------------------*/
+
+	/*------------------------------------------------------------*/
+
+	const char* TextureUI::mCurrentItem = "None";
+	u8 TextureUI::mSelectedValue = 0;
+	bool TextureUI::mApplyTexture;
+	bool TextureUI::mApplyTransparentOverlay;
+
 #ifdef DEBUG_MODE
+	void TextureUI::display(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture) {
+		if (ImGui::CollapsingHeader("Textures")) {
 
-	namespace collapsingHeader {
+			// Copes items of passed in vector into another vector of 'const char*'
+			std::vector<const char*> items;
+			items.push_back("None");
+			for (size_t i = 0; i < textures.size(); i++) {
+				items.push_back(textures[i].data());
+			}
 
-		/*----------------------------------------------------------------------------------*/
-
-		/*------------------------------------------------------------*/
-
-		//TextureUI::TextureUI(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const std::shared_ptr<Texture> error_texture, const std::shared_ptr<Texture> transparent_texture)
-		//	: mTextures(textures), mLoadedTextures(loaded_textures), mErrorTexture(error_texture), mTransparentTexture(transparent_texture) { }
-
-		bool TextureUI::mApplyTexture;
-		bool TextureUI::mApplyTransparent;
-
-		void TextureUI::display() {
-		}
-		void TextureUI::process() {
-
-		}
-
-		void texture(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const std::shared_ptr<Texture> error_texture, const std::shared_ptr<Texture> transparent_texture, bool editor) {
-
-			static const char* current_item = "None";
-			static u8 selected_value = 0;
-			static bool apply_texture;
-			static bool graffiti_texture;
-
-			// If function call specified editor mode then it will display the collapsing header, else it will show current state but no option to edit over it
-
-			if (editor) {
-				if (ImGui::CollapsingHeader("Textures")) {
-
-					// Copes items of passed in vector into another vector of 'const char*'
-					std::vector<const char*> items;
-					items.push_back("None");
-					for (size_t i1 = 0; i1 < textures.size(); i1++) {
-						items.push_back(textures[i1].data());
+			// Texture loader combo:
+			ImGui::TextWrapped("\nTexture Picker: ");
+			if (ImGui::BeginCombo("###texture_picker1", mCurrentItem, ImGuiComboFlags_NoArrowButton)) {
+				for (size_t i = 0; i < items.size(); i++) {
+					bool is_selected = (mCurrentItem == items[i]);
+					if (ImGui::Selectable(items[i], is_selected)) {
+						mSelectedValue = i;		//Index of selected item
+						mCurrentItem = items[i];	//Name of selected item
 					}
-
-					// Texture loader combo (custom design):
-					ImGui::TextWrapped("\nTexture Picker: ");
-					if (ImGui::BeginCombo("###texture_picker1", current_item, ImGuiComboFlags_NoArrowButton)) {
-						for (size_t i2 = 0; i2 < items.size(); i2++) {
-							bool is_selected = (current_item == items[i2]);
-							if (ImGui::Selectable(items[i2], is_selected)) {
-								selected_value = i2;		//Index of selected item
-								current_item = items[i2];	//Name of selected item
-							}
-							if (is_selected) {
-								ImGui::SetItemDefaultFocus();
-							}
-						}
-						ImGui::EndCombo();
+					if (is_selected) {
+						ImGui::SetItemDefaultFocus();
 					}
+				}
+				ImGui::EndCombo();
+			}
 
-					ImGuiStyle& style = ImGui::GetStyle();
-					float spacing = style.ItemInnerSpacing.x;
+			ImGuiStyle& style = ImGui::GetStyle();
+			float spacing = style.ItemInnerSpacing.x;
 
 
-					// Creates arrows and makes sure they cannot go beyond/below possible value limit
-					ImGui::SameLine(0, spacing);
-					if (ImGui::ArrowButton("###left1", ImGuiDir_Left)) {
-						if (selected_value != 0) {
-							selected_value -= 1;
-							current_item = items[selected_value];
-						}
-					}
-					ImGui::SameLine(0, spacing);
-					if (ImGui::ArrowButton("###right1", ImGuiDir_Right)) {
-						if (selected_value != (items.size() - 1)) {
-							selected_value += 1;
-							current_item = items[selected_value];
-						}
-					}
+			// Creates arrows and makes sure they cannot go beyond/below possible value limit
+			ImGui::SameLine(0, spacing);
+			if (ImGui::ArrowButton("###left1", ImGuiDir_Left)) {
+				if (mSelectedValue != 0) {
+					mSelectedValue -= 1;
+					mCurrentItem = items[mSelectedValue];
+				}
+			}
+			ImGui::SameLine(0, spacing);
+			if (ImGui::ArrowButton("###right1", ImGuiDir_Right)) {
+				if (mSelectedValue != (items.size() - 1)) {
+					mSelectedValue += 1;
+					mCurrentItem = items[mSelectedValue];
+				}
+			}
 
-					for (size_t i3 = 0; i3 < loaded_textures.size(); i3++) {
-						bool correct_texture = (i3 == selected_value);
+			for (size_t i = 0; i < loaded_textures.size(); i++) {
+				bool correct_texture = (i == mSelectedValue);
 
-						// Makes sure if selected item is none no image preview will be loaded and in else statement it default loads the error texture
-						if (correct_texture && selected_value != 0) {
-							// Image previewer
-							GLuint imgui_preview_image_texture = 0;
+				// Makes sure if selected item is none no image preview will be loaded and in else statement it default loads the error texture
+				if (correct_texture && mSelectedValue != 0) {
+					// Image previewer
+					GLuint imgui_preview_image_texture = 0;
 
-							bool image = loaded_textures[i3]->previewImage(&imgui_preview_image_texture);
-							IM_ASSERT(image);
+					bool image = loaded_textures[i]->previewImage(&imgui_preview_image_texture);
+					IM_ASSERT(image);
 
-							ImGui::TextWrapped("\nImage Preview: ");
-							ImGui::Image((void*)(intptr_t)imgui_preview_image_texture, ImVec2(160, 160));
+					ImGui::TextWrapped("\nImage Preview: ");
+					ImGui::Image((void*)(intptr_t)imgui_preview_image_texture, ImVec2(160, 160));
 
-							// Load texture
-
-							ImGui::TextWrapped("\n");
-							ImGui::TextWrapped("Apply: ");
-							ImGui::SameLine();
-							ImGui::Checkbox("###apply_texture1", &apply_texture);
-
-							if (apply_texture) {
-								loaded_textures[i3]->bind(0);
-							}
-							else {
-								error_texture->bind(0);
-							}
-
-							break;
-						}
-						else {
-							error_texture->bind(0);
-						}
-					}
-
-					// Graffiti toggle
 					ImGui::TextWrapped("\n");
-					ImGui::TextWrapped("Graffiti: ");
+					ImGui::TextWrapped("Apply: ");
 					ImGui::SameLine();
-					ImGui::Checkbox("###graffiti_texture1", &graffiti_texture);
-					if (graffiti_texture) {
-						transparent_texture->bind(1);
-					}
+					ImGui::Checkbox("###apply_texture1", &mApplyTexture);
 
-					ImGui::Text("\n");
+					break;
 				}
-				else {
+			}
 
-					// Texture loader combo:
-					for (size_t i4 = 0; i4 < loaded_textures.size(); i4++) {
-						bool correct_texture = (i4 == selected_value);
+			// Transparent Overlay
+			ImGui::TextWrapped("\n");
+			ImGui::TextWrapped("Transparent Overlay: ");
+			ImGui::SameLine();
+			ImGui::Checkbox("###transparent_overlay1", &mApplyTransparentOverlay);
 
-						if (correct_texture) {
-							if (apply_texture) {
-								loaded_textures[i4]->bind(0);
-							}
-							else {
-								error_texture->bind(0);
-							}
+			ImGui::Text("\n");
+		}
+	}
+#endif
+	void TextureUI::process(const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture) {
+		for (size_t i = 0; i < loaded_textures.size(); i++) {
+			bool correct_texture = (i == mSelectedValue);
 
-							break;
-						}
+			if (correct_texture && mSelectedValue != 0) {
+				if (correct_texture) {
+					if (mApplyTexture) {
+						loaded_textures[i]->bind(0);
+					}
+					else {
+						error_texture.bind(0);
 					}
 
-					// Graffiti toggle
-					if (graffiti_texture) {
-						transparent_texture->bind(1);
-					}
+					break;
 				}
 			}
 			else {
-				// Texture loader combo (Keeps all current data to be processed as combo is not visible on screen [same is done when collapsing header is closed]):
-				for (size_t i5 = 0; i5 < loaded_textures.size(); i5++) {
-					bool correct_texture = (i5 == selected_value);
-
-					if (correct_texture) {
-						if (apply_texture) {
-							loaded_textures[i5]->bind(0);
-						}
-						else {
-							error_texture->bind(0);
-						}
-
-						break;
-					}
-				}
-
-				// Graffiti toggle
-				if (graffiti_texture) {
-					transparent_texture->bind(1);
-				}
+				error_texture.bind(0);
 			}
 		}
 
-		/*------------------------------------------------------------*/
-
-		ImVec4 ColourUI::colour = ImVec4(0.2f, 0.3f, 0.3f, 1.0f);
-		bool ColourUI::apply_background;
-
-		void ColourUI::display() {
-			if (ImGui::CollapsingHeader("Colour")) {
-				ImGui::TextWrapped("\nBackground Colour Picker: ");
-				ImGui::ColorEdit3("###background_colour_picker1", (float*)&colour);
-
-				ImGui::TextWrapped("\n");
-				ImGui::TextWrapped("Apply: ");
-				ImGui::SameLine();
-				ImGui::Checkbox("###apply_background1", &apply_background);
-
-				ImGui::Text("\n");
-			}
-		}
-		void ColourUI::process() {
-			if (apply_background) {
-				setBackgroundColour(colour.x, colour.y, colour.z, colour.w);
-			}
-			else {
-				setBackgroundColour(0.2f, 0.3f, 0.3f, 1.0f);
-			}
-		}
-
-		/*------------------------------------------------------------*/
-
-		bool MiscellaneousUI::mWireframeModeChecked;
-
-		void MiscellaneousUI::display() {
-			if (ImGui::CollapsingHeader("Miscellaneous")) {
-
-				// Polygon toggle checkbox: 
-				ImGui::TextWrapped("Polygon Toggle: ");
-				ImGui::Checkbox("###polygon_mode_checkbox1", &mWireframeModeChecked);
-				ImGui::Text("\n");
-			}
-		}
-		void MiscellaneousUI::process() {
-			if (mWireframeModeChecked) {
-				wireframe_mode = true;
-			}
-			else {
-				wireframe_mode = false;
-			}
-		}
-
-		/*----------------------------------------------------------------------------------*/
-
-		void controlsText() {
-			if (ImGui::CollapsingHeader("Controls")) {
-
-				ImGui::TextWrapped("- 'W' = Move Forward");
-				ImGui::TextWrapped("- 'A' = Move Left");
-				ImGui::TextWrapped("- 'S' = Move Backward");
-				ImGui::TextWrapped("- 'D' = Move Right");
-				ImGui::TextWrapped("\n");
-				ImGui::TextWrapped("- 'Escape' = Quit game");
-				ImGui::TextWrapped("\n");
-				ImGui::TextWrapped("- 'Left Shift' = Toggle outline and fill mode");
-				ImGui::TextWrapped("\n");
-				ImGui::TextWrapped("- '0 (Zero)' = Hold to disbale all other input methods / controls.");
-				ImGui::TextWrapped("\n");
-			}
-		}
-
-		/*------------------------------------------------------------*/
-
-		void aboutText() {
-			if (ImGui::CollapsingHeader("About")) {
-
-				ImGui::TextWrapped("This is a game engine which is currently being developed in C++ and OpenGL.");
-				ImGui::TextWrapped("\n");
-				ImGui::TextWrapped("Devloper: Isam Ilyas");
-				ImGui::TextWrapped("\n");
-				ImGui::TextWrapped("To learn more please visit: ");
-				ImGui::TextWrapped("https://github.com/Isam-Ilyas29/OpenGL-Graphics-Engine");
-				ImGui::TextWrapped("\n");
-			}
-		}
-
-		/*----------------------------------------------------------------------------------*/
-
-	} // namespace collapsingHeader
-
-	bool isMouseOverUI() {
-		if (ImGui::IsWindowHovered()) {
-			return true;
-		}
-		else {
-			return false;
+		if (mApplyTransparentOverlay) {
+			transparent_texture.bind(1);
 		}
 	}
 
+	/*------------------------------------------------------------*/
+
+	ImVec4 ColourUI::colour = ImVec4(0.2f, 0.3f, 0.3f, 1.0f);
+	bool ColourUI::apply_background;
+
+#ifdef DEBUG_MODE
+	void ColourUI::display() {
+		if (ImGui::CollapsingHeader("Colour")) {
+			ImGui::TextWrapped("\nBackground Colour Picker: ");
+			ImGui::ColorEdit3("###background_colour_picker1", (float*)&colour);
+
+			ImGui::TextWrapped("\n");
+			ImGui::TextWrapped("Apply: ");
+			ImGui::SameLine();
+			ImGui::Checkbox("###apply_background1", &apply_background);
+
+			ImGui::Text("\n");
+		}
+	}
+#endif
+	void ColourUI::process() {
+		if (apply_background) {
+			setBackgroundColour(colour.x, colour.y, colour.z, colour.w);
+		}
+		else {
+			setBackgroundColour(0.2f, 0.3f, 0.3f, 1.0f);
+		}
+	}
+
+	/*------------------------------------------------------------*/
+
+	bool MiscellaneousUI::mWireframeModeChecked;
+
+#ifdef DEBUG_MODE
+	void MiscellaneousUI::display() {
+		if (ImGui::CollapsingHeader("Miscellaneous")) {
+
+			// Polygon toggle checkbox: 
+			ImGui::TextWrapped("Polygon Toggle: ");
+			ImGui::Checkbox("###polygon_mode_checkbox1", &mWireframeModeChecked);
+			ImGui::Text("\n");
+		}
+	}
+#endif
+	void MiscellaneousUI::process() {
+		if (mWireframeModeChecked) {
+			wireframe_mode = true;
+		}
+		else {
+			wireframe_mode = false;
+		}
+	}
+
+	/*----------------------------------------------------------------------------------*/
+
+#ifdef DEBUG_MODE
+	void controlsText() {
+		if (ImGui::CollapsingHeader("Controls")) {
+
+			ImGui::TextWrapped("- 'W' = Move Forward");
+			ImGui::TextWrapped("- 'A' = Move Left");
+			ImGui::TextWrapped("- 'S' = Move Backward");
+			ImGui::TextWrapped("- 'D' = Move Right");
+			ImGui::TextWrapped("\n");
+			ImGui::TextWrapped("- 'Escape' = Quit game");
+			ImGui::TextWrapped("\n");
+			ImGui::TextWrapped("- 'Left Shift' = Toggle outline and fill mode");
+			ImGui::TextWrapped("\n");
+			ImGui::TextWrapped("- '0 (Zero)' = Hold to disbale all other input methods / controls.");
+			ImGui::TextWrapped("\n");
+		}
+	}
+
+	/*------------------------------------------------------------*/
+
+	void aboutText() {
+		if (ImGui::CollapsingHeader("About")) {
+
+			ImGui::TextWrapped("This is a game engine which is currently being developed in C++ and OpenGL.");
+			ImGui::TextWrapped("\n");
+			ImGui::TextWrapped("Devloper: Isam Ilyas");
+			ImGui::TextWrapped("\n");
+			ImGui::TextWrapped("To learn more please visit: ");
+			ImGui::TextWrapped("https://github.com/Isam-Ilyas29/OpenGL-Graphics-Engine");
+			ImGui::TextWrapped("\n");
+		}
+	}
+#endif
+
+	/*----------------------------------------------------------------------------------*/
+
+} // namespace collapsingHeader
+
+#ifdef DEBUG_MODE
+bool isMouseOverUI() {
+	if (ImGui::IsWindowHovered()) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
 #endif

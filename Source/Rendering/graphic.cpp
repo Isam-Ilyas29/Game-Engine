@@ -16,7 +16,7 @@ namespace context {
 				std::cerr << "Failed to initialize GLAD" << std::endl;
 				return false;
 			}
-			glEnable(GL_DEPTH_TEST);
+			GLAD_CHECK_ERROR(glEnable(GL_DEPTH_TEST));
 			return true;
 		}
 	}
@@ -50,47 +50,47 @@ void VertexData::setEBO(unsigned int EBO) {
 
 VertexData::~VertexData() {
 	if (mVBO != 0) {
-		glDeleteBuffers(1, &mVBO);
+		GLAD_CHECK_ERROR(glDeleteBuffers(1, &mVBO));
 	}
 	if (mEBO != 0) {
-		glDeleteBuffers(1, &mEBO);
+		GLAD_CHECK_ERROR(glDeleteBuffers(1, &mEBO));
 	}
 	if (mVAO != 0) {
-		glDeleteVertexArrays(1, &mVAO);
+		GLAD_CHECK_ERROR(glDeleteVertexArrays(1, &mVAO));
 	}
 }
 
-void VertexData::bindVBO(const std::vector<f32>& vertices, unsigned int VBO) {		// Accepts Vertices
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);											
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices.front(), GL_STATIC_DRAW);
+void VertexData::bindVBO(const std::vector<f32>& vertices, unsigned int VBO) {		// Accepts Vectors
+	GLAD_CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, VBO));											
+	GLAD_CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices.front(), GL_STATIC_DRAW));
 }
 void VertexData::bindVBO(f32 vertices[], size_t size, unsigned int VBO) {				// Accepts Arrays
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);									   
-	glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+	GLAD_CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, VBO));
+	GLAD_CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW));
 }
 void VertexData::bindEBO(const std::vector<u8>& indices, unsigned int EBO) {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices.front(), GL_STATIC_DRAW);
+	GLAD_CHECK_ERROR(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO));
+	GLAD_CHECK_ERROR(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices.front(), GL_STATIC_DRAW));
 }
 void VertexData::bindVAO(unsigned int VAO) {
-	glBindVertexArray(VAO);
+	GLAD_CHECK_ERROR(glBindVertexArray(VAO));
 }
 
 // ATTRIBUTES
 
 void VertexData::positionAttrib(unsigned int location, size_t stride) {
-	glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
-	glEnableVertexAttribArray(location);
+	GLAD_CHECK_ERROR(glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, stride, (void*)0));
+	GLAD_CHECK_ERROR(glEnableVertexAttribArray(location));
 }
 
 void VertexData::colourAttrib(unsigned int location, size_t stride) {
-	glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(location);
+	GLAD_CHECK_ERROR(glVertexAttribPointer(location, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float))));
+	GLAD_CHECK_ERROR(glEnableVertexAttribArray(location));
 }
 
 void VertexData::textureAttrib(unsigned int location, size_t stride) {
-	glVertexAttribPointer(location, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(location);
+	GLAD_CHECK_ERROR(glVertexAttribPointer(location, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float))));
+	GLAD_CHECK_ERROR(glEnableVertexAttribArray(location));
 }
 
 
@@ -122,9 +122,9 @@ const glm::mat4 Transform::getModel() const {
 
 // Set background colour
 
-void setBackgroundColour(f64 r, f64 g, f64 b, f64 a) {
-	glClearColor(r, g, b, a);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+void setBackgroundColour(f32 r, f32 g, f32 b, f32 a) {
+	GLAD_CHECK_ERROR(glClearColor(r, g, b, a));
+	GLAD_CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 }
 
 /*----------------------------------------------------------------------------------*/

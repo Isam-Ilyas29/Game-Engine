@@ -1,58 +1,60 @@
+#include "Core/std_types.hpp"
+
 #include <imgui.h>
 #include "Rendering/ImGUI/imgui_impl_glfw.hpp"
 #include "Rendering/ImGUI/imgui_impl_opengl3.hpp"
 
-#include "Utils/miscellaneous.hpp"
+#include <memory>
+
+#include "Core/utils.hpp"
 #include "Rendering/graphic.hpp"
 #include "Rendering/texture.hpp"
 #include "Input/input_responder.hpp"
 
 
+namespace collapsingHeader {
+
+	class TextureUI {
+	private:
+		static const char* mCurrentItem;
+		static u8 mSelectedValue;
+		static bool mApplyTexture;
+		static bool mApplyTransparentOverlay;
+
+	public:
 #ifdef DEBUG_MODE
-	namespace collapsingHeader {
+		void display(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture);
+#endif
+		void process(const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture);
+	};
 
-		void texture(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const std::shared_ptr<Texture> error_texture, const std::shared_ptr<Texture> transparent_texture, bool editor);
+	class ColourUI {
+	public:
+		static ImVec4 colour;
+		static bool apply_background;
 
-		class TextureUI {
-		private:
-			std::vector<std::string> mTextures;
-			std::vector<std::unique_ptr<Texture>> mLoadedTextures;
-			std::shared_ptr<Texture> mErrorTexture;
-			std::shared_ptr<Texture> mTransparentTexture;
+#ifdef DEBUG_MODE
+		void display();
+#endif
+		void process();
+	};
 
-			const char* mCurrentItem;
-			u8 mSelectedValue;
+	class MiscellaneousUI {
+	public:
+		static bool mWireframeModeChecked;
 
-		public:
-			//TextureUI(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const std::shared_ptr<Texture> error_texture, const std::shared_ptr<Texture> transparent_texture);
+#ifdef DEBUG_MODE
+		void display();
+#endif
+		void process();
+	};
 
-			static bool mApplyTexture;
-			static bool mApplyTransparent;
+#ifdef DEBUG_MODE
+	void controlsText();
+	void aboutText();
+#endif
+}
 
-			void display();
-			void process();
-		};
-
-		class ColourUI {
-		public:
-			static ImVec4 colour;
-			static bool apply_background;
-
-			void display();
-			void process();
-		};
-
-		class MiscellaneousUI {
-		public:
-			static bool mWireframeModeChecked;
-
-			void display();
-			void process();
-		};
-
-		void controlsText();
-		void aboutText();
-	}
-
-	bool isMouseOverUI();
+#ifdef DEBUG_MODE
+bool isMouseOverUI();
 #endif
