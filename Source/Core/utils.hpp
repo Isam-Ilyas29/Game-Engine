@@ -10,11 +10,19 @@
 #include <filesystem>
 
 
-extern bool wireframe_mode;
+/*----------------------------------------------------------------------------------*/
+
+enum class PolygonMode {
+	FILL,
+	LINE,
+	POINT
+};
+
+extern PolygonMode polygon_mode;
 
 /*----------------------------------------------------------------------------------*/
 
-struct framerate {
+struct Framerate {
 	Time elapsed;
 	u16 frames = 0;
 	u16 fps = 0;

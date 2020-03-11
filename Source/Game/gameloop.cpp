@@ -3,6 +3,7 @@
 #include "Core/time.hpp"
 #include "Core/rng.hpp"
 #include "Context/context.hpp"
+#include "Rendering/ImGUI/imgui_theme.hpp"
 #include "Rendering/graphic.hpp"
 #include "Rendering/shader.hpp"
 #include "Rendering/texture.hpp"
@@ -35,6 +36,7 @@ bool gameloop::run(int argc, char* argv[]) {
 
 #ifdef DEBUG_MODE
 	context::imguiContext();
+	themeGrey();
 #endif
 
 	/*----------------------------------------------------------------------------------*/
@@ -183,7 +185,6 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		bool should_isolte = false;
 
-		/*----------------------------------------------------------------------------------*/
 
 		// Editor 
 
@@ -191,12 +192,17 @@ bool gameloop::run(int argc, char* argv[]) {
 		collapsingHeader::MiscellaneousUI miscellaneous;
 		collapsingHeader::ColourUI colour;
 
+		// Polygon Mode
+
+		std::array polygon_modes = { GL_FILL, GL_LINE, GL_POINT };
+
 		/*----------------------------------------------------------------------------------*/
 
 		// Game loop
 		while (context::window::isClosed(context::window::getWindow()) == false) {
 
-			GLAD_CHECK_ERROR(glPolygonMode(GL_FRONT_AND_BACK, wireframe_mode ? GL_LINE : GL_FILL));
+			int pm = polygon_modes[static_cast<u8>(polygon_mode)];
+			GLAD_CHECK_ERROR(glPolygonMode(GL_FRONT_AND_BACK, pm));
 
 			// Initialise DT
 			Time delta_time = Time::now() - last_frame;
@@ -264,6 +270,7 @@ bool gameloop::run(int argc, char* argv[]) {
 
 			ImGui::End();
 #else
+			texture.process(std::move(loaded_textures), error_texture, transparent1);
 			colour.process();
 			miscellaneous.process();
 #endif

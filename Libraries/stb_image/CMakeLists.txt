@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.13)
 project(stb_image C)
 
+# Unzip stb_image
+unzip(stb_image.zip "${CMAKE_CURRENT_SOURCE_DIR}")
+
+# Set sbt_image target
 set(SOURCES
     stb_image.h
     stb_image.c

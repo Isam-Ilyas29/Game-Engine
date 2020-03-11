@@ -72,12 +72,11 @@ void keyboardResponder(Camera& camera) {
 
 	/*-----------------------------------------*/
 
-	bool l_shift_PRESSED;
-	l_shift_PRESSED = input::isPressed(GLFW_KEY_LEFT_SHIFT);
+	bool l_shift_HELD;
+	l_shift_HELD = input::isHeld(GLFW_KEY_LEFT_SHIFT);
 
-	if (l_shift_PRESSED) {
-		std::cout << "lShift Pressed!" << std::endl;
-		wireframe_mode = !wireframe_mode;
+	if (l_shift_HELD) {
+		polygon_mode = PolygonMode::LINE;
 	}
 
 	/*-----------------------------------------*/

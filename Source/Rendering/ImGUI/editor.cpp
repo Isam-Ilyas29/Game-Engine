@@ -149,26 +149,22 @@ namespace collapsingHeader {
 
 	/*------------------------------------------------------------*/
 
-	bool MiscellaneousUI::mWireframeModeChecked;
+	int MiscellaneousUI::mSelectedItem;
+	const char* MiscellaneousUI::mItems[] = { "Fill", "Line", "Point" };
 
 #ifdef DEBUG_MODE
 	void MiscellaneousUI::display() {
 		if (ImGui::CollapsingHeader("Miscellaneous")) {
 
 			// Polygon toggle checkbox: 
-			ImGui::TextWrapped("Polygon Toggle: ");
-			ImGui::Checkbox("###polygon_mode_checkbox1", &mWireframeModeChecked);
+			ImGui::TextWrapped("\nPolygon Mode: ");
+			ImGui::ListBox("###polygon_mode1", &mSelectedItem, mItems, IM_ARRAYSIZE(mItems), 3);
 			ImGui::Text("\n");
 		}
 	}
 #endif
 	void MiscellaneousUI::process() {
-		if (mWireframeModeChecked) {
-			wireframe_mode = true;
-		}
-		else {
-			wireframe_mode = false;
-		}
+		polygon_mode = static_cast<PolygonMode>(mSelectedItem);
 	}
 
 	/*----------------------------------------------------------------------------------*/

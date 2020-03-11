@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.13)
 project(glad C)
 
+# Unzip glad
+unzip(glad.zip "${CMAKE_CURRENT_SOURCE_DIR}")
+
+# Set glad target
 set(SOURCES
     include/glad/glad.h
     include/KHR/khrplatform.h

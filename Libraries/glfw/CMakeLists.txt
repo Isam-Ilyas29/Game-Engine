@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.0)
 
 project(GLFW C)
 
+# Unzip glfw
+unzip(glfw.zip "${CMAKE_CURRENT_SOURCE_DIR}")
+
+# Set glfw target
 set(CMAKE_LEGACY_CYGWIN_WIN32 OFF)
 
 if (POLICY CMP0054)

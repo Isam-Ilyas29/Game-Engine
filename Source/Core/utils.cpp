@@ -3,12 +3,12 @@
 
 /*----------------------------------------------------------------------------------*/
 
-bool wireframe_mode = false;
+PolygonMode polygon_mode;
 
 /*----------------------------------------------------------------------------------*/
 
 namespace {
-	framerate f;
+	Framerate f;
 }
 
 u16 getFramesPerSecond(Time dt) {

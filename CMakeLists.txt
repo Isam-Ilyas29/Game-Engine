@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.13)
 set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "")
 project(GladApp CXX)
 
+# Include
+include(Utils/CMake/utils.cmake)
+
+# Libraries
 add_subdirectory(Libraries/glfw)
 add_subdirectory(Libraries/glad)
 add_subdirectory(Libraries/stb_image)

@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.13)
 project(imgui CXX)
 
+# Unzip imgui
+unzip(imgui.zip "${CMAKE_CURRENT_SOURCE_DIR}")
+
+# Set imgui target
 add_library(${PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}/imgui.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/imgui_demo.cpp

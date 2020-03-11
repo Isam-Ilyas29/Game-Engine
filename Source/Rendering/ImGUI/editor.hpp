@@ -5,6 +5,7 @@
 #include "Rendering/ImGUI/imgui_impl_opengl3.hpp"
 
 #include <memory>
+#include <array>
 
 #include "Core/utils.hpp"
 #include "Rendering/graphic.hpp"
@@ -41,7 +42,8 @@ namespace collapsingHeader {
 
 	class MiscellaneousUI {
 	public:
-		static bool mWireframeModeChecked;
+		static int mSelectedItem;
+		static const char* mItems[];
 
 #ifdef DEBUG_MODE
 		void display();

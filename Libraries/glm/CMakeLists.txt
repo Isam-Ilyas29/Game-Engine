@@ -5,6 +5,10 @@ set(GLM_VERSION "0.9.9")
 project(glm VERSION ${GLM_VERSION} LANGUAGES CXX)
 enable_testing()
 
+# Unzip glm
+unzip(glm.zip "${CMAKE_CURRENT_SOURCE_DIR}")
+
+# Set glm target
 add_subdirectory(glm)
 add_library(glm::glm ALIAS glm)
 
