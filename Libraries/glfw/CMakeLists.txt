@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 
 project(GLFW C)
 
-# Unzip glfw
+# Unzip glfw [CUSTOM CODE]
 unzip(glfw.zip "${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Set glfw target

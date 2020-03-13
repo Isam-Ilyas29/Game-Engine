@@ -11,6 +11,7 @@ add_subdirectory(Libraries/glad)
 add_subdirectory(Libraries/stb_image)
 add_subdirectory(Libraries/glm)
 add_subdirectory(Libraries/imgui)
+add_subdirectory(Libraries/fmt)
 
 # Disable GLFW compiler warnings
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
@@ -65,6 +66,7 @@ target_link_libraries(${PROJECT_NAME}
     stb_image
     glm
     imgui
+	fmt
 )
 
 # Windows + Linux Support
