@@ -76,7 +76,7 @@ void keyboardResponder(Camera& camera) {
 	l_shift_HELD = input::isHeld(GLFW_KEY_LEFT_SHIFT);
 
 	if (l_shift_HELD) {
-		polygon_mode = PolygonMode::LINE;
+		polygon_mode = polygonMode::LINE;
 	}
 
 	/*-----------------------------------------*/

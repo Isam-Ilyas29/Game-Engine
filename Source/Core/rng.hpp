@@ -83,7 +83,7 @@ private:
     std::vector<s64> seeds;
 
 public:
-    RandomBatch(u16 amount);
+    RandomBatch(s32 amount);
 
     int intInRange(int lower_bound, int upper_bound);
     float floatInRange(float lower_bound, float upper_bound);

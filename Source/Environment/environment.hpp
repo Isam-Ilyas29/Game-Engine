@@ -5,7 +5,8 @@
 
 
 namespace environment {
-    extern std::filesystem::path exeDirectory;
-    extern std::filesystem::path resourcesPath;
-    std::filesystem::path ResourcePath(std::filesystem::path id);
+    extern std::filesystem::path exePath;
+    extern std::filesystem::path resourcePath;
+
+    std::filesystem::path getResourcePath(std::filesystem::path id);
 }

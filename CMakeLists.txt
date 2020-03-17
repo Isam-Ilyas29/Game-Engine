@@ -66,7 +66,7 @@ target_link_libraries(${PROJECT_NAME}
     stb_image
     glm
     imgui
-	fmt
+    fmt
 )
 
 # Windows + Linux Support

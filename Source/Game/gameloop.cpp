@@ -1,5 +1,6 @@
 #include "Game/gameloop.hpp"
 
+#include "Core/logger.hpp"
 #include "Core/time.hpp"
 #include "Core/rng.hpp"
 #include "Context/context.hpp"
@@ -11,12 +12,14 @@
 #include "Input/input_responder.hpp"
 #include "Core/utils.hpp"
 
+#include <fmt/format.h>
+
 
 bool gameloop::run(int argc, char* argv[]) {
 
 	std::filesystem::path exeFile = argv[0];
-	environment::exeDirectory = exeFile.parent_path();
-	environment::resourcesPath = environment::exeDirectory.parent_path() / "Resources";
+	environment::exePath = exeFile.parent_path();
+	environment::resourcePath = environment::exePath.parent_path() / "Resources";
 
 	/*----------------------------------------------------------------------------------*/
 
@@ -24,9 +27,13 @@ bool gameloop::run(int argc, char* argv[]) {
 
 	context::initialiseGLFW();
 
-	bool success = context::window::setupWindow("My Game", 600, 450);
+	std::string name = "My Game Engine";  u16 width = 600; u16 height = 450;
+	bool success = context::window::setupWindow(name, width, 450);
 	if (!success) {
 		return false;
+	}
+	else {
+		log(logType::INFO , fmt::format("WINDOW | Window With Properties (\"{}\", {}, {}) Successfully Created", name, width, height));
 	}
 
 	success = context::graphics::initialiseGraphics();
@@ -42,7 +49,7 @@ bool gameloop::run(int argc, char* argv[]) {
 	/*----------------------------------------------------------------------------------*/
 
 	{
-		Shader shader(environment::ResourcePath("Shaders/shader.vs"), environment::ResourcePath("Shaders/shader.fs"));
+		Shader shader(environment::getResourcePath("Shaders/shader.vs"), environment::getResourcePath("Shaders/shader.fs"));
 
 		/*----------------------------------------------------------------------------------*/
 
@@ -130,15 +137,15 @@ bool gameloop::run(int argc, char* argv[]) {
 		// Textures
 
 		// Dropdown list of .txt file which contains all texture paths
-		std::vector<std::string> textures = readFile(environment::ResourcePath("DirectoryReader/textures_list.txt"));
+		std::vector<std::string> textures = readFile(environment::getResourcePath("DirectoryReader/textures_list.txt"));
 
 		// Initialise texture objects
-		Texture transparent1(environment::ResourcePath("Textures/T_Transparent/graffiti_texture1.png"));
+		Texture transparent1(environment::getResourcePath("Textures/T_Transparent/graffiti_texture1.png"));
 
-		auto texture1 = std::make_unique<Texture>(environment::ResourcePath("Textures/T_Metal/metal_bricks1.jpg"));
-		auto texture2 = std::make_unique<Texture>(environment::ResourcePath("Textures/T_Wood/wood_planks1.jpg"));
+		auto texture1 = std::make_unique<Texture>(environment::getResourcePath("Textures/T_Metal/metal_bricks1.jpg"));
+		auto texture2 = std::make_unique<Texture>(environment::getResourcePath("Textures/T_Wood/wood_planks1.jpg"));
 
-		Texture error_texture(environment::ResourcePath("Textures/error_texture1.png"));
+		Texture error_texture(environment::getResourcePath("Textures/error_texture1.png"));
 
 		// Add all textures to vector
 		std::vector<std::unique_ptr<Texture>> loaded_textures;
@@ -188,6 +195,7 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		// Editor 
 
+		collapsingHeader::LoggerUI logger;
 		collapsingHeader::TextureUI texture;
 		collapsingHeader::MiscellaneousUI miscellaneous;
 		collapsingHeader::ColourUI colour;
@@ -197,6 +205,16 @@ bool gameloop::run(int argc, char* argv[]) {
 		std::array polygon_modes = { GL_FILL, GL_LINE, GL_POINT };
 
 		/*----------------------------------------------------------------------------------*/
+
+		log(logType::WARNING, "this is a warningoh no!");
+		log(logType::ERROR, "uh oh error he please remove me.");
+		log(logType::WARNING, "bad warnign");
+		log(logType::WARNING, "oii get warned kid");
+		log(logType::ERROR, "ehhehe errro ha.");
+		log(logType::INFO, "info read this now ");
+		log(logType::INFO, "info read this now again : )");
+		log(logType::WARNING, "oii get warned again kid, bad!");
+		log(logType::INFO, ": ( info here < - !!");
 
 		// Game loop
 		while (context::window::isClosed(context::window::getWindow()) == false) {
@@ -218,19 +236,23 @@ bool gameloop::run(int argc, char* argv[]) {
 			if (ImGui::BeginTabBar("###tab_bar1")) {
 
 				if (ImGui::BeginTabItem("Debug###debug1")) {
+					ImGui::TextWrapped("\n");
+
 					texture.process(std::move(loaded_textures), error_texture, transparent1);
 					colour.process();
 					miscellaneous.process();
 
-					ImGui::TextWrapped("\n");
-
-					ImGui::TextWrapped("FPS: %d", getFramesPerSecond(delta_time));
+					collapsingHeader::fpsText(delta_time);
+					logger.display();
+					logger.process();
 
 					ImGui::EndTabItem();
 				}
 
 				if (ImGui::BeginTabItem("Editor###editor1")) {
 					ImGui::TextWrapped("\n");
+
+					logger.process();
 
 					texture.display(textures, std::move(loaded_textures), error_texture, transparent1);
 					texture.process(std::move(loaded_textures), error_texture, transparent1);
@@ -243,11 +265,12 @@ bool gameloop::run(int argc, char* argv[]) {
 				}
 
 				if (ImGui::BeginTabItem("Help###help1")) {
+					ImGui::TextWrapped("\n");
+
+					logger.process();
 					texture.process(std::move(loaded_textures), error_texture, transparent1);
 					colour.process();
 					miscellaneous.process();
-
-					ImGui::TextWrapped("\n");
 
 					collapsingHeader::controlsText();
 					collapsingHeader::aboutText();
@@ -258,6 +281,8 @@ bool gameloop::run(int argc, char* argv[]) {
 				ImGui::EndTabBar();
 			}
 			else {
+				logger.display();
+				logger.process();
 				texture.display(textures, std::move(loaded_textures), error_texture, transparent1);
 				texture.process(std::move(loaded_textures), error_texture, transparent1);
 				colour.display();
@@ -266,7 +291,7 @@ bool gameloop::run(int argc, char* argv[]) {
 				miscellaneous.process();
 			}
 
-			should_isolte = isMouseOverUI();
+			should_isolte = isMouseOverGUI();
 
 			ImGui::End();
 #else
@@ -294,10 +319,6 @@ bool gameloop::run(int argc, char* argv[]) {
 				GLAD_CHECK_ERROR(glBindVertexArray(VAO));
 				GLAD_CHECK_ERROR(glDrawArrays(GL_TRIANGLES, 0, 36));
 			}
-
-			// Unbind all texture units 
-			std::vector<u16> texture_units = { 0, 1, 2 };
-			Texture::unbind(texture_units);
 
 
 #ifdef DEBUG_MODE

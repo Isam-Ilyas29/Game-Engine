@@ -1,15 +1,22 @@
 #include "Rendering/texture.hpp"
 
+#include <fmt/format.h>
+
+#include "Core/logger.hpp"
+#include "Environment/environment.hpp"
+
+#include <string>
+
 
 /*----------------------------------------------------------------------------------*/
 
 Texture::Texture(const std::filesystem::path& path)
-	: mValid(false), mWidth(0), mHeight(0), mChannels(0), mData(nullptr), mInternalFormat(0), mFormat(0), mID(0) {
+	: mValid(false), mWidth(0), mHeight(0), mChannels(0), mData(nullptr), mInternalFormat(0), mFormat(0), mID(0), mPath(path) {
 
 	stbi_set_flip_vertically_on_load(true);
 
-	unsigned char* local_data = nullptr;
-	local_data = stbi_load(path.string().c_str(), &mWidth, &mHeight, &mChannels, 0);
+	u8* local_data = nullptr;
+	local_data = stbi_load(mPath.string().data(), &mWidth, &mHeight, &mChannels, 0);
 
 	switch (mChannels) {
 	case 3:
@@ -23,13 +30,13 @@ Texture::Texture(const std::filesystem::path& path)
 		mValid = true;
 		break;
 	default:
-		std::cerr << "ERROR::TEXTURE::ONLY_SUPPORT_RGB_&_RGBA" << "  |  " << path.filename() << " IS INVALID." << std::endl;
+		log(logType::ERROR, fmt::format("TEXTURE ERROR | Only Support RGB & RGBA | {} Is Invalid", mPath.filename().generic_string()));
 		mValid = false;
 		break;
 	}
 
 	if (!(mInternalFormat && mFormat)) {
-		std::cerr << "ERROR::TEXTURE::TYPE_NOT_SUPPORTED" << std::endl;
+		log(logType::ERROR, fmt::format("TEXTURE ERROR | Type Not Supported | {} Is Invalid", mPath.filename().generic_string()));
 		mValid = false;
 	}
 
@@ -44,7 +51,7 @@ Texture::~Texture() {
 	GLAD_CHECK_ERROR(glDeleteTextures(1, &mID));
 }
 
-GLuint Texture::dataToTextureID(unsigned char* data, int width, int height, GLuint internal_format, GLuint format) {
+GLuint Texture::dataToTextureID(u8* data, int width, int height, GLuint internal_format, GLuint format) {
 	GLuint textureID;
 
 	GLAD_CHECK_ERROR(glGenTextures(1, &textureID));
@@ -59,11 +66,16 @@ GLuint Texture::dataToTextureID(unsigned char* data, int width, int height, GLui
 		GLAD_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, GL_UNSIGNED_BYTE, data));
 		GLAD_CHECK_ERROR(glGenerateMipmap(GL_TEXTURE_2D));
 
+		auto base = std::filesystem::path{"C:/Users/ilsai/Documents/OpenGL/GladApp/Resources/"};
+		auto relative = std::filesystem::relative(this->mPath, base);
+
+		log(logType::INFO, fmt::format("TEXTURE | Successfully Loaded {} | Width: {}, Height: {}, Channels: {}", relative.generic_string(), this->mWidth, this->mHeight, this->mChannels));
+
 		stbi_image_free(data);
 		data = nullptr;
 	}
 	else {
-		std::cerr << "Failed to load texture." << std::endl;
+		log(logType::INFO, "TEXTURE ERROR | Failed To Load Texture");
 	}
 
 	return textureID;
@@ -74,18 +86,11 @@ void Texture::bind(u16 tex_unit) const {
 	GLAD_CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + tex_unit));
 	GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, getID()));
 }
-void Texture::unbind(std::vector<u16> tex_units) {
-	for (size_t i = 0; i < tex_units.size(); i++) {
-		GLAD_CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + i));
-		GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
-	}
-}
 
 
 bool Texture::isValid() const {
 	return mValid;
 }
-
 unsigned char* Texture::getData() const {
 	return mData;
 }

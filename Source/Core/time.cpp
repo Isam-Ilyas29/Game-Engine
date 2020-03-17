@@ -1,10 +1,10 @@
 #include "Core/time.hpp"
 
 
-Time Time::setMilliseconds(s32 milli_seconds) {
+Time Time::milliseconds(s32 milli_seconds) {
 	return Time(s64(milli_seconds) * 1000);
 }
-Time Time::setSeconds(f32 seconds) {
+Time Time::seconds(f32 seconds) {
 	seconds = seconds * 1000.0f * 1000.0f;
 	return Time(s32(seconds));
 }

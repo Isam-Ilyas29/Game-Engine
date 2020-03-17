@@ -35,7 +35,7 @@ namespace context {
 	} while (0);								
 
 
-void gladCheckError(const char* file, u32 line_number);
+void gladCheckError(std::filesystem::path file, u32 line_number);
 
 /*----------------------------------------------------------------------------------*/
 

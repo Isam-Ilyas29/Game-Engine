@@ -12,8 +12,6 @@
 
 namespace context {
 	void initialiseGLFW();
-	bool initialiseGlad();
-
 	void glfwContext();
 
 	void keyboardContext(GLFWwindow* window, int key, int scancode, int action, int mods); 
@@ -28,7 +26,7 @@ namespace context {
 #endif
 
 	namespace window {
-		bool setupWindow(std::string name, u16 width, u16 height);
+		bool setupWindow(std::string_view name, u16 width, u16 height);
 		void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
 		void closeWindow();

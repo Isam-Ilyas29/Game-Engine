@@ -1,9 +1,50 @@
 #include "Rendering/ImGUI/editor.hpp"
 
+#include "Core/logger.hpp"
+#include "Context/context.hpp"
+
 
 namespace collapsingHeader {
 
 	/*----------------------------------------------------------------------------------*/
+
+	/*------------------------------------------------------------*/
+
+#ifdef DEBUG_MODE
+	void LoggerUI::display() {
+		if (ImGui::CollapsingHeader("Log")) {
+			
+			ImGui::Text("\n");
+
+			if (ImGui::Button("View log###view_log1")) {
+				setLogWindow(!isLogWindowOpened());
+			}
+
+			ImGui::Text("\n");
+		}
+	}
+	void LoggerUI::process() {
+		if (isLogWindowOpened()) {
+			// Set window size and pos
+			ImGui::SetNextWindowSize(ImVec2(0.34f * context::window::getWidth(), 0.3476f * context::window::getHeight()), ImGuiCond_Appearing);
+			ImGui::SetNextWindowPos(ImVec2(context::window::getWidth() - (context::window::getWidth() * 0.345f), 8.f), ImGuiCond_Appearing);
+
+			ImGui::Begin("Log###log1");
+
+			std::deque<std::string> gui_logs = getLog();
+			std::vector<logType> gui_colours = getColour();
+
+			//  Output log onto window
+			for (size_t i = 0; i < gui_logs.size(); i++) {
+				ImGui::PushStyleColor(ImGuiCol_Text, setLogTextColour(gui_colours[i]));
+				ImGui::TextWrapped("%s", gui_logs[i].data());
+				ImGui::PopStyleColor();
+			}
+
+			ImGui::End();
+		}
+	}
+#endif
 
 	/*------------------------------------------------------------*/
 
@@ -164,12 +205,25 @@ namespace collapsingHeader {
 	}
 #endif
 	void MiscellaneousUI::process() {
-		polygon_mode = static_cast<PolygonMode>(mSelectedItem);
+		polygon_mode = static_cast<polygonMode>(mSelectedItem);
 	}
 
 	/*----------------------------------------------------------------------------------*/
 
 #ifdef DEBUG_MODE
+
+	void fpsText(Time delta_time) {
+		if (ImGui::CollapsingHeader("Information")) {
+
+			ImGui::TextWrapped("\n");
+			ImGui::TextWrapped("FPS: %d", getFramesPerSecond(delta_time));
+
+			ImGui::Text("\n");
+		}
+	}
+
+	/*------------------------------------------------------------*/
+
 	void controlsText() {
 		if (ImGui::CollapsingHeader("Controls")) {
 
@@ -208,8 +262,8 @@ namespace collapsingHeader {
 } // namespace collapsingHeader
 
 #ifdef DEBUG_MODE
-bool isMouseOverUI() {
-	if (ImGui::IsWindowHovered()) {
+bool isMouseOverGUI() {
+	if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)) {
 		return true;
 	}
 	else {

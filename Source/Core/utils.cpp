@@ -1,9 +1,13 @@
 #include "Core/utils.hpp"
 
+#include "Core/logger.hpp"
+
+#include <fmt/format.h>
+
 
 /*----------------------------------------------------------------------------------*/
 
-PolygonMode polygon_mode;
+polygonMode polygon_mode;
 
 /*----------------------------------------------------------------------------------*/
 
@@ -16,13 +20,24 @@ u16 getFramesPerSecond(Time dt) {
 
 	++f.frames;
 
-	if (f.elapsed >= Time::setSeconds(1.0f)) {
+	if (f.elapsed >= Time::seconds(1.f)) {
 		f.fps = f.frames;
 		f.frames = 0;
 		f.elapsed = {};
 	}
 
 	return f.fps;
+}
+
+/*----------------------------------------------------------------------------------*/
+
+std::string getCurrentTime() {
+	std::time_t time = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
+	std::string buffer(128, '\0');
+	buffer.resize(std::strftime(buffer.data(), buffer.size(), "%Y-%m-%d %X", std::localtime(&time)));
+
+	return buffer;
 }
 
 /*----------------------------------------------------------------------------------*/
@@ -35,7 +50,7 @@ std::vector<std::string> readFile(std::filesystem::path path) {
 
 	// Check if object is valid
 	if (!file) {
-		std::cerr << "Cannot open " << path << std::endl;
+		log(logType::ERROR, fmt::format("FILE | Cannot Open {}", path.generic_string()));
 		return data;
 	}
 

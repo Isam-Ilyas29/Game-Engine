@@ -1,12 +1,13 @@
 #include "Context/context.hpp"
 
 #include <glad/glad.h>
-
 #include <imgui.h>
 #include "Rendering/ImGUI/imgui_impl_glfw.hpp"
 #include "Rendering/ImGUI/imgui_impl_opengl3.hpp"
+#include <fmt/format.h>
 
 #include "Input/input_responder.hpp"
+#include "Core/logger.hpp"
 
 
 /*----------------------------------------------------------------------------------*/
@@ -23,7 +24,7 @@ namespace {
 	}
 	bool windowVerifier(GLFWwindow* window) {
 		if (window == NULL) {
-			std::cerr << "Failed to create GLFW window" << std::endl;
+			log(logType::ERROR, "Failed to create GLFW window");
 			glfwTerminate();
 			return false;
 		}
@@ -40,17 +41,9 @@ namespace context {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	}
 
-	bool initialiseGlad() {
-		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-			std::cerr << "Failed to initialize GLAD" << std::endl;
-			return false;
-		}
-		glEnable(GL_DEPTH_TEST);
-		return true;
+		log(logType::INFO, "CONTEXT | GLFW Successfully Initialised");
 	}
-
 
 	void glfwContext() {
 		glfwSwapInterval(1);
@@ -81,7 +74,9 @@ namespace context {
 		ImGui::CreateContext();
 
 		ImGui_ImplGlfw_InitForOpenGL(::window, true);
-		ImGui_ImplOpenGL3_Init("#version 330 core");
+		ImGui_ImplOpenGL3_Init("#version 450 core");
+
+		log(logType::INFO, "CONTEXT | ImGui Successfully Initialised");
 	}
 	void createImguiWindow(std::string name) {
 		// Feed input to imGUI, start new frame
@@ -89,8 +84,8 @@ namespace context {
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		ImGui::SetNextWindowSize(ImVec2(144, 157.5), ImGuiCond_Appearing);
-		ImGui::SetNextWindowPos(ImVec2(8, 8), ImGuiCond_Appearing);
+		ImGui::SetNextWindowSize(ImVec2(0.24f * ::scr_width, 0.3476f * ::scr_height), ImGuiCond_Appearing);
+		ImGui::SetNextWindowPos(ImVec2(8.f, 8.f), ImGuiCond_Appearing);
 
 		ImGui::Begin(name.data());
 	}
@@ -103,7 +98,7 @@ namespace context {
 
 	namespace window {
 
-		bool setupWindow(std::string name, u16 width, u16 height) {
+		bool setupWindow(std::string_view name, u16 width, u16 height) {
 			::name = name;  ::scr_width = width; ::scr_height = height;
 			::window = glfwCreateWindow(::scr_width, ::scr_height, ::name.data(), NULL, NULL);
 
@@ -117,10 +112,15 @@ namespace context {
 			// Makes sure the viewport matches the new window dimensions
 			glViewport(0, 0, width, height);
 
+			::scr_width = width; ::scr_height = height;
+
 #ifdef DEBUG_MODE
-			ImGui::SetWindowSize("###GUI1", ImVec2(0.24f * width, 0.35f * height));
+			ImGui::SetWindowSize("###GUI1", ImVec2(0.24f * width, 0.3476f * height));
 			ImGui::SetWindowPos("###GUI1", ImVec2(8.f, 8.f));
-#endif
+
+			ImGui::SetWindowSize("###log1", ImVec2(0.34f * width, 0.3476f * height));
+			ImGui::SetWindowPos("###log1", ImVec2(width - (width * 0.345f), 8.f));
+#endif		
 		}   // Whenever the window is resized (by OS or user resize) this callback function executes
 
 		void closeWindow() {
@@ -150,7 +150,10 @@ namespace context {
 
 
 		float aspectRatio() {
-			return (float)::scr_width / (float)::scr_height;
+			if (::scr_width != 0 && ::scr_height != 0) {
+				return (float)::scr_width / (float)::scr_height;
+			}
+			return 1.f;
 		}
 	}
 }

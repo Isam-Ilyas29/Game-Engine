@@ -12,15 +12,19 @@
 
 /*----------------------------------------------------------------------------------*/
 
-enum class PolygonMode {
+// Switch between polygon mode's
+
+enum class polygonMode {
 	FILL,
 	LINE,
 	POINT
 };
 
-extern PolygonMode polygon_mode;
+extern polygonMode polygon_mode;
 
 /*----------------------------------------------------------------------------------*/
+
+// Accurate FPS reader
 
 struct Framerate {
 	Time elapsed;
@@ -32,5 +36,14 @@ u16 getFramesPerSecond(Time dt);
 
 /*----------------------------------------------------------------------------------*/
 
+// Get current timestamp
+
+std::string getCurrentTime();
+
+/*----------------------------------------------------------------------------------*/
+
+// Reads file and returns vector filled with content
+
 std::vector<std::string> readFile(std::filesystem::path path);
  
+/*----------------------------------------------------------------------------------*/

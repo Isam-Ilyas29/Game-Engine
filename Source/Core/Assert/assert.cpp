@@ -1,5 +1,9 @@
 #include "Core/Assert/assert.hpp"
 
+#include "Core/logger.hpp"
+
+#include <fmt/format.h>
+
 
 namespace os {
 	bool isDebuggerAttached() {
@@ -39,9 +43,9 @@ namespace os {
 	}
 
 	void debugBreak() {
-#if defined(LEVK_RUNTIME_MSVC)
+#if _MSC_VER
 		__debugbreak();
-#elif defined(LEVK_RUNTIME_LIBSTDCXX)
+#elif __linux__ || __MINGW32__
 #ifdef SIGTRAP
 		raise(SIGTRAP);
 #endif
@@ -50,23 +54,19 @@ namespace os {
 }
 
 
-void assertMessage(bool predicate, std::string_view message, std::string_view file, u64 line_number) {
+void assertMessage(bool predicate, std::string_view message, std::filesystem::path file, u64 line_number) {
 	if (predicate) {
 		return;
 	}
 
-	std::cerr << '[' << std::filesystem::path(file).generic_string() << ']' << " [" << "Line. " << line_number << ']' << " [ASSERTION FAILED] " << message << std::endl;
+	log(logType::ERROR, fmt::format("ASSERTION FAILED | {} | \"{}\", \"Line. {}\"", message, file.generic_string(), line_number));
 	
 	if (os::isDebuggerAttached()) {
-#if defined(LEVK_OS_WINX)
-		OutputDebugStringA(message.data());
-#endif
 		os::debugBreak();
 	}
 	else {
-#if defined(LEVK_DEBUG)
-		os::debugBreak();
-#endif
+		std::abort();
 	}
+
 	return;
 }

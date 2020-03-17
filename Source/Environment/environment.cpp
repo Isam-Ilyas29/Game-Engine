@@ -2,10 +2,10 @@
 
 
 namespace environment{
-	std::filesystem::path exeDirectory;
-	std::filesystem::path resourcesPath;
-}
+	std::filesystem::path exePath;
+	std::filesystem::path resourcePath;
 
-std::filesystem::path environment::ResourcePath(std::filesystem::path id){
-	return resourcesPath / id;
+	std::filesystem::path environment::getResourcePath(std::filesystem::path id) {
+		return resourcePath / id;
+	}
 }

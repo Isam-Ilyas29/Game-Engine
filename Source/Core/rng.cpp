@@ -19,10 +19,10 @@ auto getGenerator(int seed) {
 
 /*----------------------------------------------------------------------------------*/
 
-RandomBatch::RandomBatch(u16 amount)
-    : mAmount(amount) { 
-
+RandomBatch::RandomBatch(s32 amount) { 
     ASSERT(amount > 0, "RandomBatch amount is not valid.");
+
+    mAmount = amount;
 
     for (size_t i = 0; i < amount; i++) {
         seeds.push_back(NDRNG::intInRange());

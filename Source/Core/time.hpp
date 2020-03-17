@@ -11,8 +11,8 @@ private:
 	std::chrono::microseconds micro_seconds;
 
 public:
-	static Time setMilliseconds(s32 milliSeconds);
-	static Time setSeconds(f32 seconds);
+	static Time milliseconds(s32 milliSeconds);
+	static Time seconds(f32 seconds);
 
 	static Time now();
 

@@ -1,6 +1,11 @@
 #include "Rendering/graphic.hpp"
 
 #include <GLFW/glfw3.h>
+#include <fmt/format.h>
+
+#include "Core/logger.hpp"
+
+#include <string>
 
 
 /*----------------------------------------------------------------------------------*/
@@ -13,10 +18,12 @@ namespace context {
 
 		bool initialiseGraphics() {
 			if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-				std::cerr << "Failed to initialize GLAD" << std::endl;
+				log(logType::ERROR, "CONTEXT | Failed to initialise GLAD");
 				return false;
 			}
 			GLAD_CHECK_ERROR(glEnable(GL_DEPTH_TEST));
+
+			log(logType::INFO, "CONTEXT | glad Successfully Initialised");
 			return true;
 		}
 	}
@@ -26,11 +33,11 @@ namespace context {
 
 // Error handling
 
-void gladCheckError(const char* file, u32 line_number) {
+void gladCheckError(std::filesystem::path file, u32 line_number) {
 	GLenum error_code = glad_glGetError(); /// or glGetError() 
 
 	if (error_code != GL_NO_ERROR) {
-		std::cerr << '[' << std::filesystem::path(file).generic_string() << ']' << " [" << "Line. " << line_number << ']' << " [GLAD ERROR] " << error_code << std::endl;
+		log(logType::ERROR, fmt::format("GLAD ERROR | {} | \"{}\", \"Line. {}\"", error_code, file.generic_string(), line_number));
 	}
 }
 

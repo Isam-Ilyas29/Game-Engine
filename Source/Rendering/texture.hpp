@@ -15,24 +15,25 @@
 class Texture {
 private:
 	int mWidth, mHeight, mChannels;
-	unsigned char* mData;
+	u8* mData;
 	GLenum mInternalFormat, mFormat;
 	GLenum mID;
+	std::filesystem::path mPath;
 	bool mValid;
 
 public:
 	Texture(const std::filesystem::path& path);
-	Texture(const Texture&) = delete;
-	Texture& operator=(const Texture&) = delete;
 	~Texture();
 
-	static GLuint dataToTextureID(unsigned char* data, int width, int height, GLuint internal_format, GLuint type);
+	// Prevents Texture objects from being copied 
+	Texture(const Texture&) = delete;
+	Texture& operator=(const Texture&) = delete;
+
+	GLuint dataToTextureID(u8* data, int width, int height, GLuint internal_format, GLuint type);
 
 	void bind(u16 tex_unit) const;
-	static void unbind(std::vector<u16> tex_units);
 
 	bool isValid() const;
-
 	unsigned char* getData() const;
 	GLuint getID() const;
 	GLuint getFormat() const;

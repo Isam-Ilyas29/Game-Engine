@@ -15,20 +15,30 @@
 
 namespace collapsingHeader {
 
+	// Logger
+	class LoggerUI {
+	public:
+#ifdef DEBUG_MODE
+		void display();
+#endif
+		void process();
+	};
+
+	// Texture
 	class TextureUI {
-	private:
+	public:
 		static const char* mCurrentItem;
 		static u8 mSelectedValue;
 		static bool mApplyTexture;
 		static bool mApplyTransparentOverlay;
 
-	public:
 #ifdef DEBUG_MODE
 		void display(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture);
 #endif
 		void process(const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture);
 	};
 
+	// Colour
 	class ColourUI {
 	public:
 		static ImVec4 colour;
@@ -40,6 +50,7 @@ namespace collapsingHeader {
 		void process();
 	};
 
+	// Miscellaneous
 	class MiscellaneousUI {
 	public:
 		static int mSelectedItem;
@@ -52,11 +63,12 @@ namespace collapsingHeader {
 	};
 
 #ifdef DEBUG_MODE
+	void fpsText(Time delta_time);
 	void controlsText();
 	void aboutText();
 #endif
 }
 
 #ifdef DEBUG_MODE
-bool isMouseOverUI();
+bool isMouseOverGUI();
 #endif
