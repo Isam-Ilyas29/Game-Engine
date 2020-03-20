@@ -4,6 +4,7 @@
 #include <fmt/format.h>
 
 #include "Core/logger.hpp"
+#include "Core/profiler.hpp"
 
 #include <string>
 

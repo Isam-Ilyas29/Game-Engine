@@ -52,6 +52,7 @@ Texture::~Texture() {
 }
 
 GLuint Texture::dataToTextureID(u8* data, int width, int height, GLuint internal_format, GLuint format) {
+
 	GLuint textureID;
 
 	GLAD_CHECK_ERROR(glGenTextures(1, &textureID));
@@ -66,7 +67,7 @@ GLuint Texture::dataToTextureID(u8* data, int width, int height, GLuint internal
 		GLAD_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, GL_UNSIGNED_BYTE, data));
 		GLAD_CHECK_ERROR(glGenerateMipmap(GL_TEXTURE_2D));
 
-		auto base = std::filesystem::path{"C:/Users/ilsai/Documents/OpenGL/GladApp/Resources/"};
+		auto base = std::filesystem::path{ "C:/Users/ilsai/Documents/OpenGL/GladApp/Resources/" };
 		auto relative = std::filesystem::relative(this->mPath, base);
 
 		log(logType::INFO, fmt::format("TEXTURE | Successfully Loaded {} | Width: {}, Height: {}, Channels: {}", relative.generic_string(), this->mWidth, this->mHeight, this->mChannels));

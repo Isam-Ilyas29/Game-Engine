@@ -39,7 +39,7 @@ namespace collapsingHeader {
 	};
 
 	// Colour
-	class ColourUI {
+	class BackgroundColourUI {
 	public:
 		static ImVec4 colour;
 		static bool apply_background;
@@ -50,8 +50,8 @@ namespace collapsingHeader {
 		void process();
 	};
 
-	// Miscellaneous
-	class MiscellaneousUI {
+	// Polygon Mode
+	class PolygonModeUI {
 	public:
 		static int mSelectedItem;
 		static const char* mItems[];

@@ -1,6 +1,7 @@
 #include "Game/gameloop.hpp"
 
 #include "Core/logger.hpp"
+#include "Core/profiler.hpp"
 #include "Core/time.hpp"
 #include "Core/rng.hpp"
 #include "Context/context.hpp"
@@ -8,7 +9,7 @@
 #include "Rendering/graphic.hpp"
 #include "Rendering/shader.hpp"
 #include "Rendering/texture.hpp"
-#include "Rendering/ImGUI/editor.hpp"
+#include "Rendering/ImGUI/gui.hpp"
 #include "Input/input_responder.hpp"
 #include "Core/utils.hpp"
 
@@ -195,26 +196,16 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		// Editor 
 
-		collapsingHeader::LoggerUI logger;
-		collapsingHeader::TextureUI texture;
-		collapsingHeader::MiscellaneousUI miscellaneous;
-		collapsingHeader::ColourUI colour;
+		collapsingHeader::LoggerUI logger_ui;
+		collapsingHeader::TextureUI texture_ui;
+		collapsingHeader::PolygonModeUI polygon_mode_ui;
+		collapsingHeader::BackgroundColourUI colour_ui;
 
 		// Polygon Mode
 
 		std::array polygon_modes = { GL_FILL, GL_LINE, GL_POINT };
 
 		/*----------------------------------------------------------------------------------*/
-
-		log(logType::WARNING, "this is a warningoh no!");
-		log(logType::ERROR, "uh oh error he please remove me.");
-		log(logType::WARNING, "bad warnign");
-		log(logType::WARNING, "oii get warned kid");
-		log(logType::ERROR, "ehhehe errro ha.");
-		log(logType::INFO, "info read this now ");
-		log(logType::INFO, "info read this now again : )");
-		log(logType::WARNING, "oii get warned again kid, bad!");
-		log(logType::INFO, ": ( info here < - !!");
 
 		// Game loop
 		while (context::window::isClosed(context::window::getWindow()) == false) {
@@ -238,13 +229,13 @@ bool gameloop::run(int argc, char* argv[]) {
 				if (ImGui::BeginTabItem("Debug###debug1")) {
 					ImGui::TextWrapped("\n");
 
-					texture.process(std::move(loaded_textures), error_texture, transparent1);
-					colour.process();
-					miscellaneous.process();
+					texture_ui.process(std::move(loaded_textures), error_texture, transparent1);
+					colour_ui.process();
+					polygon_mode_ui.process();
 
 					collapsingHeader::fpsText(delta_time);
-					logger.display();
-					logger.process();
+					logger_ui.display();
+					logger_ui.process();
 
 					ImGui::EndTabItem();
 				}
@@ -252,14 +243,14 @@ bool gameloop::run(int argc, char* argv[]) {
 				if (ImGui::BeginTabItem("Editor###editor1")) {
 					ImGui::TextWrapped("\n");
 
-					logger.process();
+					logger_ui.process();
 
-					texture.display(textures, std::move(loaded_textures), error_texture, transparent1);
-					texture.process(std::move(loaded_textures), error_texture, transparent1);
-					colour.display();
-					colour.process();
-					miscellaneous.display();
-					miscellaneous.process();
+					texture_ui.display(textures, std::move(loaded_textures), error_texture, transparent1);
+					texture_ui.process(std::move(loaded_textures), error_texture, transparent1);
+					colour_ui.display();
+					colour_ui.process();
+					polygon_mode_ui.display();
+					polygon_mode_ui.process();
 
 					ImGui::EndTabItem();
 				}
@@ -267,10 +258,10 @@ bool gameloop::run(int argc, char* argv[]) {
 				if (ImGui::BeginTabItem("Help###help1")) {
 					ImGui::TextWrapped("\n");
 
-					logger.process();
-					texture.process(std::move(loaded_textures), error_texture, transparent1);
-					colour.process();
-					miscellaneous.process();
+					logger_ui.process();
+					texture_ui.process(std::move(loaded_textures), error_texture, transparent1);
+					colour_ui.process();
+					polygon_mode_ui.process();
 
 					collapsingHeader::controlsText();
 					collapsingHeader::aboutText();
@@ -281,14 +272,14 @@ bool gameloop::run(int argc, char* argv[]) {
 				ImGui::EndTabBar();
 			}
 			else {
-				logger.display();
-				logger.process();
-				texture.display(textures, std::move(loaded_textures), error_texture, transparent1);
-				texture.process(std::move(loaded_textures), error_texture, transparent1);
-				colour.display();
-				colour.process();
-				miscellaneous.display();
-				miscellaneous.process();
+				logger_ui.display();
+				logger_ui.process();
+				texture_ui.display(textures, std::move(loaded_textures), error_texture, transparent1);
+				texture_ui.process(std::move(loaded_textures), error_texture, transparent1);
+				colour_ui.display();
+				colour_ui.process();
+				polygon_mode_ui.display();
+				polygon_mode_ui.process();
 			}
 
 			should_isolte = isMouseOverGUI();

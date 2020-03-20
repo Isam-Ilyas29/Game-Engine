@@ -1,4 +1,4 @@
-#include "Rendering/ImGUI/editor.hpp"
+#include "Rendering/ImGUI/gui.hpp"
 
 #include "Core/logger.hpp"
 #include "Context/context.hpp"
@@ -9,6 +9,8 @@ namespace collapsingHeader {
 	/*----------------------------------------------------------------------------------*/
 
 	/*------------------------------------------------------------*/
+
+	// Logger
 
 #ifdef DEBUG_MODE
 	void LoggerUI::display() {
@@ -47,6 +49,8 @@ namespace collapsingHeader {
 #endif
 
 	/*------------------------------------------------------------*/
+
+	// Texture
 
 	const char* TextureUI::mCurrentItem = "None";
 	u8 TextureUI::mSelectedValue = 0;
@@ -161,11 +165,13 @@ namespace collapsingHeader {
 
 	/*------------------------------------------------------------*/
 
-	ImVec4 ColourUI::colour = ImVec4(0.2f, 0.3f, 0.3f, 1.0f);
-	bool ColourUI::apply_background;
+	// Background colour
+
+	ImVec4 BackgroundColourUI::colour = ImVec4(0.2f, 0.3f, 0.3f, 1.0f);
+	bool BackgroundColourUI::apply_background;
 
 #ifdef DEBUG_MODE
-	void ColourUI::display() {
+	void BackgroundColourUI::display() {
 		if (ImGui::CollapsingHeader("Colour")) {
 			ImGui::TextWrapped("\nBackground Colour Picker: ");
 			ImGui::ColorEdit3("###background_colour_picker1", (float*)&colour);
@@ -179,7 +185,7 @@ namespace collapsingHeader {
 		}
 	}
 #endif
-	void ColourUI::process() {
+	void BackgroundColourUI::process() {
 		if (apply_background) {
 			setBackgroundColour(colour.x, colour.y, colour.z, colour.w);
 		}
@@ -190,11 +196,13 @@ namespace collapsingHeader {
 
 	/*------------------------------------------------------------*/
 
-	int MiscellaneousUI::mSelectedItem;
-	const char* MiscellaneousUI::mItems[] = { "Fill", "Line", "Point" };
+	// Polygon mode
+
+	int PolygonModeUI::mSelectedItem;
+	const char* PolygonModeUI::mItems[] = { "Fill", "Line", "Point" };
 
 #ifdef DEBUG_MODE
-	void MiscellaneousUI::display() {
+	void PolygonModeUI::display() {
 		if (ImGui::CollapsingHeader("Miscellaneous")) {
 
 			// Polygon toggle checkbox: 
@@ -204,11 +212,13 @@ namespace collapsingHeader {
 		}
 	}
 #endif
-	void MiscellaneousUI::process() {
+	void PolygonModeUI::process() {
 		polygon_mode = static_cast<polygonMode>(mSelectedItem);
 	}
 
 	/*----------------------------------------------------------------------------------*/
+
+	// Text based UI's
 
 #ifdef DEBUG_MODE
 
@@ -261,6 +271,8 @@ namespace collapsingHeader {
 
 } // namespace collapsingHeader
 
+	// Check if mouse is hovering over UI
+	
 #ifdef DEBUG_MODE
 bool isMouseOverGUI() {
 	if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)) {

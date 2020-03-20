@@ -1,5 +1,7 @@
 #include "Core/rng.hpp"
 
+#include "Core/profiler.hpp"
+
 #include <climits>
 
 
