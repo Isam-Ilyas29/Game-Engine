@@ -3,6 +3,7 @@
 #include <fmt/format.h>
 
 #include "Core/logger.hpp"
+#include "Core/profiler.hpp"
 #include "Environment/environment.hpp"
 
 #include <string>
@@ -12,6 +13,10 @@
 
 Texture::Texture(const std::filesystem::path& path)
 	: mValid(false), mWidth(0), mHeight(0), mChannels(0), mData(nullptr), mInternalFormat(0), mFormat(0), mID(0), mPath(path) {
+
+	auto base = std::filesystem::path{ "C:/Users/ilsai/Documents/OpenGL/GladApp/Resources/" };
+	auto relative = std::filesystem::relative(this->mPath, base);
+	mShortenedPath = relative;
 
 	stbi_set_flip_vertically_on_load(true);
 
@@ -41,6 +46,8 @@ Texture::Texture(const std::filesystem::path& path)
 	}
 
 	if (mValid) {
+		PROFILE_SCOPE((fmt::format("Texture : {} | {} * {}", mShortenedPath.generic_string(), mWidth, mHeight)).data());
+
 		mID = dataToTextureID(local_data, mWidth, mHeight, mInternalFormat, mFormat);
 
 		mData = local_data;
@@ -67,10 +74,7 @@ GLuint Texture::dataToTextureID(u8* data, int width, int height, GLuint internal
 		GLAD_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, GL_UNSIGNED_BYTE, data));
 		GLAD_CHECK_ERROR(glGenerateMipmap(GL_TEXTURE_2D));
 
-		auto base = std::filesystem::path{ "C:/Users/ilsai/Documents/OpenGL/GladApp/Resources/" };
-		auto relative = std::filesystem::relative(this->mPath, base);
-
-		log(logType::INFO, fmt::format("TEXTURE | Successfully Loaded {} | Width: {}, Height: {}, Channels: {}", relative.generic_string(), this->mWidth, this->mHeight, this->mChannels));
+		log(logType::INFO, fmt::format("TEXTURE | Successfully Loaded {} | Width: {}, Height: {}, Channels: {}", mShortenedPath.generic_string(), this->mWidth, this->mHeight, this->mChannels));
 
 		stbi_image_free(data);
 		data = nullptr;
@@ -100,6 +104,9 @@ GLuint Texture::getID() const {
 		return mID;
 	}
 	return 0;
+}
+GLuint Texture::getInternalFormat() const {
+	return mInternalFormat;
 }
 GLuint Texture::getFormat() const {
 	return mFormat;

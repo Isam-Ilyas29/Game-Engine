@@ -18,7 +18,7 @@ private:
 	u8* mData;
 	GLenum mInternalFormat, mFormat;
 	GLenum mID;
-	std::filesystem::path mPath;
+	std::filesystem::path mPath, mShortenedPath;
 	bool mValid;
 
 public:
@@ -36,6 +36,7 @@ public:
 	bool isValid() const;
 	unsigned char* getData() const;
 	GLuint getID() const;
+	GLuint getInternalFormat() const;
 	GLuint getFormat() const;
 	int getWidth() const;
 	int getHeight() const;

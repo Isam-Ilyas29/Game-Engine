@@ -142,16 +142,14 @@ namespace collapsingHeader {
 			bool correct_texture = (i == mSelectedValue);
 
 			if (correct_texture && mSelectedValue != 0) {
-				if (correct_texture) {
-					if (mApplyTexture) {
-						loaded_textures[i]->bind(0);
-					}
-					else {
-						error_texture.bind(0);
-					}
-
-					break;
+				if (mApplyTexture) {
+					loaded_textures[i]->bind(0);
 				}
+				else {
+					error_texture.bind(0);
+				}
+
+				break;
 			}
 			else {
 				error_texture.bind(0);
@@ -160,6 +158,9 @@ namespace collapsingHeader {
 
 		if (mApplyTransparentOverlay) {
 			transparent_texture.bind(1);
+		}
+		else {
+			// TODO:
 		}
 	}
 

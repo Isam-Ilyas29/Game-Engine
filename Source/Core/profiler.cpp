@@ -7,7 +7,7 @@ Instrumentor::~Instrumentor() {
     endSession();
 }
 
-void Instrumentor::beginSession(const std::string& name, const std::string& filepath) {
+void Instrumentor::beginSession(std::string_view name, const std::filesystem::path& filepath) {
     if (mActiveSession) { 
         endSession(); 
     }
@@ -27,7 +27,6 @@ void Instrumentor::endSession() {
 }
 
 void Instrumentor::writeProfile(const ProfileResult& result) {
-    std::lock_guard<std::mutex> lock(mLock);
 
     if (mProfileCount++ > 0)
         mOutputStream << ",";

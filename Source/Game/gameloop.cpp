@@ -228,7 +228,8 @@ bool gameloop::run(int argc, char* argv[]) {
 
 				if (ImGui::BeginTabItem("Debug###debug1")) {
 					ImGui::TextWrapped("\n");
-
+					char* foo;
+					ImGui::InputText("input", foo, 10);
 					texture_ui.process(std::move(loaded_textures), error_texture, transparent1);
 					colour_ui.process();
 					polygon_mode_ui.process();

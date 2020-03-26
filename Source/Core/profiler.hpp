@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <fstream>
 #include <thread>
-#include <mutex>
+#include <filesystem>
 
 
 /*----------------------------------------------------------------------------------*/
@@ -29,17 +29,16 @@ struct ProfileResult {
 
 class Instrumentor {
 private:
-    std::string mSessionName = "None";
+    std::string_view mSessionName = "None";
     std::ofstream mOutputStream;
-    int mProfileCount = 0;
-    std::mutex mLock;
+    u16 mProfileCount = 0;
     bool mActiveSession = false;
 
 
 public:
     ~Instrumentor();
 
-    void beginSession(const std::string& name, const std::string& filepath = "../ExeDirectory/profile.json");
+    void beginSession(std::string_view name, const std::filesystem::path& filepath = "../ExeDirectory/profile.json");
     void endSession();
 
     void writeProfile(const ProfileResult& result);
