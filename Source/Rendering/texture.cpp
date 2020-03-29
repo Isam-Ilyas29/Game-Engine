@@ -91,6 +91,12 @@ void Texture::bind(u16 tex_unit) const {
 	GLAD_CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + tex_unit));
 	GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, getID()));
 }
+void Texture::unbind(std::vector<u16> tex_units) {
+	for (size_t i = 0; i < tex_units.size(); i++) {
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+}
 
 
 bool Texture::isValid() const {

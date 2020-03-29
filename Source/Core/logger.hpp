@@ -9,16 +9,14 @@
 #include <vector>
 
 
-#ifdef DEBUG_MODE
-	// Determines severity of log
-	enum class logType {
-		INFO,
-		WARNING,
-		ERROR,
+// Determines severity of log
+enum class logType {
+	INFO,
+	WARNING,
+	ERROR,
 
-		_COUNT
-	};
-#endif
+	_COUNT
+};
 
 void log(logType type, std::string_view log_msg);
 

@@ -32,6 +32,7 @@ public:
 	GLuint dataToTextureID(u8* data, int width, int height, GLuint internal_format, GLuint type);
 
 	void bind(u16 tex_unit) const;
+	static void unbind(std::vector<u16> tex_units);
 
 	bool isValid() const;
 	unsigned char* getData() const;

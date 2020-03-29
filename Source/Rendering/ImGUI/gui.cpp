@@ -243,9 +243,10 @@ namespace collapsingHeader {
 			ImGui::TextWrapped("- 'S' = Move Backward");
 			ImGui::TextWrapped("- 'D' = Move Right");
 			ImGui::TextWrapped("\n");
-			ImGui::TextWrapped("- 'Escape' = Quit game");
+			ImGui::TextWrapped("- 'Right Click' = Hold to rotate camera");
+			ImGui::TextWrapped("- 'Scroll' = Zoom in and out");
 			ImGui::TextWrapped("\n");
-			ImGui::TextWrapped("- 'Left Shift' = Toggle outline and fill mode");
+			ImGui::TextWrapped("- 'Escape' = Quit game");
 			ImGui::TextWrapped("\n");
 			ImGui::TextWrapped("- '0 (Zero)' = Hold to disbale all other input methods / controls.");
 			ImGui::TextWrapped("\n");
@@ -259,7 +260,7 @@ namespace collapsingHeader {
 
 			ImGui::TextWrapped("This is a game engine which is currently being developed in C++ and OpenGL.");
 			ImGui::TextWrapped("\n");
-			ImGui::TextWrapped("Devloper: Isam Ilyas");
+			ImGui::TextWrapped("Developer: Isam Ilyas");
 			ImGui::TextWrapped("\n");
 			ImGui::TextWrapped("To learn more please visit: ");
 			ImGui::TextWrapped("https://github.com/Isam-Ilyas29/OpenGL-Graphics-Engine");

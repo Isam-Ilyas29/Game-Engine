@@ -9,7 +9,8 @@
 
 namespace {
 
-    std::mt19937 generate(GenerateSeedNDRNG<std::random_device>{});
+    std::random_device rd;
+    std::mt19937 generate(rd());
 }
 
 /*----------------------------------------------------------------------------------*/
@@ -21,9 +22,7 @@ auto getGenerator(int seed) {
 
 /*----------------------------------------------------------------------------------*/
 
-RandomBatch::RandomBatch(s32 amount) { 
-    ASSERT(amount > 0, "RandomBatch amount is not valid.");
-
+RandomBatch::RandomBatch(u16 amount) { 
     mAmount = amount;
 
     for (size_t i = 0; i < amount; i++) {
@@ -32,10 +31,16 @@ RandomBatch::RandomBatch(s32 amount) {
 }
 
 int RandomBatch::intInRange(int lower_bound, int upper_bound) {
-    return std::uniform_int_distribution<>{lower_bound, upper_bound}(getGenerator(seeds[mCurrent -1]));
+    std::uniform_int_distribution<> distribution(lower_bound , upper_bound);
+    auto generator = getGenerator(seeds[mCurrent - 1]);
+
+    return distribution(generator);
 }
 float RandomBatch::floatInRange(float lower_bound, float upper_bound) {
-    return std::uniform_real_distribution<>{lower_bound, upper_bound}(getGenerator(seeds[mCurrent - 1]));
+    std::uniform_real_distribution<> distribution(lower_bound, upper_bound);
+    auto generator = getGenerator(seeds[mCurrent - 1]);
+
+    return distribution(generator);
 }
 
 void RandomBatch::moveForward() {

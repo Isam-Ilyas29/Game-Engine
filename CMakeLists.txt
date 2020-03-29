@@ -35,14 +35,19 @@ set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${EXE
 
 # Compiler warnings
 target_compile_options(${PROJECT_NAME} PRIVATE 
-    $<$<CXX_COMPILER_ID:MSVC>:/W4>
-    $<$<NOT:$<BOOL:$<CXX_COMPILER_ID:MSVC>>>:-Wall -Wextra>
+    $<$<CXX_COMPILER_ID:CLANG>:/W4>
+    $<$<NOT:$<BOOL:$<CXX_COMPILER_ID:CLANG>>>:-Wextra>
 )
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_options(${PROJECT_NAME} PRIVATE 
-        $<$<CXX_COMPILER_ID:MSVC>:/WX>
-        $<$<NOT:$<BOOL:$<CXX_COMPILER_ID:MSVC>>>:-Werror>
-	)
+	if (CMAKE_CXX_COMPILER_ID MATCHES Clang)
+        target_compile_options(${PROJECT_NAME} PRIVATE 
+            $<$<NOT:$<BOOL:$<CXX_COMPILER_ID:Clang>>>:-Werror>
+	    )
+	elseif (CMAKE_CXX_COMPILER_ID MATCHES MSVC)
+	    target_compile_options(${PROJECT_NAME} PRIVATE 
+	        $<$<CXX_COMPILER_ID:MSVC>:/WX>
+		)
+	endif()
 endif()
 
 # Disable GLM compiler warnings

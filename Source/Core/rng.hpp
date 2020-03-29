@@ -9,52 +9,6 @@
 #include <cassert>
 
 
-/*
-template<typename T>
-class GenerateSeed {
-private:
-    T mRNG;
-
-public:
-    GenerateSeed() = default; // default
-    GenerateSeed(const T& x); // copy constructor
-    GenerateSeed(T&& x); // move constructor
-
-    template<typename Iterator>
-    void generate(Iterator begin, Iterator end);
-};
-
-template <typename T>
-GenerateSeed<T>::GenerateSeed(const T& x) : mRNG(x){} // copy
-
-template <typename T>
-GenerateSeed<T>::GenerateSeed(T&& x) : mRNG(x){} // move
-*/
-
-
-// NDRNG
-
-template<typename T>
-class GenerateSeedNDRNG {
-private:
-    T mRNG;
-
-public:
-    template<typename... Args>
-    GenerateSeedNDRNG(Args&&...args)
-        : mRNG(std::forward<Args>(args)...) { }
-
-    template<typename Iterator>
-    void generate(Iterator begin, Iterator end) {
-        std::uniform_int_distribution<u32> distribution;
-        for (; begin != end; ++begin) {
-            *begin = distribution(mRNG);
-        }
-    }
-};
-
-// DRNG
-
 class GenerateSeedDRNG {
 private:
     std::minstd_rand mRNG;
@@ -71,7 +25,7 @@ public:
 
 /*----------------------------------------------------------------------------------*/
 
-auto getGenerator(int i);
+auto getGenerator(int seed);
 
 /*----------------------------------------------------------------------------------*/
 
@@ -83,7 +37,7 @@ private:
     std::vector<s64> seeds;
 
 public:
-    RandomBatch(s32 amount);
+    RandomBatch(u16 amount);
 
     int intInRange(int lower_bound, int upper_bound);
     float floatInRange(float lower_bound, float upper_bound);
