@@ -1,4 +1,6 @@
 #pragma once
 
 
-void themeGrey();
+#ifdef IMGUI_LAYER
+	void themeGrey();
+#endif

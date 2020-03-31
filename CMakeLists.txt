@@ -26,8 +26,21 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Source")
 
-#ifdef for DEBUG
+# Preprocessors:
+
+# DEBUG_MODE
 target_compile_definitions(${PROJECT_NAME} PUBLIC "$<$<CONFIG:Debug>:DEBUG_MODE>")
+
+# IMGUI_LAYER
+if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
+    option(GLADAPP_IMGUI_LAYER "IMGUI_LAYER SHOULD BE ACTIVE" ON)
+else()
+    option(GLADAPP_IMGUI_LAYER "IMGUI_LAYER SHOULD NOT BE ACTIVE" OFF)
+endif()
+
+if (GLADAPP_IMGUI_LAYER)
+	target_compile_definitions(${PROJECT_NAME} PUBLIC IMGUI_LAYER)
+endif()
 
 # ExeDirectory
 set(EXECUTABLE_PATH "${CMAKE_SOURCE_DIR}/ExeDirectory")
@@ -55,11 +68,13 @@ target_compile_definitions(glm INTERFACE GLM_FORCE_SILENT_WARNINGS GLM_FORCE_RAD
 
 target_include_directories(${PROJECT_NAME} INTERFACE SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/glm/include")
 
+# Exes
 foreach(CONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${CONFIG} CONFIG)
     set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_${CONFIG} "${EXECUTABLE_PATH}")
 endforeach()
 
+# C++ 17
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 
 set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})

@@ -68,7 +68,7 @@ namespace context {
 	}
 
 
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 	void imguiContext() {
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -88,6 +88,13 @@ namespace context {
 		ImGui::SetNextWindowPos(ImVec2(8.f, 8.f), ImGuiCond_Appearing);
 
 		ImGui::Begin(name.data());
+	}
+	void setImguiTheme(std::function<void()> theme) {
+		theme();
+	}
+	void setImguiFont(const std::filesystem::path& font, f32 size) {
+		ImGuiIO& io = ImGui::GetIO();
+		io.Fonts->AddFontFromFileTTF(font.generic_string().data(), size);
 	}
 	void renderImgui() {
 		ImGui::Render();
@@ -114,7 +121,7 @@ namespace context {
 
 			::scr_width = width; ::scr_height = height;
 
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 			ImGui::SetWindowSize("###GUI1", ImVec2(0.24f * width, 0.3476f * height));
 			ImGui::SetWindowPos("###GUI1", ImVec2(8.f, 8.f));
 

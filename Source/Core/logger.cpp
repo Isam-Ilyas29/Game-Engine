@@ -18,7 +18,7 @@ namespace {
 	// Type specifier
 	std::array<std::string, static_cast<u8>(logType::_COUNT)> log_type = { "INFO", "WARNING", "ERROR" };
 
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 	// GUI logs
 	std::vector<logType> log_colours;
 	std::deque<std::string> log_messages;
@@ -34,7 +34,7 @@ void log(logType type, std::string_view log_msg) {
 
 	logToFile(full_log_msg);
 	logToConsole(full_log_msg);
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 	::log_colours.push_back(type);
 	logToGUI(full_log_msg);
 #endif
@@ -46,7 +46,7 @@ void logToFile(std::string log_msg) {
 void logToConsole(std::string log_msg) {
 	std::cerr << log_msg << std::endl;
 }
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 	void logToGUI(std::string log_msg) {
 		if (::log_messages.size() >= 20) {
 			log_messages.pop_front();

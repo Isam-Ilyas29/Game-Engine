@@ -18,7 +18,7 @@ namespace collapsingHeader {
 	// Logger
 	class LoggerUI {
 	public:
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 		void display();
 #endif
 		void process();
@@ -32,7 +32,7 @@ namespace collapsingHeader {
 		static bool mApplyTexture;
 		static bool mApplyTransparentOverlay;
 
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 		void display(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture);
 #endif
 		void process(const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture);
@@ -44,7 +44,7 @@ namespace collapsingHeader {
 		static ImVec4 colour;
 		static bool apply_background;
 
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 		void display();
 #endif
 		void process();
@@ -56,19 +56,19 @@ namespace collapsingHeader {
 		static int mSelectedItem;
 		static const char* mItems[];
 
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 		void display();
 #endif
 		void process();
 	};
 
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 	void fpsText(Time delta_time);
 	void controlsText();
 	void aboutText();
 #endif
 }
 
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 bool isMouseOverGUI();
 #endif

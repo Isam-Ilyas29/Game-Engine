@@ -12,7 +12,7 @@ namespace collapsingHeader {
 
 	// Logger
 
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 	void LoggerUI::display() {
 		if (ImGui::CollapsingHeader("Log")) {
 			
@@ -57,7 +57,7 @@ namespace collapsingHeader {
 	bool TextureUI::mApplyTexture;
 	bool TextureUI::mApplyTransparentOverlay;
 
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 	void TextureUI::display(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture) {
 		if (ImGui::CollapsingHeader("Textures")) {
 
@@ -171,7 +171,7 @@ namespace collapsingHeader {
 	ImVec4 BackgroundColourUI::colour = ImVec4(0.2f, 0.3f, 0.3f, 1.0f);
 	bool BackgroundColourUI::apply_background;
 
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 	void BackgroundColourUI::display() {
 		if (ImGui::CollapsingHeader("Colour")) {
 			ImGui::TextWrapped("\nBackground Colour Picker: ");
@@ -202,7 +202,7 @@ namespace collapsingHeader {
 	int PolygonModeUI::mSelectedItem;
 	const char* PolygonModeUI::mItems[] = { "Fill", "Line", "Point" };
 
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 	void PolygonModeUI::display() {
 		if (ImGui::CollapsingHeader("Miscellaneous")) {
 
@@ -221,7 +221,7 @@ namespace collapsingHeader {
 
 	// Text based UI's
 
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 
 	void fpsText(Time delta_time) {
 		if (ImGui::CollapsingHeader("Information")) {
@@ -275,7 +275,7 @@ namespace collapsingHeader {
 
 	// Check if mouse is hovering over UI
 	
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 bool isMouseOverGUI() {
 	if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)) {
 		return true;

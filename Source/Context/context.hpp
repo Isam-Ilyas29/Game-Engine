@@ -8,6 +8,7 @@
 #include <GLFW/glfw3.h>
 
 #include <string>
+#include <filesystem>
 
 
 namespace context {
@@ -19,9 +20,11 @@ namespace context {
 	void cursorPosContext(GLFWwindow* window, double xpos, double ypos);
 	void scrollContext(GLFWwindow* window, double xoffset, double yoffset);
 
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 	void imguiContext();
 	void createImguiWindow(std::string name);
+	void setImguiTheme(std::function<void()> theme);
+	void setImguiFont(const std::filesystem::path& font, f32 size);
 	void renderImgui();
 #endif
 

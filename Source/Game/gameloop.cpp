@@ -42,9 +42,10 @@ bool gameloop::run(int argc, char* argv[]) {
 		return false;
 	}
 
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 	context::imguiContext();
-	themeGrey();
+	context::setImguiTheme(themeGrey);
+	context::setImguiFont(environment::getResourcePath("Fonts/open_sans.ttf"), 17.f);
 #endif
 
 	/*----------------------------------------------------------------------------------*/
@@ -219,7 +220,7 @@ bool gameloop::run(int argc, char* argv[]) {
 
 			camera.update(delta_time.getSeconds());
 
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 			// Render imGUI
 
 			context::createImguiWindow("My GUI###GUI1");
@@ -315,7 +316,7 @@ bool gameloop::run(int argc, char* argv[]) {
 			Texture::unbind(tex_units);
 
 
-#ifdef DEBUG_MODE
+#ifdef IMGUI_LAYER
 			context::renderImgui();
 #endif
 			context::window::swapBuffers();
