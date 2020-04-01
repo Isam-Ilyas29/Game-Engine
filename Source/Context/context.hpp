@@ -22,7 +22,7 @@ namespace context {
 
 #ifdef IMGUI_LAYER
 	void imguiContext();
-	void createImguiWindow(std::string name);
+	void createMainImguiWindow(std::string name);
 	void setImguiTheme(std::function<void()> theme);
 	void setImguiFont(const std::filesystem::path& font, f32 size);
 	void renderImgui();

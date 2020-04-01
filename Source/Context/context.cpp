@@ -78,14 +78,14 @@ namespace context {
 
 		log(logType::INFO, "CONTEXT | ImGui Successfully Initialised");
 	}
-	void createImguiWindow(std::string name) {
+	void createMainImguiWindow(std::string name) {
 		// Feed input to imGUI, start new frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		ImGui::SetNextWindowSize(ImVec2(0.24f * ::scr_width, 0.3476f * ::scr_height), ImGuiCond_Appearing);
-		ImGui::SetNextWindowPos(ImVec2(8.f, 8.f), ImGuiCond_Appearing);
+		ImGui::SetNextWindowSize(ImVec2(::scr_width * 0.24f, ::scr_height * 0.3476f), ImGuiCond_Appearing);
+		ImGui::SetNextWindowPos(ImVec2(::scr_width * 0.005f, ::scr_height * 0.005f), ImGuiCond_Appearing);
 
 		ImGui::Begin(name.data());
 	}
@@ -121,14 +121,22 @@ namespace context {
 
 			::scr_width = width; ::scr_height = height;
 
+			// Re-size/Re-position GUI
 #ifdef IMGUI_LAYER
-			ImGui::SetWindowSize("###GUI1", ImVec2(0.24f * width, 0.3476f * height));
-			ImGui::SetWindowPos("###GUI1", ImVec2(8.f, 8.f));
+			ImGui::SetWindowSize("###GUI1", ImVec2(width * 0.24f, height * 0.3476f));
+			ImGui::SetWindowPos("###GUI1", ImVec2(width * 0.005f, width * 0.005));
 
-			ImGui::SetWindowSize("###log1", ImVec2(0.34f * width, 0.3476f * height));
-			ImGui::SetWindowPos("###log1", ImVec2(width - (width * 0.345f), 8.f));
+			ImGui::SetWindowSize("###log1", ImVec2(width * 0.34f, height * 0.3476f));
+			ImGui::SetWindowPos("###log1", ImVec2(width * 0.655f, width * 0.005));
+
+
+			ImGui::SetWindowSize("###profiler1", ImVec2(width * 0.36f, height * 0.38f));
+			ImGui::SetWindowPos("###profiler1", ImVec2(width * 0.005f, height * 0.6135f));
+
+			ImGui::SetWindowSize("###console1", ImVec2(width * 0.34f, height * 0.35f));
+			ImGui::SetWindowPos("###console1", ImVec2(width * 0.655f, height * 0.6455f));
 #endif		
-		}   // Whenever the window is resized (by OS or user resize) this callback function executes
+		}
 
 		void closeWindow() {
 			glfwSetWindowShouldClose(::window, true);

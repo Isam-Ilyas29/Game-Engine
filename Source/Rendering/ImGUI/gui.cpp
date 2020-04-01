@@ -1,12 +1,33 @@
 #include "Rendering/ImGUI/gui.hpp"
 
 #include "Core/logger.hpp"
+#include "Core/profiler.hpp"
+#include "Core/console.hpp"
 #include "Context/context.hpp"
 
 
 namespace collapsingHeader {
 
 	/*----------------------------------------------------------------------------------*/
+
+	/*------------------------------------------------------------*/
+
+	// Information
+
+#ifdef IMGUI_LAYER
+	void InformationUI::display() {
+		if (ImGui::CollapsingHeader("Information")) {
+
+			ImGui::TextWrapped("\n");
+			ImGui::TextWrapped("FPS: %d", mFPS);
+
+			ImGui::Text("\n");
+		}
+	}
+#endif
+	void InformationUI::process(Time delta_time) {
+		mFPS = getFramesPerSecond(delta_time);
+	}
 
 	/*------------------------------------------------------------*/
 
@@ -28,8 +49,8 @@ namespace collapsingHeader {
 	void LoggerUI::process() {
 		if (isLogWindowOpened()) {
 			// Set window size and pos
-			ImGui::SetNextWindowSize(ImVec2(0.34f * context::window::getWidth(), 0.3476f * context::window::getHeight()), ImGuiCond_Appearing);
-			ImGui::SetNextWindowPos(ImVec2(context::window::getWidth() - (context::window::getWidth() * 0.345f), 8.f), ImGuiCond_Appearing);
+			ImGui::SetNextWindowSize(ImVec2(context::window::getWidth() * 0.34f, context::window::getHeight() * 0.3476f), ImGuiCond_Appearing);
+			ImGui::SetNextWindowPos(ImVec2(context::window::getWidth() * 0.655f, context::window::getHeight() * 0.005), ImGuiCond_Appearing);
 
 			ImGui::Begin("Log###log1");
 
@@ -42,6 +63,70 @@ namespace collapsingHeader {
 				ImGui::TextWrapped("%s", gui_logs[i].data());
 				ImGui::PopStyleColor();
 			}
+
+			ImGui::End();
+		}
+	}
+#endif
+
+	/*------------------------------------------------------------*/
+
+	// Profiler
+
+#ifdef IMGUI_LAYER
+	void ProfilerUI::display() {
+		if (ImGui::CollapsingHeader("Profiler")) {
+
+			ImGui::Text("\n");
+
+			if (ImGui::Button("View profiler###view_profiler1")) {
+				setProfileWindow(!isProfileWindowOpened());
+			}
+
+			ImGui::Text("\n");
+		}
+	}
+	void ProfilerUI::process() {
+		if (isProfileWindowOpened()) {
+			// Set window size and pos
+			ImGui::SetNextWindowSize(ImVec2(context::window::getWidth() * 0.36f, context::window::getHeight() * 0.38f), ImGuiCond_Appearing);
+			ImGui::SetNextWindowPos(ImVec2(context::window::getWidth() * 0.005f, context::window::getHeight() * 0.6135f), ImGuiCond_Appearing);
+
+			ImGui::Begin("Profiler###profiler1");
+
+			// TODO:
+
+			ImGui::End();
+		}
+	}
+#endif
+
+	/*------------------------------------------------------------*/
+
+	// Console
+
+#ifdef IMGUI_LAYER
+	void ConsoleUI::display() {
+		if (ImGui::CollapsingHeader("Console")) {
+
+			ImGui::Text("\n");
+
+			if (ImGui::Button("View console###view_console1")) {
+				setConsoleWindow(!isConsoleWindowOpened());
+			}
+
+			ImGui::Text("\n");
+		}
+	}
+	void ConsoleUI::process() {
+		if (isConsoleWindowOpened()) {
+			// Set window size and pos
+			ImGui::SetNextWindowSize(ImVec2(context::window::getWidth() * 0.34f, context::window::getHeight() * 0.35f), ImGuiCond_Appearing);
+			ImGui::SetNextWindowPos(ImVec2(context::window::getWidth() * 0.655f, context::window::getHeight() * 0.6455f), ImGuiCond_Appearing);
+
+			ImGui::Begin("Console###console1");
+
+			// TODO:
 
 			ImGui::End();
 		}
@@ -222,16 +307,6 @@ namespace collapsingHeader {
 	// Text based UI's
 
 #ifdef IMGUI_LAYER
-
-	void fpsText(Time delta_time) {
-		if (ImGui::CollapsingHeader("Information")) {
-
-			ImGui::TextWrapped("\n");
-			ImGui::TextWrapped("FPS: %d", getFramesPerSecond(delta_time));
-
-			ImGui::Text("\n");
-		}
-	}
 
 	/*------------------------------------------------------------*/
 

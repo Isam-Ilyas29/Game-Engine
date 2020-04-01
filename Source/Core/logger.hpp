@@ -28,8 +28,6 @@ void logToConsole(std::string log_msg);
 
 
 #ifdef IMGUI_LAYER
-	extern logType log_text_colour;
-
 	std::deque<std::string> getLog();
 	std::vector<logType> getColour();
 

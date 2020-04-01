@@ -15,8 +15,37 @@
 
 namespace collapsingHeader {
 
+	// Information
+	class InformationUI {
+	private:
+		u16 mFPS;
+	public:
+#ifdef IMGUI_LAYER
+		void display();
+#endif
+		void process(Time delta_time);
+	};
+
 	// Logger
 	class LoggerUI {
+	public:
+#ifdef IMGUI_LAYER
+		void display();
+#endif
+		void process();
+	};
+
+	// Profiler
+	class ProfilerUI {
+	public:
+#ifdef IMGUI_LAYER
+		void display();
+#endif
+		void process();
+	};
+
+	// Console
+	class ConsoleUI {
 	public:
 #ifdef IMGUI_LAYER
 		void display();
@@ -62,8 +91,8 @@ namespace collapsingHeader {
 		void process();
 	};
 
+	// Text
 #ifdef IMGUI_LAYER
-	void fpsText(Time delta_time);
 	void controlsText();
 	void aboutText();
 #endif

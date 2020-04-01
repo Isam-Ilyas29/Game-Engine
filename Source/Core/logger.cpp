@@ -13,13 +13,13 @@ namespace {
 	// File
 	std::string log_path = "../ExeDirectory/log.txt";
 	std::ofstream log_file(log_path, std::ios::out);
-	bool is_log_opened = false;
 
 	// Type specifier
 	std::array<std::string, static_cast<u8>(logType::_COUNT)> log_type = { "INFO", "WARNING", "ERROR" };
 
 #ifdef IMGUI_LAYER
 	// GUI logs
+	bool is_log_opened = false;
 	std::vector<logType> log_colours;
 	std::deque<std::string> log_messages;
 #endif

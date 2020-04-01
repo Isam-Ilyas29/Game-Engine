@@ -195,9 +195,12 @@ bool gameloop::run(int argc, char* argv[]) {
 		bool should_isolte = false;
 
 
-		// Editor 
+		// GUI
 
+		collapsingHeader::InformationUI information_ui;
 		collapsingHeader::LoggerUI logger_ui;
+		collapsingHeader::ProfilerUI profiler_ui;
+		collapsingHeader::ConsoleUI console_ui;
 		collapsingHeader::TextureUI texture_ui;
 		collapsingHeader::PolygonModeUI polygon_mode_ui;
 		collapsingHeader::BackgroundColourUI colour_ui;
@@ -223,19 +226,25 @@ bool gameloop::run(int argc, char* argv[]) {
 #ifdef IMGUI_LAYER
 			// Render imGUI
 
-			context::createImguiWindow("My GUI###GUI1");
+			context::createMainImguiWindow("My GUI###GUI1");
 
 			if (ImGui::BeginTabBar("###tab_bar1")) {
 
 				if (ImGui::BeginTabItem("Debug###debug1")) {
 					ImGui::TextWrapped("\n");
+
 					texture_ui.process(std::move(loaded_textures), error_texture, transparent1);
 					colour_ui.process();
 					polygon_mode_ui.process();
 
-					collapsingHeader::fpsText(delta_time);
+					information_ui.display();
+					information_ui.process(delta_time);
 					logger_ui.display();
 					logger_ui.process();
+					profiler_ui.display();
+					profiler_ui.process();
+					console_ui.display();
+					console_ui.process();
 
 					ImGui::EndTabItem();
 				}
@@ -243,7 +252,10 @@ bool gameloop::run(int argc, char* argv[]) {
 				if (ImGui::BeginTabItem("Editor###editor1")) {
 					ImGui::TextWrapped("\n");
 
+					information_ui.process(delta_time);
 					logger_ui.process();
+					profiler_ui.process();
+					console_ui.process();
 
 					texture_ui.display(textures, std::move(loaded_textures), error_texture, transparent1);
 					texture_ui.process(std::move(loaded_textures), error_texture, transparent1);
@@ -258,7 +270,10 @@ bool gameloop::run(int argc, char* argv[]) {
 				if (ImGui::BeginTabItem("Help###help1")) {
 					ImGui::TextWrapped("\n");
 
+					information_ui.process(delta_time);
 					logger_ui.process();
+					profiler_ui.process();
+					console_ui.process();
 					texture_ui.process(std::move(loaded_textures), error_texture, transparent1);
 					colour_ui.process();
 					polygon_mode_ui.process();
@@ -272,8 +287,14 @@ bool gameloop::run(int argc, char* argv[]) {
 				ImGui::EndTabBar();
 			}
 			else {
+				information_ui.display();
+				information_ui.process(delta_time);
 				logger_ui.display();
 				logger_ui.process();
+				profiler_ui.display();
+				profiler_ui.process();
+				console_ui.display();
+				console_ui.process();
 				texture_ui.display(textures, std::move(loaded_textures), error_texture, transparent1);
 				texture_ui.process(std::move(loaded_textures), error_texture, transparent1);
 				colour_ui.display();

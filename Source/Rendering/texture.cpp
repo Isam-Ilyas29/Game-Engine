@@ -46,8 +46,6 @@ Texture::Texture(const std::filesystem::path& path)
 	}
 
 	if (mValid) {
-		PROFILE_SCOPE((fmt::format("Texture : {} | {} * {}", mShortenedPath.generic_string(), mWidth, mHeight)).data());
-
 		mID = dataToTextureID(local_data, mWidth, mHeight, mInternalFormat, mFormat);
 
 		mData = local_data;

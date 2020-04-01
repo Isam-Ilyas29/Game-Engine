@@ -4,6 +4,6 @@
 
 
 #ifdef IMGUI_LAYER
-	void setProfileWindow(bool predicate);
-	bool isProfileWindowOpened();
+	void setConsoleWindow(bool predicate);
+	bool isConsoleWindowOpened();
 #endif
