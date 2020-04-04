@@ -1,9 +1,10 @@
 #include "Rendering/shader.hpp"
 
-#include <glad/glad.h>
-#include <fmt/format.h>
-
 #include "Core/logger.hpp"
+#include "Rendering/graphic.hpp"
+
+#include <fstream>
+#include <sstream>
 
 
 // Constructor reads and builds the shader

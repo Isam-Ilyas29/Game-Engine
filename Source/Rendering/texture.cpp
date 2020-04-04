@@ -1,10 +1,10 @@
 #include "Rendering/texture.hpp"
 
-#include <fmt/format.h>
-
 #include "Core/logger.hpp"
-#include "Core/profiler.hpp"
 #include "Environment/environment.hpp"
+
+#include <stb_image.h>
+#include <fmt/format.h>
 
 #include <string>
 

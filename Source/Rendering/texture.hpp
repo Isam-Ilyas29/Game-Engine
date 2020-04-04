@@ -1,14 +1,12 @@
 #pragma once
 
 #include "Core/std_types.hpp"
-
 #include "Environment/environment.hpp"
 #include "Rendering/graphic.hpp"
 
 #include <glad/glad.h>
-#include <stb_image.h>
 
-#include <iostream>
+#include <filesystem>
 #include <vector>
 
 
@@ -22,12 +20,12 @@ private:
 	bool mValid;
 
 public:
-	Texture(const std::filesystem::path& path);
-	~Texture();
-
 	// Prevents Texture objects from being copied 
 	Texture(const Texture&) = delete;
 	Texture& operator=(const Texture&) = delete;
+
+	Texture(const std::filesystem::path& path);
+	~Texture();
 
 	GLuint dataToTextureID(u8* data, int width, int height, GLuint internal_format, GLuint type);
 

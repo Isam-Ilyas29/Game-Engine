@@ -3,10 +3,8 @@
 #include "Core/std_types.hpp"
 #include "Core/Assert/assert.hpp"
 
-#include <iostream>
 #include <random>
 #include <vector>
-#include <cassert>
 
 
 class GenerateSeedDRNG {
@@ -45,7 +43,6 @@ public:
     void moveForward();
     void reset();
 
-    void debugOutput();
     u16 getCurrentIndex() const;
     u16 getNextIndex() const;
 };

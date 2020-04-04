@@ -1,12 +1,9 @@
 #pragma once
 
 #include <imgui.h>
-#include "Rendering/ImGUI/imgui_impl_glfw.hpp"
-#include "Rendering/ImGUI/imgui_impl_opengl3.hpp"
 
 #include <string>
 #include <deque>
-#include <vector>
 
 
 // Determines severity of log
@@ -18,21 +15,29 @@ enum class logType {
 	_COUNT
 };
 
-void log(logType type, std::string_view log_msg);
+void log(logType type, std::string log_msg);
 
 void logToFile(std::string log_msg);
 void logToConsole(std::string log_msg);
 #ifdef IMGUI_LAYER
-	void logToGUI(std::string log_msg);
+	void logToGUI(std::string log_prefix, std::string log_msg, std::string full_log_msg, logType log_type);
 #endif
 
 
 #ifdef IMGUI_LAYER
-	std::deque<std::string> getLog();
-	std::vector<logType> getColour();
+	struct GUILogData {
+		std::string prefix;
+		std::string message;
+		std::string full_log;
+		logType type;
+	};
 
-	ImVec4 setLogTextColour(logType type);
+	std::deque<GUILogData> getGUILogData();
 
-	void setLogWindow(bool predicate);
-	bool isLogWindowOpened();
+	void clearGUILog();
+
+	ImVec4 setGUILogTextColour(logType type);
+
+	void setGUILogWindow(bool predicate);
+	bool isGUILogWindowOpened();
 #endif

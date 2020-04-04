@@ -1,11 +1,11 @@
 #include "Input/input_responder.hpp"
 
-#include <imgui.h>
-#include "Rendering/ImGUI/imgui_impl_glfw.hpp"
-#include "Rendering/ImGUI/imgui_impl_opengl3.hpp"
-
 #include "Context/context.hpp"
 #include "Core/utils.hpp"
+
+#include <imgui.h>
+
+#include <bitset>
 
 
 // Scene states and has the correspoding functions and bitset
@@ -36,62 +36,44 @@ void keyboardResponder(Camera& camera) {
 
 	/*-----------------------------------------*/
 
-	bool w_HELD;
-	w_HELD = input::isHeld(GLFW_KEY_W);
-
-	if (w_HELD) {
+	if (input::isHeld(GLFW_KEY_W)) {
 		camera.moveForward();
 	}
 
 	/*-----------------------------------------*/
 
-	bool a_HELD;
-	a_HELD = input::isHeld(GLFW_KEY_A);
-
-	if (a_HELD) {
+	if (input::isHeld(GLFW_KEY_A)) {
 		camera.moveLeft();
 	}
 
 	/*-----------------------------------------*/
 
-	bool s_HELD;
-	s_HELD = input::isHeld(GLFW_KEY_S);
-
-	if (s_HELD) {
+	if (input::isHeld(GLFW_KEY_S)) {
 		camera.moveBackward();
 	}
 
 	/*-----------------------------------------*/
 
-	bool d_HELD;
-	d_HELD = input::isHeld(GLFW_KEY_D);
-
-	if (d_HELD) {
+	if (input::isHeld(GLFW_KEY_D)) {
 		camera.moveRight();
 	}
 
 	/*-----------------------------------------*/
 
-	bool l_shift_HELD;
-	l_shift_HELD = input::isHeld(GLFW_KEY_LEFT_SHIFT);
-
-	if (l_shift_HELD) {
+	if (input::isHeld(GLFW_KEY_LEFT_SHIFT)) {
 		polygon_mode = polygonMode::LINE;
 	}
 
 	/*-----------------------------------------*/
 
-	bool esc_PRESSED;
-	esc_PRESSED = input::isPressed(GLFW_KEY_ESCAPE);
-
-	if (esc_PRESSED) {
+	if (input::isPressed(GLFW_KEY_ESCAPE)) {
 		context::window::closeWindow();
 	}
 
 	/*-----------------------------------------*/
 }
 
-void mouseResponder(Camera& camera) {	//Mouse and cursor
+void mouseResponder(Camera& camera) {
 
 	if (input::isPressed(GLFW_MOUSE_BUTTON_2)) {
 		camera.beginCursorRotation();
@@ -108,17 +90,13 @@ void scrollResponder(Camera& camera) {
 /*----------------------------------------------------------------------------------*/
 
 void update(f32 delta_time, Camera& camera, bool should_isolate) {
-	bool zero_HELD;
-	zero_HELD = input::isHeld(GLFW_KEY_0);
 
-	if (zero_HELD || should_isolate) {
+	if (should_isolate) {
 		disableSceneState(sceneStates::STATE_CAMERA);
-
 		enableSceneState(sceneStates::STATE_HALTED);
 	}
 	else {
 		disableSceneState(sceneStates::STATE_HALTED);
-
 		enableSceneState(sceneStates::STATE_CAMERA);
 	}
 

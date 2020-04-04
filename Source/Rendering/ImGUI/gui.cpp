@@ -1,9 +1,20 @@
 #include "Rendering/ImGUI/gui.hpp"
 
+#include "Core/utils.hpp"
 #include "Core/logger.hpp"
 #include "Core/profiler.hpp"
 #include "Core/console.hpp"
 #include "Context/context.hpp"
+#include "Rendering/graphic.hpp"
+#include "Core/rng.hpp"
+
+#include "Rendering/ImGUI/imgui_external.hpp"
+#include <fmt/format.h>
+
+#include <deque>
+#include <algorithm>
+
+#include <iostream> //temp
 
 
 namespace collapsingHeader {
@@ -34,35 +45,125 @@ namespace collapsingHeader {
 	// Logger
 
 #ifdef IMGUI_LAYER
+	char LoggerUI::mFind[250];
+	bool LoggerUI::mInfoCategory = true;
+	bool LoggerUI::mWarningCategory = true;
+	bool LoggerUI::mErrorCategory = true;
+
 	void LoggerUI::display() {
 		if (ImGui::CollapsingHeader("Log")) {
 			
 			ImGui::Text("\n");
 
 			if (ImGui::Button("View log###view_log1")) {
-				setLogWindow(!isLogWindowOpened());
+				setGUILogWindow(!isGUILogWindowOpened());
 			}
 
 			ImGui::Text("\n");
 		}
 	}
 	void LoggerUI::process() {
-		if (isLogWindowOpened()) {
+		if (isGUILogWindowOpened()) {
 			// Set window size and pos
 			ImGui::SetNextWindowSize(ImVec2(context::window::getWidth() * 0.34f, context::window::getHeight() * 0.3476f), ImGuiCond_Appearing);
 			ImGui::SetNextWindowPos(ImVec2(context::window::getWidth() * 0.655f, context::window::getHeight() * 0.005), ImGuiCond_Appearing);
 
 			ImGui::Begin("Log###log1");
-
-			std::deque<std::string> gui_logs = getLog();
-			std::vector<logType> gui_colours = getColour();
+			ImGui::Columns(2);
 
 			//  Output log onto window
-			for (size_t i = 0; i < gui_logs.size(); i++) {
-				ImGui::PushStyleColor(ImGuiCol_Text, setLogTextColour(gui_colours[i]));
-				ImGui::TextWrapped("%s", gui_logs[i].data());
-				ImGui::PopStyleColor();
+			ImGui::BeginChild("log_text1", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+
+			std::deque<GUILogData> gui_log_data = getGUILogData();
+
+			for (GUILogData log_data : gui_log_data) {
+				if (std::count(std::begin(mFind), std::begin(mFind) + strlen(mFind), ' ') == strlen(mFind)) {
+					if (mInfoCategory && log_data.type == logType::INFO) {
+						ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
+						ImGui::TextWrapped("%s", log_data.full_log.data());
+						ImGui::PopStyleColor();
+					}
+					if (mWarningCategory && log_data.type == logType::WARNING) {
+						ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
+						ImGui::TextWrapped("%s", log_data.full_log.data());
+						ImGui::PopStyleColor();
+					}
+					if (mErrorCategory && log_data.type == logType::ERROR) {
+						ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
+						ImGui::TextWrapped("%s", log_data.full_log.data());
+						ImGui::PopStyleColor();
+					}
+				}
+				// User searching for log
+				else {
+					if (startsWith(log_data.message, mFind)) {
+						ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
+						ImGui::TextWrapped("%s", log_data.full_log.data());
+						ImGui::PopStyleColor();
+					}
+				}
 			}
+
+			ImGui::EndChild();
+
+			// Sidebar
+			ImGui::NextColumn();
+			ImGui::SetColumnOffset(-1, ImGui::GetWindowSize().x * 0.65f);
+
+			ImGui::BeginChild("log_sidebar1", ImVec2(0, 0), false);
+
+			// Search
+			ImGui::Text("Find: ");
+			ImGui::SameLine();
+			ImGui::InputText("###find_log1", mFind, IM_ARRAYSIZE(mFind));
+			ImGui::Text("\n\n\n");
+
+			ImGui::HorizontalSeparator();
+
+			// Clear & Copy
+			if (ImGui::Button("Clear###clear_log1")) {
+				clearGUILog();
+			}
+			if (ImGui::Button("Copy###copy_log1")) {
+				ImGui::LogToClipboard();
+				for (GUILogData log_data : gui_log_data) {
+					ImGui::LogText(fmt::format("{}\n", log_data.full_log).data());
+				}
+				ImGui::LogFinish();
+			}
+			ImGui::Text("\n\n\n");
+
+			ImGui::HorizontalSeparator();
+
+			// Categories
+			ImGui::TextWrapped("Categories");
+			ImGui::Checkbox("INFO###info_category1", &mInfoCategory);
+			ImGui::Checkbox("WARNING###warning_category1", &mWarningCategory);
+			ImGui::Checkbox("ERROR###error_category1", &mErrorCategory);
+			ImGui::Text("\n\n\n");
+
+			ImGui::HorizontalSeparator();
+
+			// Temp
+			if (ImGui::Button("Dummy Log###dummy_log1")) {
+				for (u8 i = 0; i < 5; i++) {
+					u8 ran = NDRNG::intInRange(1, 3);
+
+					switch (ran) {
+					case 1:
+						log(logType::INFO, "This is information");
+						break;
+					case 2:
+						log(logType::WARNING, "This is a warning");
+						break;
+					case 3:
+						log(logType::ERROR, "This is an error");
+						break;
+					}
+				}
+			}
+
+			ImGui::EndChild();
 
 			ImGui::End();
 		}
@@ -244,9 +345,6 @@ namespace collapsingHeader {
 		if (mApplyTransparentOverlay) {
 			transparent_texture.bind(1);
 		}
-		else {
-			// TODO:
-		}
 	}
 
 	/*------------------------------------------------------------*/
@@ -276,7 +374,7 @@ namespace collapsingHeader {
 			setBackgroundColour(colour.x, colour.y, colour.z, colour.w);
 		}
 		else {
-			setBackgroundColour(0.2f, 0.3f, 0.3f, 1.0f);
+			setBackgroundColour(0.2f, 0.3f, 0.3f, 1.0f);	// Default
 		}
 	}
 
@@ -323,8 +421,6 @@ namespace collapsingHeader {
 			ImGui::TextWrapped("\n");
 			ImGui::TextWrapped("- 'Escape' = Quit game");
 			ImGui::TextWrapped("\n");
-			ImGui::TextWrapped("- '0 (Zero)' = Hold to disbale all other input methods / controls.");
-			ImGui::TextWrapped("\n");
 		}
 	}
 
@@ -348,8 +444,8 @@ namespace collapsingHeader {
 
 } // namespace collapsingHeader
 
-	// Check if mouse is hovering over UI
-	
+
+// Check if mouse is hovering over UI	
 #ifdef IMGUI_LAYER
 bool isMouseOverGUI() {
 	if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)) {

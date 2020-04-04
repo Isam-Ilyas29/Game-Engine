@@ -2,16 +2,12 @@
 
 #include "Core/std_types.hpp"
 
-#include "Rendering/graphic.hpp"
-
-#include <glm/glm.hpp>
 #include <glad/glad.h>
+#include <fmt/format.h>
+#include <glm/glm.hpp>
 
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
 #include <filesystem>
+#include <string>
 
 
 class Shader {

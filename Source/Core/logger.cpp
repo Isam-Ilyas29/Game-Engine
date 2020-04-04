@@ -6,6 +6,7 @@
 
 #include <fstream>
 #include <array>
+#include <iostream>
 
 
 namespace {
@@ -19,24 +20,25 @@ namespace {
 
 #ifdef IMGUI_LAYER
 	// GUI logs
-	bool is_log_opened = false;
-	std::vector<logType> log_colours;
-	std::deque<std::string> log_messages;
+	bool is_gui_log_opened = false;
+
+	u8 gui_log_limit = 20;
+
+	std::deque<GUILogData> gui_log_data;
 #endif
 }
 
 
 // Logging
-void log(logType type, std::string_view log_msg) {
-	std::string lt = ::log_type[static_cast<u8>(type)];
-
-	std::string full_log_msg = fmt::format("[{}] [{}] {}", getCurrentTime(), lt, log_msg);
+void log(logType type, std::string log_msg) {
+	std::string log_type = ::log_type[static_cast<u8>(type)];
+	std::string prefix = fmt::format("[{}] [{}]", getCurrentTime(), log_type);
+	std::string full_log_msg = fmt::format("{} {}", prefix, log_msg);
 
 	logToFile(full_log_msg);
 	logToConsole(full_log_msg);
 #ifdef IMGUI_LAYER
-	::log_colours.push_back(type);
-	logToGUI(full_log_msg);
+	logToGUI(prefix, log_msg, full_log_msg, type);
 #endif
 }
 
@@ -47,25 +49,27 @@ void logToConsole(std::string log_msg) {
 	std::cerr << log_msg << std::endl;
 }
 #ifdef IMGUI_LAYER
-	void logToGUI(std::string log_msg) {
-		if (::log_messages.size() >= 20) {
-			log_messages.pop_front();
+	void logToGUI(std::string log_prefix, std::string log_msg, std::string full_log_msg, logType log_type) {
+		if (::gui_log_data.size() >= ::gui_log_limit) {
+			gui_log_data.pop_front();
 		}
-		log_messages.push_back(log_msg);
+		GUILogData data{ log_prefix, log_msg, full_log_msg, log_type };
+		gui_log_data.push_back(data);
 	}
 #endif
 
 
 #ifdef DEBUG_MODE
 	// GUI Log
-	std::deque<std::string> getLog() {
-		return ::log_messages;
-	}
-	std::vector<logType> getColour() {
-		return ::log_colours;
+	std::deque<GUILogData> getGUILogData() {
+		return ::gui_log_data;
 	}
 
-	ImVec4 setLogTextColour(logType type) {
+	void clearGUILog() {
+		::gui_log_data.clear();
+	}
+
+	ImVec4 setGUILogTextColour(logType type) {
 		switch (type) {
 		case logType::INFO:
 			return ImVec4(1.f, 1.f, 1.f, 1.f);
@@ -80,10 +84,10 @@ void logToConsole(std::string log_msg) {
 		return ImVec4(0.f, 0.f, 0.f, 0.f);
 	}
 
-	void setLogWindow(bool predicate) {
-		::is_log_opened = predicate;
+	void setGUILogWindow(bool predicate) {
+		::is_gui_log_opened = predicate;
 	}
-	bool isLogWindowOpened() {
-		return ::is_log_opened;
+	bool isGUILogWindowOpened() {
+		return ::is_gui_log_opened;
 	}
 #endif

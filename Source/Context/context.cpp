@@ -1,13 +1,13 @@
 #include "Context/context.hpp"
 
+#include "Input/input_responder.hpp"
+#include "Core/logger.hpp"
+
 #include <glad/glad.h>
 #include <imgui.h>
 #include "Rendering/ImGUI/imgui_impl_glfw.hpp"
 #include "Rendering/ImGUI/imgui_impl_opengl3.hpp"
 #include <fmt/format.h>
-
-#include "Input/input_responder.hpp"
-#include "Core/logger.hpp"
 
 
 /*----------------------------------------------------------------------------------*/

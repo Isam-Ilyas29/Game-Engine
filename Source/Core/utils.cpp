@@ -4,6 +4,8 @@
 
 #include <fmt/format.h>
 
+#include <fstream>
+
 
 /*----------------------------------------------------------------------------------*/
 
@@ -63,6 +65,12 @@ std::vector<std::string> readFile(std::filesystem::path path) {
 	file.close();
 
 	return data;
+}
+
+/*----------------------------------------------------------------------------------*/
+
+bool startsWith(const std::string_view target, const std::string_view test) {
+	return target.substr(0, test.size()) == test;
 }
 
 /*----------------------------------------------------------------------------------*/

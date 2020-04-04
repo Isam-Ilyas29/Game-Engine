@@ -1,10 +1,9 @@
 #include "Rendering/graphic.hpp"
 
+#include "Core/logger.hpp"
+
 #include <GLFW/glfw3.h>
 #include <fmt/format.h>
-
-#include "Core/logger.hpp"
-#include "Core/profiler.hpp"
 
 #include <string>
 
@@ -68,7 +67,7 @@ VertexData::~VertexData() {
 	}
 }
 
-void VertexData::bindVBO(const std::vector<f32>& vertices, unsigned int VBO) {		// Accepts Vectors
+void VertexData::bindVBO(const std::vector<f32>& vertices, unsigned int VBO) {		    // Accepts Vectors
 	GLAD_CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, VBO));											
 	GLAD_CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices.front(), GL_STATIC_DRAW));
 }
@@ -107,7 +106,7 @@ void VertexData::textureAttrib(unsigned int location, size_t stride) {
 // Transform class
 
 Transform::Transform(u16 rotation_axis, glm::vec3 position, glm::quat rotation, glm::vec3 scale)
-	: mRotationAxis(rotation_axis), mPosition(position), mTransform(glm::mat4(1.f)), mRotation(rotation), mScale(scale) {
+	: mRotationAxis(rotation_axis), mPosition(position), mRotation(rotation), mScale(scale), mTransform(glm::mat4(1.f)) {
 
 	createModel();
 }

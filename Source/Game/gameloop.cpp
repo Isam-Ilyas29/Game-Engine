@@ -13,7 +13,19 @@
 #include "Input/input_responder.hpp"
 #include "Core/utils.hpp"
 
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <imgui.h>
 #include <fmt/format.h>
+
+#include <filesystem>
+#include <string>
+#include <array>
+#include <vector>
+#include <memory>
 
 
 bool gameloop::run(int argc, char* argv[]) {
@@ -28,7 +40,7 @@ bool gameloop::run(int argc, char* argv[]) {
 
 	context::initialiseGLFW();
 
-	std::string name = "My Game Engine";  u16 width = 600; u16 height = 450;
+	std::string name = "Game Engine";  u16 width = 600; u16 height = 450;
 	bool success = context::window::setupWindow(name, width, 450);
 	if (!success) {
 		return false;

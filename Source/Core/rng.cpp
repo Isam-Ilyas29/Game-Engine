@@ -50,11 +50,6 @@ void RandomBatch::reset() {
     mCurrent = 1;
 }
 
-void RandomBatch::debugOutput() {
-    for (size_t i = 0; i < mAmount; ++i) {
-        std::cout << i << ',';
-    }
-}
 u16 RandomBatch::getCurrentIndex() const {
     return mCurrent;
 }

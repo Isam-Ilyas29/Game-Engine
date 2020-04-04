@@ -1,16 +1,12 @@
 #include "Core/std_types.hpp"
+#include "Core/time.hpp"
+#include "Rendering/texture.hpp"
 
 #include <imgui.h>
-#include "Rendering/ImGUI/imgui_impl_glfw.hpp"
-#include "Rendering/ImGUI/imgui_impl_opengl3.hpp"
 
+#include <vector>
+#include <string>
 #include <memory>
-#include <array>
-
-#include "Core/utils.hpp"
-#include "Rendering/graphic.hpp"
-#include "Rendering/texture.hpp"
-#include "Input/input_responder.hpp"
 
 
 namespace collapsingHeader {
@@ -28,11 +24,19 @@ namespace collapsingHeader {
 
 	// Logger
 	class LoggerUI {
+	private:
+		size_t mLowerIndex = 0;
+		size_t mUpperIndex = 0;
 	public:
 #ifdef IMGUI_LAYER
+		static char mFind[250];
+		static bool mInfoCategory;
+		static bool mWarningCategory;
+		static bool mErrorCategory;
+
 		void display();
-#endif
 		void process();
+#endif
 	};
 
 	// Profiler
@@ -40,8 +44,8 @@ namespace collapsingHeader {
 	public:
 #ifdef IMGUI_LAYER
 		void display();
-#endif
 		void process();
+#endif
 	};
 
 	// Console
@@ -49,8 +53,8 @@ namespace collapsingHeader {
 	public:
 #ifdef IMGUI_LAYER
 		void display();
-#endif
 		void process();
+#endif
 	};
 
 	// Texture

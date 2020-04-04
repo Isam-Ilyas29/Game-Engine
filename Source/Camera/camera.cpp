@@ -1,6 +1,5 @@
-#include <iostream>
-
 #include "Camera/camera.hpp"
+
 #include "Context/context.hpp"
 
 #include <GLFW/glfw3.h>

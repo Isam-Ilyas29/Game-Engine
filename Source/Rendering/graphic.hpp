@@ -8,10 +8,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include <iostream>
 #include <vector>
 #include <filesystem>
-#include <array>
 
 
 /*----------------------------------------------------------------------------------*/
@@ -52,8 +50,8 @@ public:
 
 	~VertexData();
 
-	void bindVBO(const std::vector<f32>& vertices, unsigned int VBO);					// Accepts Vectors
-	void bindVBO(f32 vertices[], size_t size, unsigned int VBO);			// Accepts Arrays
+	void bindVBO(const std::vector<f32>& vertices, unsigned int VBO);			// Accepts Vectors
+	void bindVBO(f32 vertices[], size_t size, unsigned int VBO);			    // Accepts Arrays
 	void bindEBO(const std::vector<u8>& indices, unsigned int EBO);
 	void bindVAO(unsigned int VAO);
 
@@ -69,13 +67,13 @@ public:
 
 class Transform {
 private:
-	glm::mat4 mTransform;
+	u16 mRotationAxis;
 
 	glm::vec3 mPosition;
 	glm::quat mRotation;
 	glm::vec3 mScale;
 
-	u16 mRotationAxis;
+	glm::mat4 mTransform;
 
 public:
 	Transform(u16 rotation_axis, glm::vec3 positions, glm::quat rotation, glm::vec3 scale = glm::vec3(1.f));
