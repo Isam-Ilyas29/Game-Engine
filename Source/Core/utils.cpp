@@ -1,10 +1,13 @@
 #include "Core/utils.hpp"
 
 #include "Core/logger.hpp"
+#include "Environment/environment.hpp"
 
 #include <fmt/format.h>
 
 #include <fstream>
+
+#include <iostream> //temp
 
 
 /*----------------------------------------------------------------------------------*/
@@ -71,6 +74,22 @@ std::vector<std::string> readFile(std::filesystem::path path) {
 
 bool startsWith(const std::string_view target, const std::string_view test) {
 	return target.substr(0, test.size()) == test;
+}
+
+/*----------------------------------------------------------------------------------*/
+
+void directoryReader(std::filesystem::path file_name, std::filesystem::path directory) {
+	std::ofstream file(environment::getResourcePath("DirectoryReader/") / file_name);
+
+	for (auto& path : std::filesystem::recursive_directory_iterator(directory)) {
+		if (!std::filesystem::is_directory(path)) {
+			auto base = std::filesystem::path{ "C:/Users/ilsai/Documents/OpenGL/GladApp/" };
+			auto relative = std::filesystem::relative(path, base);
+			file << relative.generic_string() << "\n";
+		}
+	}
+
+	file.close();
 }
 
 /*----------------------------------------------------------------------------------*/

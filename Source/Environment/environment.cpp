@@ -6,6 +6,9 @@ namespace environment{
 	std::filesystem::path resourcePath;
 
 	std::filesystem::path environment::getResourcePath(std::filesystem::path id) {
+		if (id == "") {
+			return resourcePath;
+		}
 		return resourcePath / id;
 	}
 }

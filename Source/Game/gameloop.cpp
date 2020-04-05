@@ -57,8 +57,15 @@ bool gameloop::run(int argc, char* argv[]) {
 #ifdef IMGUI_LAYER
 	context::imguiContext();
 	context::setImguiTheme(themeGrey);
-	context::setImguiFont(environment::getResourcePath("Fonts/open_sans.ttf"), 17.f);
+	context::setImguiTextFont(environment::getResourcePath("Fonts/Texts/open_sans.ttf"), 17.f);
+	context::setImguiIconFont(environment::getResourcePath("Fonts/Icons/icons_font_awesome.ttf"), 14.5f);
 #endif
+
+	/*----------------------------------------------------------------------------------*/
+
+	// Read directories and append file paths to txt
+
+	directoryReader("textures_list.txt", environment::getResourcePath("Textures/Solid"));
 
 	/*----------------------------------------------------------------------------------*/
 
@@ -154,12 +161,12 @@ bool gameloop::run(int argc, char* argv[]) {
 		std::vector<std::string> textures = readFile(environment::getResourcePath("DirectoryReader/textures_list.txt"));
 
 		// Initialise texture objects
-		Texture transparent1(environment::getResourcePath("Textures/T_Transparent/graffiti_texture1.png"));
+		Texture transparent1(environment::getResourcePath("Textures/Transparent/Graffiti/graffiti_texture1.png"));
 
-		auto texture1 = std::make_unique<Texture>(environment::getResourcePath("Textures/T_Metal/metal_bricks1.jpg"));
-		auto texture2 = std::make_unique<Texture>(environment::getResourcePath("Textures/T_Wood/wood_planks1.jpg"));
+		auto texture1 = std::make_unique<Texture>(environment::getResourcePath("Textures/Solid/Metal/metal_bricks1.jpg"));
+		auto texture2 = std::make_unique<Texture>(environment::getResourcePath("Textures/Solid/Wood/wood_planks1.jpg"));
 
-		Texture error_texture(environment::getResourcePath("Textures/error_texture1.png"));
+		Texture error_texture(environment::getResourcePath("Textures/Other/error_texture1.png"));
 
 		// Add all textures to vector
 		std::vector<std::unique_ptr<Texture>> loaded_textures;

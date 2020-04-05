@@ -7,5 +7,5 @@ namespace environment {
     extern std::filesystem::path exePath;
     extern std::filesystem::path resourcePath;
 
-    std::filesystem::path getResourcePath(std::filesystem::path id);
+    std::filesystem::path getResourcePath(std::filesystem::path id = "");
 }

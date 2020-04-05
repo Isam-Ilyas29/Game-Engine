@@ -1,5 +1,6 @@
 #include "Rendering/ImGUI/gui.hpp"
 
+#include "Rendering/ImGUI/icons_font_awesome.hpp"
 #include "Core/utils.hpp"
 #include "Core/logger.hpp"
 #include "Core/profiler.hpp"
@@ -13,8 +14,6 @@
 
 #include <deque>
 #include <algorithm>
-
-#include <iostream> //temp
 
 
 namespace collapsingHeader {
@@ -55,7 +54,7 @@ namespace collapsingHeader {
 			
 			ImGui::Text("\n");
 
-			if (ImGui::Button("View log###view_log1")) {
+			if (ImGui::Button(ICON_FA_FILE_ALT "   View log ###view_log1")) {
 				setGUILogWindow(!isGUILogWindowOpened());
 			}
 
@@ -121,10 +120,10 @@ namespace collapsingHeader {
 			ImGui::HorizontalSeparator();
 
 			// Clear & Copy
-			if (ImGui::Button("Clear###clear_log1")) {
+			if (ImGui::Button(ICON_FA_TRASH_ALT "   Clear ###clear_log1")) {
 				clearGUILog();
 			}
-			if (ImGui::Button("Copy###copy_log1")) {
+			if (ImGui::Button(ICON_FA_COPY "   Copy ###copy_log1")) {
 				ImGui::LogToClipboard();
 				for (GUILogData log_data : gui_log_data) {
 					ImGui::LogText(fmt::format("{}\n", log_data.full_log).data());
@@ -144,8 +143,8 @@ namespace collapsingHeader {
 
 			ImGui::HorizontalSeparator();
 
-			// Temp
-			if (ImGui::Button("Dummy Log###dummy_log1")) {
+			// Dummy log
+			if (ImGui::Button(ICON_FA_PLUS "   Dummy Log ###dummy_log1")) {
 				for (u8 i = 0; i < 5; i++) {
 					u8 ran = NDRNG::intInRange(1, 3);
 
@@ -180,7 +179,7 @@ namespace collapsingHeader {
 
 			ImGui::Text("\n");
 
-			if (ImGui::Button("View profiler###view_profiler1")) {
+			if (ImGui::Button(ICON_FA_CHART_BAR "   View profiler ###view_profiler1")) {
 				setProfileWindow(!isProfileWindowOpened());
 			}
 
@@ -212,7 +211,7 @@ namespace collapsingHeader {
 
 			ImGui::Text("\n");
 
-			if (ImGui::Button("View console###view_console1")) {
+			if (ImGui::Button(ICON_FA_TERMINAL "   View console ###view_console1")) {
 				setConsoleWindow(!isConsoleWindowOpened());
 			}
 

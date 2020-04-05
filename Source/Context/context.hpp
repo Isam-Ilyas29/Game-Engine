@@ -24,7 +24,8 @@ namespace context {
 	void imguiContext();
 	void createMainImguiWindow(std::string name);
 	void setImguiTheme(std::function<void()> theme);
-	void setImguiFont(const std::filesystem::path& font, f32 size);
+	void setImguiTextFont(const std::filesystem::path& path, f32 size);
+	void setImguiIconFont(const std::filesystem::path& path, f32 size);
 	void renderImgui();
 #endif
 

@@ -46,3 +46,8 @@ std::vector<std::string> readFile(std::filesystem::path path);
 bool startsWith(const std::string_view target, const std::string_view test);
 
 /*----------------------------------------------------------------------------------*/
+
+// Finds all file paths for a given directory and appends to txt file
+void directoryReader(std::filesystem::path file_name, std::filesystem::path directory);
+
+/*----------------------------------------------------------------------------------*/

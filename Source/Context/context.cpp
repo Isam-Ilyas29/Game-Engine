@@ -2,6 +2,7 @@
 
 #include "Input/input_responder.hpp"
 #include "Core/logger.hpp"
+#include "Rendering/ImGUI/icons_font_awesome.hpp"
 
 #include <glad/glad.h>
 #include <imgui.h>
@@ -92,9 +93,17 @@ namespace context {
 	void setImguiTheme(std::function<void()> theme) {
 		theme();
 	}
-	void setImguiFont(const std::filesystem::path& font, f32 size) {
+	void setImguiTextFont(const std::filesystem::path& path, f32 size) {
 		ImGuiIO& io = ImGui::GetIO();
-		io.Fonts->AddFontFromFileTTF(font.generic_string().data(), size);
+		io.Fonts->AddFontFromFileTTF(path.generic_string().data(), size);
+	}
+	void setImguiIconFont(const std::filesystem::path& path, f32 size) {
+		ImGuiIO& io = ImGui::GetIO();
+		ImFontConfig icons_config; 
+		icons_config.MergeMode = true; 
+		icons_config.PixelSnapH = true;
+		static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+		io.Fonts->AddFontFromFileTTF(path.generic_string().data(), size, &icons_config, icons_ranges);
 	}
 	void renderImgui() {
 		ImGui::Render();
