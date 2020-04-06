@@ -7,8 +7,6 @@
 
 #include <fstream>
 
-#include <iostream> //temp
-
 
 /*----------------------------------------------------------------------------------*/
 
@@ -83,9 +81,7 @@ void directoryReader(std::filesystem::path file_name, std::filesystem::path dire
 
 	for (auto& path : std::filesystem::recursive_directory_iterator(directory)) {
 		if (!std::filesystem::is_directory(path)) {
-			auto base = std::filesystem::path{ "C:/Users/ilsai/Documents/OpenGL/GladApp/" };
-			auto relative = std::filesystem::relative(path, base);
-			file << relative.generic_string() << "\n";
+			file << path.path().generic_string().substr(path.path().generic_string().find("Resources")) << "\n";
 		}
 	}
 

@@ -5,6 +5,7 @@
 #include "Core/logger.hpp"
 #include "Core/profiler.hpp"
 #include "Core/console.hpp"
+#include "Rendering/editor.hpp"
 #include "Context/context.hpp"
 #include "Rendering/graphic.hpp"
 #include "Core/rng.hpp"
@@ -20,12 +21,10 @@ namespace collapsingHeader {
 
 	/*----------------------------------------------------------------------------------*/
 
-	/*------------------------------------------------------------*/
-
 	// Information
 
 #ifdef IMGUI_LAYER
-	void InformationUI::display() {
+	void InformationUI::header() {
 		if (ImGui::CollapsingHeader("Information")) {
 
 			ImGui::TextWrapped("\n");
@@ -39,7 +38,7 @@ namespace collapsingHeader {
 		mFPS = getFramesPerSecond(delta_time);
 	}
 
-	/*------------------------------------------------------------*/
+	/*----------------------------------------------------------------------------------*/
 
 	// Logger
 
@@ -49,7 +48,7 @@ namespace collapsingHeader {
 	bool LoggerUI::mWarningCategory = true;
 	bool LoggerUI::mErrorCategory = true;
 
-	void LoggerUI::display() {
+	void LoggerUI::header() {
 		if (ImGui::CollapsingHeader("Log")) {
 			
 			ImGui::Text("\n");
@@ -63,6 +62,7 @@ namespace collapsingHeader {
 	}
 	void LoggerUI::process() {
 		if (isGUILogWindowOpened()) {
+
 			// Set window size and pos
 			ImGui::SetNextWindowSize(ImVec2(context::window::getWidth() * 0.34f, context::window::getHeight() * 0.3476f), ImGuiCond_Appearing);
 			ImGui::SetNextWindowPos(ImVec2(context::window::getWidth() * 0.655f, context::window::getHeight() * 0.005), ImGuiCond_Appearing);
@@ -169,12 +169,12 @@ namespace collapsingHeader {
 	}
 #endif
 
-	/*------------------------------------------------------------*/
+	/*----------------------------------------------------------------------------------*/
 
 	// Profiler
 
 #ifdef IMGUI_LAYER
-	void ProfilerUI::display() {
+	void ProfilerUI::header() {
 		if (ImGui::CollapsingHeader("Profiler")) {
 
 			ImGui::Text("\n");
@@ -188,6 +188,7 @@ namespace collapsingHeader {
 	}
 	void ProfilerUI::process() {
 		if (isProfileWindowOpened()) {
+
 			// Set window size and pos
 			ImGui::SetNextWindowSize(ImVec2(context::window::getWidth() * 0.36f, context::window::getHeight() * 0.38f), ImGuiCond_Appearing);
 			ImGui::SetNextWindowPos(ImVec2(context::window::getWidth() * 0.005f, context::window::getHeight() * 0.6135f), ImGuiCond_Appearing);
@@ -201,12 +202,12 @@ namespace collapsingHeader {
 	}
 #endif
 
-	/*------------------------------------------------------------*/
+	/*----------------------------------------------------------------------------------*/
 
 	// Console
 
 #ifdef IMGUI_LAYER
-	void ConsoleUI::display() {
+	void ConsoleUI::header() {
 		if (ImGui::CollapsingHeader("Console")) {
 
 			ImGui::Text("\n");
@@ -220,6 +221,7 @@ namespace collapsingHeader {
 	}
 	void ConsoleUI::process() {
 		if (isConsoleWindowOpened()) {
+
 			// Set window size and pos
 			ImGui::SetNextWindowSize(ImVec2(context::window::getWidth() * 0.34f, context::window::getHeight() * 0.35f), ImGuiCond_Appearing);
 			ImGui::SetNextWindowPos(ImVec2(context::window::getWidth() * 0.655f, context::window::getHeight() * 0.6455f), ImGuiCond_Appearing);
@@ -233,96 +235,155 @@ namespace collapsingHeader {
 	}
 #endif
 
-	/*------------------------------------------------------------*/
+	/*----------------------------------------------------------------------------------*/
+
+	// Editor
 
 	// Texture
+	const char* EditorUI::mCurrentItem = "None";
+	u8 EditorUI::mSelectedValue = 0;
+	bool EditorUI::mApplyTexture;
+	bool EditorUI::mApplyTransparentOverlay;
 
-	const char* TextureUI::mCurrentItem = "None";
-	u8 TextureUI::mSelectedValue = 0;
-	bool TextureUI::mApplyTexture;
-	bool TextureUI::mApplyTransparentOverlay;
+	// Background Colour
+
+	ImVec4 EditorUI::mColour = ImVec4(0.2f, 0.3f, 0.3f, 1.0f);
+	bool EditorUI::mApplyBackground;
+
+	// Polygon Mode
+
+	int EditorUI::mSelectedItem;
+	const char* EditorUI::mItems[] = { "Fill", "Line", "Point" };
 
 #ifdef IMGUI_LAYER
-	void TextureUI::display(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture) {
-		if (ImGui::CollapsingHeader("Textures")) {
+	void EditorUI::header() {
+		if (ImGui::CollapsingHeader("Editor")) {
 
-			// Copes items of passed in vector into another vector of 'const char*'
-			std::vector<const char*> items;
-			items.push_back("None");
-			for (size_t i = 0; i < textures.size(); i++) {
-				items.push_back(textures[i].data());
+			ImGui::Text("\n");
+
+			if (ImGui::Button(ICON_FA_PEN_ALT "   View editor ###view_editor1")) {
+				setEditorWindow(!isEditorWindowOpened());
 			}
-
-			// Texture loader combo:
-			ImGui::TextWrapped("\nTexture Picker: ");
-			if (ImGui::BeginCombo("###texture_picker1", mCurrentItem, ImGuiComboFlags_NoArrowButton)) {
-				for (size_t i = 0; i < items.size(); i++) {
-					bool is_selected = (mCurrentItem == items[i]);
-					if (ImGui::Selectable(items[i], is_selected)) {
-						mSelectedValue = i;		//Index of selected item
-						mCurrentItem = items[i];	//Name of selected item
-					}
-					if (is_selected) {
-						ImGui::SetItemDefaultFocus();
-					}
-				}
-				ImGui::EndCombo();
-			}
-
-			ImGuiStyle& style = ImGui::GetStyle();
-			float spacing = style.ItemInnerSpacing.x;
-
-
-			// Creates arrows and makes sure they cannot go beyond/below possible value limit
-			ImGui::SameLine(0, spacing);
-			if (ImGui::ArrowButton("###left1", ImGuiDir_Left)) {
-				if (mSelectedValue != 0) {
-					mSelectedValue -= 1;
-					mCurrentItem = items[mSelectedValue];
-				}
-			}
-			ImGui::SameLine(0, spacing);
-			if (ImGui::ArrowButton("###right1", ImGuiDir_Right)) {
-				if (mSelectedValue != (items.size() - 1)) {
-					mSelectedValue += 1;
-					mCurrentItem = items[mSelectedValue];
-				}
-			}
-
-			for (size_t i = 0; i < loaded_textures.size(); i++) {
-				bool correct_texture = (i == mSelectedValue);
-
-				// Makes sure if selected item is none no image preview will be loaded and in else statement it default loads the error texture
-				if (correct_texture && mSelectedValue != 0) {
-					// Image previewer
-					GLuint imgui_preview_image_texture = 0;
-
-					bool image = loaded_textures[i]->previewImage(&imgui_preview_image_texture);
-					IM_ASSERT(image);
-
-					ImGui::TextWrapped("\nImage Preview: ");
-					ImGui::Image((void*)(intptr_t)imgui_preview_image_texture, ImVec2(160, 160));
-
-					ImGui::TextWrapped("\n");
-					ImGui::TextWrapped("Apply: ");
-					ImGui::SameLine();
-					ImGui::Checkbox("###apply_texture1", &mApplyTexture);
-
-					break;
-				}
-			}
-
-			// Transparent Overlay
-			ImGui::TextWrapped("\n");
-			ImGui::TextWrapped("Transparent Overlay: ");
-			ImGui::SameLine();
-			ImGui::Checkbox("###transparent_overlay1", &mApplyTransparentOverlay);
 
 			ImGui::Text("\n");
 		}
 	}
 #endif
-	void TextureUI::process(const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture) {
+	void EditorUI::process(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture) {
+#ifdef IMGUI_LAYER
+		if (isEditorWindowOpened()) {
+
+			// Set window size and pos
+			ImGui::SetNextWindowSize(ImVec2(context::window::getWidth() * 0.25, context::window::getHeight() * 0.98f), ImGuiCond_Appearing);
+			ImGui::SetNextWindowPos(ImVec2(context::window::getWidth() * 0.7465f, context::window::getHeight() * 0.0125), ImGuiCond_Appearing);
+
+			ImGui::Begin("Editor###editor1");
+
+			// Texture
+			if (ImGui::CollapsingHeader("Textures")) {
+
+				// Copes items of passed in vector into another vector of 'const char*'
+				std::vector<const char*> items;
+				items.push_back("None");
+				for (size_t i = 0; i < textures.size(); i++) {
+					items.push_back(textures[i].data());
+				}
+
+				// Texture loader combo:
+				ImGui::TextWrapped("\nTexture Picker: ");
+				if (ImGui::BeginCombo("###texture_picker1", mCurrentItem, ImGuiComboFlags_NoArrowButton)) {
+					for (size_t i = 0; i < items.size(); i++) {
+						bool is_selected = (mCurrentItem == items[i]);
+						if (ImGui::Selectable(items[i], is_selected)) {
+							mSelectedValue = i;		//Index of selected item
+							mCurrentItem = items[i];	//Name of selected item
+						}
+						if (is_selected) {
+							ImGui::SetItemDefaultFocus();
+						}
+					}
+					ImGui::EndCombo();
+				}
+
+				ImGuiStyle& style = ImGui::GetStyle();
+				float spacing = style.ItemInnerSpacing.x;
+
+
+				// Creates arrows and makes sure they cannot go beyond/below possible value limit
+				ImGui::SameLine(0, spacing);
+				if (ImGui::ArrowButton("###left1", ImGuiDir_Left)) {
+					if (mSelectedValue != 0) {
+						mSelectedValue -= 1;
+						mCurrentItem = items[mSelectedValue];
+					}
+				}
+				ImGui::SameLine(0, spacing);
+				if (ImGui::ArrowButton("###right1", ImGuiDir_Right)) {
+					if (mSelectedValue != (items.size() - 1)) {
+						mSelectedValue += 1;
+						mCurrentItem = items[mSelectedValue];
+					}
+				}
+
+				for (size_t i = 0; i < loaded_textures.size(); i++) {
+					bool correct_texture = (i == mSelectedValue);
+
+					// Makes sure if selected item is none no image preview will be loaded and in else statement it default loads the error texture
+					if (correct_texture && mSelectedValue != 0) {
+						// Image previewer
+						GLuint imgui_preview_image_texture = 0;
+
+						bool image = loaded_textures[i]->previewImage(&imgui_preview_image_texture);
+						IM_ASSERT(image);
+
+						ImGui::TextWrapped("\nImage Preview: ");
+						ImGui::Image((void*)(intptr_t)imgui_preview_image_texture, ImVec2(160, 160));
+
+						ImGui::TextWrapped("\n");
+						ImGui::TextWrapped("Apply: ");
+						ImGui::SameLine();
+						ImGui::Checkbox("###apply_texture1", &mApplyTexture);
+
+						break;
+					}
+				}
+
+				// Transparent Overlay
+				ImGui::TextWrapped("\n");
+				ImGui::TextWrapped("Transparent Overlay: ");
+				ImGui::SameLine();
+				ImGui::Checkbox("###transparent_overlay1", &mApplyTransparentOverlay);
+
+				ImGui::Text("\n");
+			}
+
+			// Background Colour
+			if (ImGui::CollapsingHeader("Background Colour")) {
+				ImGui::TextWrapped("\nBackground Colour Picker: ");
+				ImGui::ColorEdit3("###background_colour_picker1", (float*)&mColour);
+
+				ImGui::TextWrapped("\n");
+				ImGui::TextWrapped("Apply: ");
+				ImGui::SameLine();
+				ImGui::Checkbox("###apply_background1", &mApplyBackground);
+
+				ImGui::Text("\n");
+			}
+
+			// Polygon Mode
+			if (ImGui::CollapsingHeader("Polygon Mode")) {
+
+				// Polygon toggle checkbox: 
+				ImGui::TextWrapped("\nPolygon Mode: ");
+				ImGui::ListBox("###polygon_mode1", &mSelectedItem, mItems, IM_ARRAYSIZE(mItems), 3);
+				ImGui::Text("\n");
+			}
+
+			ImGui::End();
+		}
+#endif
+
+		// Texture
 		for (size_t i = 0; i < loaded_textures.size(); i++) {
 			bool correct_texture = (i == mSelectedValue);
 
@@ -344,68 +405,22 @@ namespace collapsingHeader {
 		if (mApplyTransparentOverlay) {
 			transparent_texture.bind(1);
 		}
-	}
 
-	/*------------------------------------------------------------*/
-
-	// Background colour
-
-	ImVec4 BackgroundColourUI::colour = ImVec4(0.2f, 0.3f, 0.3f, 1.0f);
-	bool BackgroundColourUI::apply_background;
-
-#ifdef IMGUI_LAYER
-	void BackgroundColourUI::display() {
-		if (ImGui::CollapsingHeader("Colour")) {
-			ImGui::TextWrapped("\nBackground Colour Picker: ");
-			ImGui::ColorEdit3("###background_colour_picker1", (float*)&colour);
-
-			ImGui::TextWrapped("\n");
-			ImGui::TextWrapped("Apply: ");
-			ImGui::SameLine();
-			ImGui::Checkbox("###apply_background1", &apply_background);
-
-			ImGui::Text("\n");
-		}
-	}
-#endif
-	void BackgroundColourUI::process() {
-		if (apply_background) {
-			setBackgroundColour(colour.x, colour.y, colour.z, colour.w);
+		// Background Colour
+		if (mApplyBackground) {
+			setBackgroundColour(mColour.x, mColour.y, mColour.z, mColour.w);
 		}
 		else {
 			setBackgroundColour(0.2f, 0.3f, 0.3f, 1.0f);	// Default
 		}
-	}
 
-	/*------------------------------------------------------------*/
-
-	// Polygon mode
-
-	int PolygonModeUI::mSelectedItem;
-	const char* PolygonModeUI::mItems[] = { "Fill", "Line", "Point" };
-
-#ifdef IMGUI_LAYER
-	void PolygonModeUI::display() {
-		if (ImGui::CollapsingHeader("Miscellaneous")) {
-
-			// Polygon toggle checkbox: 
-			ImGui::TextWrapped("\nPolygon Mode: ");
-			ImGui::ListBox("###polygon_mode1", &mSelectedItem, mItems, IM_ARRAYSIZE(mItems), 3);
-			ImGui::Text("\n");
-		}
-	}
-#endif
-	void PolygonModeUI::process() {
+		// Polygon Mode
 		polygon_mode = static_cast<polygonMode>(mSelectedItem);
 	}
 
 	/*----------------------------------------------------------------------------------*/
 
-	// Text based UI's
-
 #ifdef IMGUI_LAYER
-
-	/*------------------------------------------------------------*/
 
 	void controlsText() {
 		if (ImGui::CollapsingHeader("Controls")) {
@@ -422,8 +437,6 @@ namespace collapsingHeader {
 			ImGui::TextWrapped("\n");
 		}
 	}
-
-	/*------------------------------------------------------------*/
 
 	void aboutText() {
 		if (ImGui::CollapsingHeader("About")) {

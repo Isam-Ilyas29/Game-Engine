@@ -40,7 +40,7 @@ namespace context {
 	void initialiseGLFW() {
 		glfwInit();
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		log(logType::INFO, "CONTEXT | GLFW Successfully Initialised");
@@ -144,6 +144,9 @@ namespace context {
 
 			ImGui::SetWindowSize("###console1", ImVec2(width * 0.34f, height * 0.35f));
 			ImGui::SetWindowPos("###console1", ImVec2(width * 0.655f, height * 0.6455f));
+
+			ImGui::SetWindowSize("###editor1", ImVec2(width * 0.25, height * 0.98f));
+			ImGui::SetWindowPos("###editor1", ImVec2(width * 0.7465f, height * 0.0125));
 #endif		
 		}
 

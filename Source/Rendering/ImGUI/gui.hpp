@@ -17,7 +17,7 @@ namespace collapsingHeader {
 		u16 mFPS;
 	public:
 #ifdef IMGUI_LAYER
-		void display();
+		void header();
 #endif
 		void process(Time delta_time);
 	};
@@ -34,7 +34,7 @@ namespace collapsingHeader {
 		static bool mWarningCategory;
 		static bool mErrorCategory;
 
-		void display();
+		void header();
 		void process();
 #endif
 	};
@@ -43,7 +43,7 @@ namespace collapsingHeader {
 	class ProfilerUI {
 	public:
 #ifdef IMGUI_LAYER
-		void display();
+		void header();
 		void process();
 #endif
 	};
@@ -52,47 +52,32 @@ namespace collapsingHeader {
 	class ConsoleUI {
 	public:
 #ifdef IMGUI_LAYER
-		void display();
+		void header();
 		void process();
 #endif
 	};
 
-	// Texture
-	class TextureUI {
+	// Editor
+	class EditorUI {
 	public:
+		// Texture
 		static const char* mCurrentItem;
 		static u8 mSelectedValue;
 		static bool mApplyTexture;
 		static bool mApplyTransparentOverlay;
 
-#ifdef IMGUI_LAYER
-		void display(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture);
-#endif
-		void process(const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture);
-	};
+		// Colour
+		static ImVec4 mColour;
+		static bool mApplyBackground;
 
-	// Colour
-	class BackgroundColourUI {
-	public:
-		static ImVec4 colour;
-		static bool apply_background;
-
-#ifdef IMGUI_LAYER
-		void display();
-#endif
-		void process();
-	};
-
-	// Polygon Mode
-	class PolygonModeUI {
-	public:
+		// Polygon Mode
 		static int mSelectedItem;
 		static const char* mItems[];
 
 #ifdef IMGUI_LAYER
-		void display();
+		void header();
 #endif
-		void process();
+		void process(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture);
 	};
 
 	// Text

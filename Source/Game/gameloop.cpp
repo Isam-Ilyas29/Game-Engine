@@ -220,9 +220,7 @@ bool gameloop::run(int argc, char* argv[]) {
 		collapsingHeader::LoggerUI logger_ui;
 		collapsingHeader::ProfilerUI profiler_ui;
 		collapsingHeader::ConsoleUI console_ui;
-		collapsingHeader::TextureUI texture_ui;
-		collapsingHeader::PolygonModeUI polygon_mode_ui;
-		collapsingHeader::BackgroundColourUI colour_ui;
+		collapsingHeader::EditorUI editor_ui;
 
 		// Polygon Mode
 
@@ -252,17 +250,15 @@ bool gameloop::run(int argc, char* argv[]) {
 				if (ImGui::BeginTabItem("Debug###debug1")) {
 					ImGui::TextWrapped("\n");
 
-					texture_ui.process(std::move(loaded_textures), error_texture, transparent1);
-					colour_ui.process();
-					polygon_mode_ui.process();
+					editor_ui.process(textures, std::move(loaded_textures), error_texture, transparent1);
 
-					information_ui.display();
+					information_ui.header();
 					information_ui.process(delta_time);
-					logger_ui.display();
+					logger_ui.header();
 					logger_ui.process();
-					profiler_ui.display();
+					profiler_ui.header();
 					profiler_ui.process();
-					console_ui.display();
+					console_ui.header();
 					console_ui.process();
 
 					ImGui::EndTabItem();
@@ -276,12 +272,8 @@ bool gameloop::run(int argc, char* argv[]) {
 					profiler_ui.process();
 					console_ui.process();
 
-					texture_ui.display(textures, std::move(loaded_textures), error_texture, transparent1);
-					texture_ui.process(std::move(loaded_textures), error_texture, transparent1);
-					colour_ui.display();
-					colour_ui.process();
-					polygon_mode_ui.display();
-					polygon_mode_ui.process();
+					editor_ui.header();
+					editor_ui.process(textures, std::move(loaded_textures), error_texture, transparent1);
 
 					ImGui::EndTabItem();
 				}
@@ -293,9 +285,7 @@ bool gameloop::run(int argc, char* argv[]) {
 					logger_ui.process();
 					profiler_ui.process();
 					console_ui.process();
-					texture_ui.process(std::move(loaded_textures), error_texture, transparent1);
-					colour_ui.process();
-					polygon_mode_ui.process();
+					editor_ui.process(textures, std::move(loaded_textures), error_texture, transparent1);
 
 					collapsingHeader::controlsText();
 					collapsingHeader::aboutText();
@@ -306,29 +296,18 @@ bool gameloop::run(int argc, char* argv[]) {
 				ImGui::EndTabBar();
 			}
 			else {
-				information_ui.display();
 				information_ui.process(delta_time);
-				logger_ui.display();
 				logger_ui.process();
-				profiler_ui.display();
 				profiler_ui.process();
-				console_ui.display();
 				console_ui.process();
-				texture_ui.display(textures, std::move(loaded_textures), error_texture, transparent1);
-				texture_ui.process(std::move(loaded_textures), error_texture, transparent1);
-				colour_ui.display();
-				colour_ui.process();
-				polygon_mode_ui.display();
-				polygon_mode_ui.process();
+				editor_ui.process(textures, std::move(loaded_textures), error_texture, transparent1);
 			}
 
 			should_isolte = isMouseOverGUI();
 
 			ImGui::End();
 #else
-			texture_ui.process(std::move(loaded_textures), error_texture, transparent1);
-			colour_ui.process();
-			polygon_mode_ui.process();
+			editor_ui.process();
 #endif
 
 			// Projection + View + Transform [MATRICES]
