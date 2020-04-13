@@ -8,6 +8,8 @@
 #include <bitset>
 
 
+/*----------------------------------------------------------------------------------*/
+
 // Scene states and has the correspoding functions and bitset
 
 enum class sceneStates {

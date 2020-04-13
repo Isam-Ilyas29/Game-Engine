@@ -11,6 +11,10 @@
 
 
 class Shader {
+private:
+    std::filesystem::path mVertexPath;
+    std::filesystem::path mFragmentPath;
+
 public:
     // Program ID
     unsigned int mID;

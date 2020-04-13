@@ -19,6 +19,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
+#include "Rendering/ImGUI/imgui_impl_glfw.hpp"
+#include "Rendering/ImGUI/imgui_impl_opengl3.hpp"
 #include <fmt/format.h>
 
 #include <filesystem>
@@ -29,6 +31,10 @@
 
 
 bool gameloop::run(int argc, char* argv[]) {
+
+	/*----------------------------------------------------------------------------------*/
+
+	// Environment
 
 	std::filesystem::path exeFile = argv[0];
 	environment::exePath = exeFile.parent_path();
@@ -41,7 +47,7 @@ bool gameloop::run(int argc, char* argv[]) {
 	context::initialiseGLFW();
 
 	std::string name = "Game Engine";  u16 width = 600; u16 height = 450;
-	bool success = context::window::setupWindow(name, width, 450);
+	bool success = context::window::setupWindow(name, width, height);
 	if (!success) {
 		return false;
 	}
@@ -70,13 +76,16 @@ bool gameloop::run(int argc, char* argv[]) {
 	/*----------------------------------------------------------------------------------*/
 
 	{
-		Shader shader(environment::getResourcePath("Shaders/shader.vs"), environment::getResourcePath("Shaders/shader.fs"));
+		Shader main_shader(environment::getResourcePath("Shaders/main.vs"), environment::getResourcePath("Shaders/main.fs"));
+		Shader post_processing_shader(environment::getResourcePath("Shaders/post_processing.vs"), environment::getResourcePath("Shaders/post_processing.fs"));
 
 		/*----------------------------------------------------------------------------------*/
 
 		// Creating vertex data
 
-		std::array vertices = {
+		// Cubes
+
+		std::array cube_vertices = {
 		   -0.5f, -0.5f, -0.5f,  0.f, 0.f,
 			0.5f, -0.5f, -0.5f,  1.f, 0.f,
 			0.5f,  0.5f, -0.5f,  1.f, 1.f,
@@ -138,72 +147,83 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		// Sending Vertex data to GPU
 
-		unsigned int VBO, VAO;
-		GLAD_CHECK_ERROR(glGenBuffers(1, &VBO));
-		GLAD_CHECK_ERROR(glGenVertexArrays(1, &VAO));
+		// Cubes
 
-		VertexData vertex_data;
+		unsigned int cube_VBO, cube_VAO;
+		GLAD_CHECK_ERROR(glGenBuffers(1, &cube_VBO));
+		GLAD_CHECK_ERROR(glGenVertexArrays(1, &cube_VAO));
 
-		vertex_data.setVBO(VBO);
-		vertex_data.setVAO(VAO);
+		VertexData cube_vertex_data;
 
-		vertex_data.bindVBO(vertices.data(), sizeof(vertices), VBO);
-		vertex_data.bindVAO(VAO);
+		cube_vertex_data.setVBO(cube_VBO);
+		cube_vertex_data.setVAO(cube_VAO);
 
-		vertex_data.positionAttrib(0, 5 * sizeof(f32));
-		vertex_data.textureAttrib(2, 5 * sizeof(f32));
+		cube_vertex_data.bindVBO(cube_vertices.data(), sizeof(cube_vertices), cube_VBO);
+		cube_vertex_data.bindVAO(cube_VAO);
+
+		cube_vertex_data.positionAttrib(0, 5 * sizeof(f32));
+		cube_vertex_data.textureAttrib(2, 5 * sizeof(f32));
 
 		/*----------------------------------------------------------------------------------*/
 		
 		// Textures
 
+#ifdef IMGUI_LAYER
 		// Dropdown list of .txt file which contains all texture paths
 		std::vector<std::string> textures = readFile(environment::getResourcePath("DirectoryReader/textures_list.txt"));
+#endif
 
 		// Initialise texture objects
-		Texture transparent1(environment::getResourcePath("Textures/Transparent/Graffiti/graffiti_texture1.png"));
+		Texture transparent_texture1(environment::getResourcePath("Textures/Transparent/Graffiti/graffiti_texture1.png"));
 
-		auto texture1 = std::make_unique<Texture>(environment::getResourcePath("Textures/Solid/Metal/metal_bricks1.jpg"));
-		auto texture2 = std::make_unique<Texture>(environment::getResourcePath("Textures/Solid/Wood/wood_planks1.jpg"));
+		auto solid_texture1 = std::make_unique<Texture>(environment::getResourcePath("Textures/Solid/Metal/metal_bricks1.jpg"));
+		auto solid_texture2 = std::make_unique<Texture>(environment::getResourcePath("Textures/Solid/Wood/wood_planks1.jpg"));
 
-		Texture error_texture(environment::getResourcePath("Textures/Other/error_texture1.png"));
+		Texture error_texture1(environment::getResourcePath("Textures/Other/error_texture1.png"));
 
+#ifdef IMGUI_LAYER
 		// Add all textures to vector
-		std::vector<std::unique_ptr<Texture>> loaded_textures;
+		std::vector<std::unique_ptr<Texture>> solid_loaded_textures1;
 
-		loaded_textures.push_back(NULL);
-		loaded_textures.push_back(std::move(texture1));
-		loaded_textures.push_back(std::move(texture2));
+		solid_loaded_textures1.push_back(NULL);
+		solid_loaded_textures1.push_back(std::move(solid_texture1));
+		solid_loaded_textures1.push_back(std::move(solid_texture2));
+#endif
 
-		// Use shader
-		shader.use();
-		shader.setInt("transparent1", 1);
+		/*----------------------------------------------------------------------------------*/
+
+		// Shader
+		main_shader.use();
+		main_shader.setInt("transparent_texture1", 1);
+
+		post_processing_shader.use();
+		post_processing_shader.setInt("screenTexture", 0);
 
 		/*----------------------------------------------------------------------------------*/
 
 		// Cubes
 
-		auto transform1 = std::make_unique<Transform>(0, cube_positions.at(0), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto transform2 = std::make_unique<Transform>(1, cube_positions.at(1), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto transform3 = std::make_unique<Transform>(2, cube_positions.at(2), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto transform4 = std::make_unique<Transform>(3, cube_positions.at(3), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto transform5 = std::make_unique<Transform>(4, cube_positions.at(4), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto transform6 = std::make_unique<Transform>(5, cube_positions.at(5), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto transform7 = std::make_unique<Transform>(6, cube_positions.at(6), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto transform8 = std::make_unique<Transform>(7, cube_positions.at(7), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto transform9 = std::make_unique<Transform>(8, cube_positions.at(8), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
+		auto cube_transform1 = std::make_unique<Transform>(0, cube_positions.at(0), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
+		auto cube_transform2 = std::make_unique<Transform>(1, cube_positions.at(1), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
+		auto cube_transform3 = std::make_unique<Transform>(2, cube_positions.at(2), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
+		auto cube_transform4 = std::make_unique<Transform>(3, cube_positions.at(3), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
+		auto cube_transform5 = std::make_unique<Transform>(4, cube_positions.at(4), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
+		auto cube_transform6 = std::make_unique<Transform>(5, cube_positions.at(5), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
+		auto cube_transform7 = std::make_unique<Transform>(6, cube_positions.at(6), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
+		auto cube_transform8 = std::make_unique<Transform>(7, cube_positions.at(7), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
+		auto cube_transform9 = std::make_unique<Transform>(8, cube_positions.at(8), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
 
 		std::vector<std::unique_ptr<Transform>> cube_position_objects;
 
-		cube_position_objects.push_back(std::move(transform1));
-		cube_position_objects.push_back(std::move(transform2));
-		cube_position_objects.push_back(std::move(transform3));
-		cube_position_objects.push_back(std::move(transform4));
-		cube_position_objects.push_back(std::move(transform5));
-		cube_position_objects.push_back(std::move(transform6));
-		cube_position_objects.push_back(std::move(transform7));
-		cube_position_objects.push_back(std::move(transform8));
-		cube_position_objects.push_back(std::move(transform9));
+		cube_position_objects.push_back(std::move(cube_transform1));
+		cube_position_objects.push_back(std::move(cube_transform2));
+		cube_position_objects.push_back(std::move(cube_transform3));
+		cube_position_objects.push_back(std::move(cube_transform4));
+		cube_position_objects.push_back(std::move(cube_transform5));
+		cube_position_objects.push_back(std::move(cube_transform6));
+		cube_position_objects.push_back(std::move(cube_transform7));
+		cube_position_objects.push_back(std::move(cube_transform8));
+		cube_position_objects.push_back(std::move(cube_transform9));
 
 		/*----------------------------------------------------------------------------------*/
 
@@ -214,13 +234,14 @@ bool gameloop::run(int argc, char* argv[]) {
 		bool should_isolte = false;
 
 
+#ifdef IMGUI_LAYER
 		// GUI
-
-		collapsingHeader::InformationUI information_ui;
-		collapsingHeader::LoggerUI logger_ui;
-		collapsingHeader::ProfilerUI profiler_ui;
-		collapsingHeader::ConsoleUI console_ui;
-		collapsingHeader::EditorUI editor_ui;
+		imguiCategory::EditorGUI editor_gui;
+		imguiCategory::SceneGUI scene_gui;
+		imguiCategory::LoggerGUI logger_gui;
+		imguiCategory::ProfilerGUI profiler_gui;
+		imguiCategory::ConsoleGUI console_gui;
+#endif
 
 		// Polygon Mode
 
@@ -231,104 +252,76 @@ bool gameloop::run(int argc, char* argv[]) {
 		// Game loop
 		while (context::window::isClosed(context::window::getWindow()) == false) {
 
-			int pm = polygon_modes[static_cast<u8>(polygon_mode)];
-			GLAD_CHECK_ERROR(glPolygonMode(GL_FRONT_AND_BACK, pm));
-
 			// Initialise DT
 			Time delta_time = Time::now() - last_frame;
 			last_frame = Time::now();
 
+#ifdef IMGUI_LAYER
+			// Editor GUI
+			context::beginImguiFrame();
+
+			editor_gui.process(textures, std::move(solid_loaded_textures1), error_texture1, transparent_texture1);
+#else
+			// Background colour
+			GLAD_CHECK_ERROR(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
+			GLAD_CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+
+			// Textures
+			solid_texture1->bind(0);
+			transparent_texture1.bind(1);
+
+			// Polygon Mode
+			polygon_mode = polygonMode::FILL;
+#endif
+
 			camera.update(delta_time.getSeconds());
 
 #ifdef IMGUI_LAYER
-			// Render imGUI
+			// Bind FBO & Enable depth test
+			GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, scene_gui.getFBO()));
+			GLAD_CHECK_ERROR(glEnable(GL_DEPTH_TEST));
 
-			context::createMainImguiWindow("My GUI###GUI1");
-
-			if (ImGui::BeginTabBar("###tab_bar1")) {
-
-				if (ImGui::BeginTabItem("Debug###debug1")) {
-					ImGui::TextWrapped("\n");
-
-					editor_ui.process(textures, std::move(loaded_textures), error_texture, transparent1);
-
-					information_ui.header();
-					information_ui.process(delta_time);
-					logger_ui.header();
-					logger_ui.process();
-					profiler_ui.header();
-					profiler_ui.process();
-					console_ui.header();
-					console_ui.process();
-
-					ImGui::EndTabItem();
-				}
-
-				if (ImGui::BeginTabItem("Editor###editor1")) {
-					ImGui::TextWrapped("\n");
-
-					information_ui.process(delta_time);
-					logger_ui.process();
-					profiler_ui.process();
-					console_ui.process();
-
-					editor_ui.header();
-					editor_ui.process(textures, std::move(loaded_textures), error_texture, transparent1);
-
-					ImGui::EndTabItem();
-				}
-
-				if (ImGui::BeginTabItem("Help###help1")) {
-					ImGui::TextWrapped("\n");
-
-					information_ui.process(delta_time);
-					logger_ui.process();
-					profiler_ui.process();
-					console_ui.process();
-					editor_ui.process(textures, std::move(loaded_textures), error_texture, transparent1);
-
-					collapsingHeader::controlsText();
-					collapsingHeader::aboutText();
-
-					ImGui::EndTabItem();
-				}
-
-				ImGui::EndTabBar();
-			}
-			else {
-				information_ui.process(delta_time);
-				logger_ui.process();
-				profiler_ui.process();
-				console_ui.process();
-				editor_ui.process(textures, std::move(loaded_textures), error_texture, transparent1);
-			}
-
-			should_isolte = isMouseOverGUI();
-
-			ImGui::End();
-#else
-			editor_ui.process();
+			// Clear framebuffers content
+			glClearColor(editor_gui.getBackgroundColour().x, editor_gui.getBackgroundColour().y, editor_gui.getBackgroundColour().z, editor_gui.getBackgroundColour().w);
+			GLAD_CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 #endif
 
 			// Projection + View + Transform [MATRICES]
+			main_shader.use();
+
 			glm::mat4 projection = camera.getMat4Projection();
-			shader.setMat4("projection", projection);
+			main_shader.setMat4("projection", projection);
 
 			glm::mat4 view = camera.getMat4View();
-			shader.setMat4("view", view);
+			main_shader.setMat4("view", view);
 
 			glm::mat4 transform = camera.getMat4Transform();
-			s32 transform_loc = glGetUniformLocation(shader.mID, "transform");
-			shader.modMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(transform));
+			s32 transform_loc = glGetUniformLocation(main_shader.mID, "transform");
+			main_shader.modMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(transform));
 
-			// Renders boxes
+			// Draw boxes
+			GLAD_CHECK_ERROR(glBindVertexArray(cube_VAO));
+
 			for (size_t i = 0; i < cube_position_objects.size(); i++) {
 				glm::mat4 model = cube_position_objects[i]->getModel();
-				shader.setMat4("model", model);
+				main_shader.setMat4("model", model);
 
-				GLAD_CHECK_ERROR(glBindVertexArray(VAO));
 				GLAD_CHECK_ERROR(glDrawArrays(GL_TRIANGLES, 0, 36));
 			}
+
+#ifdef IMGUI_LAYER
+			// GUI 
+			logger_gui.process();
+			profiler_gui.process(delta_time);
+			console_gui.process();
+			scene_gui.process();
+
+			should_isolte = shouldIsolate();
+#endif
+
+			// Polygon Mode
+			int pm = polygon_modes[static_cast<u8>(polygon_mode)];
+			GLAD_CHECK_ERROR(glPolygonMode(GL_FRONT_AND_BACK, pm));
 
 			// Unbind all texture units at end of frame (helps toggling of textures)
 			std::vector<u16> tex_units = { 0, 1, 2 };

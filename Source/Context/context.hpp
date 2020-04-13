@@ -12,6 +12,9 @@
 
 
 namespace context {
+
+	/*----------------------------------------------------------------------------------*/
+
 	void initialiseGLFW();
 	void glfwContext();
 
@@ -20,14 +23,22 @@ namespace context {
 	void cursorPosContext(GLFWwindow* window, double xpos, double ypos);
 	void scrollContext(GLFWwindow* window, double xoffset, double yoffset);
 
+	/*----------------------------------------------------------------------------------*/
+
+	// ImGUI
+
 #ifdef IMGUI_LAYER
 	void imguiContext();
-	void createMainImguiWindow(std::string name);
 	void setImguiTheme(std::function<void()> theme);
 	void setImguiTextFont(const std::filesystem::path& path, f32 size);
 	void setImguiIconFont(const std::filesystem::path& path, f32 size);
+	void beginImguiFrame();
 	void renderImgui();
 #endif
+
+	/*----------------------------------------------------------------------------------*/
+
+	// Window
 
 	namespace window {
 		bool setupWindow(std::string_view name, u16 width, u16 height);
@@ -45,5 +56,9 @@ namespace context {
 		unsigned int getHeight();
 
 		float aspectRatio();
-	}
-}
+
+	} //namespace window
+
+	/*----------------------------------------------------------------------------------*/
+
+} // namespace context

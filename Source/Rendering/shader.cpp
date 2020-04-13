@@ -8,7 +8,8 @@
 
 
 // Constructor reads and builds the shader
-Shader::Shader(std::filesystem::path vertex_path, std::filesystem::path fragment_path) {
+Shader::Shader(std::filesystem::path vertex_path, std::filesystem::path fragment_path)
+    : mVertexPath(vertex_path), mFragmentPath(fragment_path) {
     // Retrieves the vertex/fragment source code from filePath
     std::string vertex_code;
     std::string fragment_code;
@@ -53,7 +54,7 @@ Shader::Shader(std::filesystem::path vertex_path, std::filesystem::path fragment
     GLAD_CHECK_ERROR(glGetShaderiv(vertex, GL_COMPILE_STATUS, &success));
     if (!success) {
         GLAD_CHECK_ERROR(glGetShaderInfoLog(vertex, 512, NULL, info_log));
-        log(logType::ERROR, fmt::format("[ERROR] SHADER ERROR | Vertex Compilation Failed | {}", info_log));
+        log(logType::ERROR, fmt::format("SHADER ERROR | Vertex Compilation Failed | {} | {}", this->mVertexPath.generic_string(), info_log));
     };
 
     // Fragment shader
@@ -65,7 +66,7 @@ Shader::Shader(std::filesystem::path vertex_path, std::filesystem::path fragment
     GLAD_CHECK_ERROR(glGetShaderiv(fragment, GL_COMPILE_STATUS, &success));
     if (!success) {
         GLAD_CHECK_ERROR(glGetShaderInfoLog(fragment, 512, NULL, info_log));
-        log(logType::ERROR, fmt::format("[ERROR] SHADER ERROR | Fragment Compilation Failed | {}", info_log));
+        log(logType::ERROR, fmt::format("SHADER ERROR | Fragment Compilation Failed | {} | {}", this->mFragmentPath.generic_string(), info_log));
     }
 
     // Shader program
@@ -78,7 +79,7 @@ Shader::Shader(std::filesystem::path vertex_path, std::filesystem::path fragment
     GLAD_CHECK_ERROR(glGetProgramiv(mID, GL_LINK_STATUS, &success));
     if (!success) {
         GLAD_CHECK_ERROR(glGetProgramInfoLog(mID, 512, NULL, info_log));
-        log(logType::ERROR, fmt::format("[ERROR] SHADER ERROR | Shader Program Linking Failed | {}", info_log));
+        log(logType::ERROR, fmt::format("SHADER ERROR | Shader Program Linking Failed | {}", info_log));
     }
 
     // Delete shaders since they are linked to our program and are no longer necessery
@@ -155,14 +156,14 @@ void Shader::checkCompileErrors(u8 shader, std::string_view type) {
         GLAD_CHECK_ERROR(glGetShaderiv(shader, GL_COMPILE_STATUS, &success));
         if (!success) {
             GLAD_CHECK_ERROR(glGetShaderInfoLog(shader, 1024, NULL, info_log));
-            log(logType::ERROR, fmt::format("[ERROR] SHADER ERROR | Shader Compilation Error Of Type: {} | {}", type, info_log));
+            log(logType::ERROR, fmt::format("SHADER ERROR | Shader Compilation Error Of Type: {} | {}", type, info_log));
         }
     }
     else {
         GLAD_CHECK_ERROR(glGetProgramiv(shader, GL_LINK_STATUS, &success));
         if (!success) {
             GLAD_CHECK_ERROR(glGetProgramInfoLog(shader, 1024, NULL, info_log));
-            log(logType::ERROR, fmt::format("[ERROR] SHADER ERROR | Program Linking Error Of Type: {} | {}", type, info_log));
+            log(logType::ERROR, fmt::format("SHADER ERROR | Program Linking Error Of Type: {} | {}", type, info_log));
         }
     }
 }

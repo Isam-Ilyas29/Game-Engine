@@ -8,6 +8,8 @@
 #include <GLFW/glfw3.h>
 
 
+/*----------------------------------------------------------------------------------*/
+
 enum class sceneStates;
 
 void enableSceneState(sceneStates state);
@@ -21,3 +23,5 @@ void mouseResponder(Camera& camera);
 void scrollResponder(Camera& camera);
 
 void update(f32 delta_time, Camera& camera, bool should_isolate);
+
+/*----------------------------------------------------------------------------------*/

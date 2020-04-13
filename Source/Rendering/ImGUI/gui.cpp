@@ -6,7 +6,6 @@
 #include "Core/profiler.hpp"
 #include "Core/console.hpp"
 #include "Rendering/editor.hpp"
-#include "Context/context.hpp"
 #include "Rendering/graphic.hpp"
 #include "Core/rng.hpp"
 
@@ -17,268 +16,44 @@
 #include <algorithm>
 
 
-namespace collapsingHeader {
-
-	/*----------------------------------------------------------------------------------*/
-
-	// Information
+/*----------------------------------------------------------------------------------*/
 
 #ifdef IMGUI_LAYER
-	void InformationUI::header() {
-		if (ImGui::CollapsingHeader("Information")) {
+	namespace {
 
-			ImGui::TextWrapped("\n");
-			ImGui::TextWrapped("FPS: %d", mFPS);
+		bool should_isolate = false;
 
-			ImGui::Text("\n");
-		}
-	}
+	} // namespace
 #endif
-	void InformationUI::process(Time delta_time) {
-		mFPS = getFramesPerSecond(delta_time);
-	}
 
-	/*----------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------*/
 
-	// Logger
+// Editor
 
 #ifdef IMGUI_LAYER
-	char LoggerUI::mFind[250];
-	bool LoggerUI::mInfoCategory = true;
-	bool LoggerUI::mWarningCategory = true;
-	bool LoggerUI::mErrorCategory = true;
-
-	void LoggerUI::header() {
-		if (ImGui::CollapsingHeader("Log")) {
-			
-			ImGui::Text("\n");
-
-			if (ImGui::Button(ICON_FA_FILE_ALT "   View log ###view_log1")) {
-				setGUILogWindow(!isGUILogWindowOpened());
-			}
-
-			ImGui::Text("\n");
-		}
-	}
-	void LoggerUI::process() {
-		if (isGUILogWindowOpened()) {
-
-			// Set window size and pos
-			ImGui::SetNextWindowSize(ImVec2(context::window::getWidth() * 0.34f, context::window::getHeight() * 0.3476f), ImGuiCond_Appearing);
-			ImGui::SetNextWindowPos(ImVec2(context::window::getWidth() * 0.655f, context::window::getHeight() * 0.005), ImGuiCond_Appearing);
-
-			ImGui::Begin("Log###log1");
-			ImGui::Columns(2);
-
-			//  Output log onto window
-			ImGui::BeginChild("log_text1", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-
-			std::deque<GUILogData> gui_log_data = getGUILogData();
-
-			for (GUILogData log_data : gui_log_data) {
-				if (std::count(std::begin(mFind), std::begin(mFind) + strlen(mFind), ' ') == strlen(mFind)) {
-					if (mInfoCategory && log_data.type == logType::INFO) {
-						ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
-						ImGui::TextWrapped("%s", log_data.full_log.data());
-						ImGui::PopStyleColor();
-					}
-					if (mWarningCategory && log_data.type == logType::WARNING) {
-						ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
-						ImGui::TextWrapped("%s", log_data.full_log.data());
-						ImGui::PopStyleColor();
-					}
-					if (mErrorCategory && log_data.type == logType::ERROR) {
-						ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
-						ImGui::TextWrapped("%s", log_data.full_log.data());
-						ImGui::PopStyleColor();
-					}
-				}
-				// User searching for log
-				else {
-					if (startsWith(log_data.message, mFind)) {
-						ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
-						ImGui::TextWrapped("%s", log_data.full_log.data());
-						ImGui::PopStyleColor();
-					}
-				}
-			}
-
-			ImGui::EndChild();
-
-			// Sidebar
-			ImGui::NextColumn();
-			ImGui::SetColumnOffset(-1, ImGui::GetWindowSize().x * 0.65f);
-
-			ImGui::BeginChild("log_sidebar1", ImVec2(0, 0), false);
-
-			// Search
-			ImGui::Text("Find: ");
-			ImGui::SameLine();
-			ImGui::InputText("###find_log1", mFind, IM_ARRAYSIZE(mFind));
-			ImGui::Text("\n\n\n");
-
-			ImGui::HorizontalSeparator();
-
-			// Clear & Copy
-			if (ImGui::Button(ICON_FA_TRASH_ALT "   Clear ###clear_log1")) {
-				clearGUILog();
-			}
-			if (ImGui::Button(ICON_FA_COPY "   Copy ###copy_log1")) {
-				ImGui::LogToClipboard();
-				for (GUILogData log_data : gui_log_data) {
-					ImGui::LogText(fmt::format("{}\n", log_data.full_log).data());
-				}
-				ImGui::LogFinish();
-			}
-			ImGui::Text("\n\n\n");
-
-			ImGui::HorizontalSeparator();
-
-			// Categories
-			ImGui::TextWrapped("Categories");
-			ImGui::Checkbox("INFO###info_category1", &mInfoCategory);
-			ImGui::Checkbox("WARNING###warning_category1", &mWarningCategory);
-			ImGui::Checkbox("ERROR###error_category1", &mErrorCategory);
-			ImGui::Text("\n\n\n");
-
-			ImGui::HorizontalSeparator();
-
-			// Dummy log
-			if (ImGui::Button(ICON_FA_PLUS "   Dummy Log ###dummy_log1")) {
-				for (u8 i = 0; i < 5; i++) {
-					u8 ran = NDRNG::intInRange(1, 3);
-
-					switch (ran) {
-					case 1:
-						log(logType::INFO, "This is information");
-						break;
-					case 2:
-						log(logType::WARNING, "This is a warning");
-						break;
-					case 3:
-						log(logType::ERROR, "This is an error");
-						break;
-					}
-				}
-			}
-
-			ImGui::EndChild();
-
-			ImGui::End();
-		}
-	}
-#endif
-
-	/*----------------------------------------------------------------------------------*/
-
-	// Profiler
-
-#ifdef IMGUI_LAYER
-	void ProfilerUI::header() {
-		if (ImGui::CollapsingHeader("Profiler")) {
-
-			ImGui::Text("\n");
-
-			if (ImGui::Button(ICON_FA_CHART_BAR "   View profiler ###view_profiler1")) {
-				setProfileWindow(!isProfileWindowOpened());
-			}
-
-			ImGui::Text("\n");
-		}
-	}
-	void ProfilerUI::process() {
-		if (isProfileWindowOpened()) {
-
-			// Set window size and pos
-			ImGui::SetNextWindowSize(ImVec2(context::window::getWidth() * 0.36f, context::window::getHeight() * 0.38f), ImGuiCond_Appearing);
-			ImGui::SetNextWindowPos(ImVec2(context::window::getWidth() * 0.005f, context::window::getHeight() * 0.6135f), ImGuiCond_Appearing);
-
-			ImGui::Begin("Profiler###profiler1");
-
-			// TODO:
-
-			ImGui::End();
-		}
-	}
-#endif
-
-	/*----------------------------------------------------------------------------------*/
-
-	// Console
-
-#ifdef IMGUI_LAYER
-	void ConsoleUI::header() {
-		if (ImGui::CollapsingHeader("Console")) {
-
-			ImGui::Text("\n");
-
-			if (ImGui::Button(ICON_FA_TERMINAL "   View console ###view_console1")) {
-				setConsoleWindow(!isConsoleWindowOpened());
-			}
-
-			ImGui::Text("\n");
-		}
-	}
-	void ConsoleUI::process() {
-		if (isConsoleWindowOpened()) {
-
-			// Set window size and pos
-			ImGui::SetNextWindowSize(ImVec2(context::window::getWidth() * 0.34f, context::window::getHeight() * 0.35f), ImGuiCond_Appearing);
-			ImGui::SetNextWindowPos(ImVec2(context::window::getWidth() * 0.655f, context::window::getHeight() * 0.6455f), ImGuiCond_Appearing);
-
-			ImGui::Begin("Console###console1");
-
-			// TODO:
-
-			ImGui::End();
-		}
-	}
-#endif
-
-	/*----------------------------------------------------------------------------------*/
-
-	// Editor
-
 	// Texture
-	const char* EditorUI::mCurrentItem = "None";
-	u8 EditorUI::mSelectedValue = 0;
-	bool EditorUI::mApplyTexture;
-	bool EditorUI::mApplyTransparentOverlay;
+	const char* imguiCategory::EditorGUI::mCurrentItem = "None";
+	u8 imguiCategory::EditorGUI::mSelectedValue = 0;
+	bool imguiCategory::EditorGUI::mApplyTexture;
+	bool imguiCategory::EditorGUI::mApplyTransparentOverlay;
 
 	// Background Colour
 
-	ImVec4 EditorUI::mColour = ImVec4(0.2f, 0.3f, 0.3f, 1.0f);
-	bool EditorUI::mApplyBackground;
+	ImVec4 imguiCategory::EditorGUI::mLocalColour = ImVec4(0.2f, 0.3f, 0.3f, 1.0f);
+	bool imguiCategory::EditorGUI::mApplyBackground;
 
 	// Polygon Mode
 
-	int EditorUI::mSelectedItem;
-	const char* EditorUI::mItems[] = { "Fill", "Line", "Point" };
+	int imguiCategory::EditorGUI::mSelectedItem;
+	const char* imguiCategory::EditorGUI::mItems[] = { "Fill", "Line", "Point" };
 
-#ifdef IMGUI_LAYER
-	void EditorUI::header() {
-		if (ImGui::CollapsingHeader("Editor")) {
+	void imguiCategory::EditorGUI::process(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture) {
+		// Set window size and pos
+		ImGui::SetNextWindowSize(mWindowSize, ImGuiCond_Appearing);
+		ImGui::SetNextWindowPos(mWindowPos, ImGuiCond_Appearing);
 
-			ImGui::Text("\n");
-
-			if (ImGui::Button(ICON_FA_PEN_ALT "   View editor ###view_editor1")) {
-				setEditorWindow(!isEditorWindowOpened());
-			}
-
-			ImGui::Text("\n");
-		}
-	}
-#endif
-	void EditorUI::process(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture) {
-#ifdef IMGUI_LAYER
-		if (isEditorWindowOpened()) {
-
-			// Set window size and pos
-			ImGui::SetNextWindowSize(ImVec2(context::window::getWidth() * 0.25, context::window::getHeight() * 0.98f), ImGuiCond_Appearing);
-			ImGui::SetNextWindowPos(ImVec2(context::window::getWidth() * 0.7465f, context::window::getHeight() * 0.0125), ImGuiCond_Appearing);
-
-			ImGui::Begin("Editor###editor1");
-
+		ImGui::Begin("Editor###editor1");
+		{
 			// Texture
 			if (ImGui::CollapsingHeader("Textures")) {
 
@@ -360,7 +135,7 @@ namespace collapsingHeader {
 			// Background Colour
 			if (ImGui::CollapsingHeader("Background Colour")) {
 				ImGui::TextWrapped("\nBackground Colour Picker: ");
-				ImGui::ColorEdit3("###background_colour_picker1", (float*)&mColour);
+				ImGui::ColorEdit3("###background_colour_picker1", (float*)&mLocalColour);
 
 				ImGui::TextWrapped("\n");
 				ImGui::TextWrapped("Apply: ");
@@ -379,9 +154,8 @@ namespace collapsingHeader {
 				ImGui::Text("\n");
 			}
 
-			ImGui::End();
 		}
-#endif
+		ImGui::End();
 
 		// Texture
 		for (size_t i = 0; i < loaded_textures.size(); i++) {
@@ -408,63 +182,301 @@ namespace collapsingHeader {
 
 		// Background Colour
 		if (mApplyBackground) {
-			setBackgroundColour(mColour.x, mColour.y, mColour.z, mColour.w);
+			mFinalColour = ImVec4(mLocalColour.x, mLocalColour.y, mLocalColour.z, mLocalColour.w);
 		}
 		else {
-			setBackgroundColour(0.2f, 0.3f, 0.3f, 1.0f);	// Default
+			mFinalColour = ImVec4(0.2f, 0.3f, 0.3f, 1.0f);	// Default
 		}
 
 		// Polygon Mode
 		polygon_mode = static_cast<polygonMode>(mSelectedItem);
 	}
-
-	/*----------------------------------------------------------------------------------*/
-
-#ifdef IMGUI_LAYER
-
-	void controlsText() {
-		if (ImGui::CollapsingHeader("Controls")) {
-
-			ImGui::TextWrapped("- 'W' = Move Forward");
-			ImGui::TextWrapped("- 'A' = Move Left");
-			ImGui::TextWrapped("- 'S' = Move Backward");
-			ImGui::TextWrapped("- 'D' = Move Right");
-			ImGui::TextWrapped("\n");
-			ImGui::TextWrapped("- 'Right Click' = Hold to rotate camera");
-			ImGui::TextWrapped("- 'Scroll' = Zoom in and out");
-			ImGui::TextWrapped("\n");
-			ImGui::TextWrapped("- 'Escape' = Quit game");
-			ImGui::TextWrapped("\n");
-		}
-	}
-
-	void aboutText() {
-		if (ImGui::CollapsingHeader("About")) {
-
-			ImGui::TextWrapped("This is a game engine which is currently being developed in C++ and OpenGL.");
-			ImGui::TextWrapped("\n");
-			ImGui::TextWrapped("Developer: Isam Ilyas");
-			ImGui::TextWrapped("\n");
-			ImGui::TextWrapped("To learn more please visit: ");
-			ImGui::TextWrapped("https://github.com/Isam-Ilyas29/OpenGL-Graphics-Engine");
-			ImGui::TextWrapped("\n");
-		}
+	const ImVec4 imguiCategory::EditorGUI::getBackgroundColour() {
+		return mFinalColour;
 	}
 #endif
 
-	/*----------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------*/
 
-} // namespace collapsingHeader
+// Scene
+
+#ifdef IMGUI_LAYER
+	imguiCategory::SceneGUI::SceneGUI() {
+
+		// FBO
+		GLAD_CHECK_ERROR(glGenFramebuffers(1, &mFBO));
+		GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, mFBO));
+
+		// Creates a color attachment texture
+		GLAD_CHECK_ERROR(glGenTextures(1, &mTexture));
+		GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mTexture));
+		GLAD_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWindowSize.x, mWindowSize.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+		GLAD_CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+		GLAD_CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+		GLAD_CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTexture, 0));
+
+		// Create a renderbuffer object for depth and stencil attachment
+		GLAD_CHECK_ERROR(glGenRenderbuffers(1, &mRBO));
+		GLAD_CHECK_ERROR(glBindRenderbuffer(GL_RENDERBUFFER, mRBO));
+		GLAD_CHECK_ERROR(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, mWindowSize.x, mWindowSize.y));
+		GLAD_CHECK_ERROR(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mRBO));
+
+		// Check if framebuffer is complete
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+			log(logType::ERROR, "Framebuffer is not complete");
+		}
+
+		GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+	}
+	void imguiCategory::SceneGUI::process() {
+
+		// Bind back to default framebuffer and draw quad with attached framebuffer colour texture
+		GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+		GLAD_CHECK_ERROR(glDisable(GL_DEPTH_TEST));
+
+		// Clear framebuffers contents
+		GLAD_CHECK_ERROR(glClearColor(1.f, 1.f, 1.f, 1.f));
+		GLAD_CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT));
+
+		// Bind to texture attachment
+		GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mTexture));
+
+		//Scene
+		ImGui::SetNextWindowSize(ImVec2(context::window::getWidth() * 0.5f, context::window::getHeight() * 0.5f), ImGuiCond_Appearing);
+		ImGui::SetNextWindowPos(ImVec2(context::window::getWidth() * 0.5f, context::window::getHeight() * 0.5f), ImGuiCond_Appearing);
+		ImGui::Begin("Scene###scene1", nullptr/*, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse*/);
+		{
+			if (ImGui::IsWindowHovered()) {
+				::should_isolate = false;
+			}
+			else {
+				::should_isolate = true;
+			}
+
+			if (ImGui::GetWindowWidth() != mPreviousWidth || ImGui::GetWindowHeight() != mPreviousHeight) {
+				isResizing = true;
+			}
+			if (isResizing && (ImGui::GetWindowWidth() == mPreviousWidth || ImGui::GetWindowHeight() == mPreviousHeight)) {
+				isResizing = false;
+
+				// Viewport
+				glViewport(0, 0, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
+
+				// Creates a color attachment texture
+				GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mTexture));
+				GLAD_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ImGui::GetWindowWidth(), ImGui::GetWindowHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+
+				// Create a renderbuffer object for depth and stencil attachment
+				GLAD_CHECK_ERROR(glBindRenderbuffer(GL_RENDERBUFFER, mRBO));
+				GLAD_CHECK_ERROR(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, ImGui::GetWindowWidth(), ImGui::GetWindowHeight()));
+
+				// Check if framebuffer is complete
+				if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+					log(logType::ERROR, "Framebuffer is not complete");
+				}
+
+				GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+			}
+
+			// Draw scene texture
+			ImGui::Image((void*)mTexture, ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight()), ImVec2(0.f, 1.f), ImVec2(1.f, 0.f));
+			
+			// Set previous width and height
+			mPreviousWidth = ImGui::GetWindowWidth();
+			mPreviousHeight = ImGui::GetWindowHeight();
+		}
+		ImGui::End();
+	}
+
+	const unsigned int imguiCategory::SceneGUI::getFBO() {
+		return mFBO;
+	}
+	const unsigned int imguiCategory::SceneGUI::getTexture() {
+		return mTexture;
+	}
+	const unsigned int imguiCategory::SceneGUI::getRBO() {
+		return mRBO;
+	}
+#endif
+
+/*----------------------------------------------------------------------------------*/
+
+// Logger
+
+#ifdef IMGUI_LAYER
+	char imguiCategory::LoggerGUI::mFind[250];
+	bool imguiCategory::LoggerGUI::mInfoCategory = true;
+	bool imguiCategory::LoggerGUI::mWarningCategory = true;
+	bool imguiCategory::LoggerGUI::mErrorCategory = true;
+
+	void imguiCategory::LoggerGUI::process() {
+		// Set window size and pos
+		ImGui::SetNextWindowSize(mWindowSize, ImGuiCond_Appearing);
+		ImGui::SetNextWindowPos(mWindowPos, ImGuiCond_Appearing);
+
+		ImGui::Begin("Log###log1");
+		{
+			ImGui::Columns(2);
+
+			//  Output log onto window
+			ImGui::BeginChild("log_text1", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+
+			std::deque<GUILogData> gui_log_data = getGUILogData();
+
+			for (GUILogData log_data : gui_log_data) {
+				if (std::count(std::begin(mFind), std::begin(mFind) + strlen(mFind), ' ') == strlen(mFind)) {
+					if (mInfoCategory && log_data.type == logType::INFO) {
+						ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
+						ImGui::TextWrapped("%s", log_data.full_log.data());
+						ImGui::PopStyleColor();
+					}
+					if (mWarningCategory && log_data.type == logType::WARNING) {
+						ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
+						ImGui::TextWrapped("%s", log_data.full_log.data());
+						ImGui::PopStyleColor();
+					}
+					if (mErrorCategory && log_data.type == logType::ERROR) {
+						ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
+						ImGui::TextWrapped("%s", log_data.full_log.data());
+						ImGui::PopStyleColor();
+					}
+				}
+				// User searching for log
+				else {
+					if (startsWith(log_data.message, mFind)) {
+						ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
+						ImGui::TextWrapped("%s", log_data.full_log.data());
+						ImGui::PopStyleColor();
+					}
+				}
+			}
+
+			ImGui::EndChild();
+
+			// Sidebar
+			ImGui::NextColumn();
+			ImGui::SetColumnOffset(-1, ImGui::GetWindowSize().x * 0.65f);
+
+			ImGui::BeginChild("log_sidebar1", ImVec2(0, 0), false);
+			{
+				// Search
+				ImGui::Text("Find: ");
+				ImGui::SameLine();
+				ImGui::InputText("###find_log1", mFind, IM_ARRAYSIZE(mFind));
+				ImGui::Text("\n\n\n");
+
+				ImGui::HorizontalSeparator();
+
+				// Clear & Copy
+				if (ImGui::Button(ICON_FA_TRASH_ALT "   Clear ###clear_log1")) {
+					clearGUILog();
+				}
+				if (ImGui::Button(ICON_FA_COPY "   Copy ###copy_log1")) {
+					ImGui::LogToClipboard();
+					for (GUILogData log_data : gui_log_data) {
+						ImGui::LogText(fmt::format("{}\n", log_data.full_log).data());
+					}
+					ImGui::LogFinish();
+				}
+				ImGui::Text("\n\n\n");
+
+				ImGui::HorizontalSeparator();
+
+				// Categories
+				ImGui::TextWrapped("Categories");
+				ImGui::Checkbox("INFO###info_category1", &mInfoCategory);
+				ImGui::Checkbox("WARNING###warning_category1", &mWarningCategory);
+				ImGui::Checkbox("ERROR###error_category1", &mErrorCategory);
+				ImGui::Text("\n\n\n");
+
+				ImGui::HorizontalSeparator();
+
+				// Dummy log
+				if (ImGui::Button(ICON_FA_PLUS "   Dummy Log ###dummy_log1")) {
+					for (u8 i = 0; i < 5; i++) {
+						u8 ran = NDRNG::intInRange(1, 3);
+
+						switch (ran) {
+						case 1:
+							log(logType::INFO, "This is information");
+							break;
+						case 2:
+							log(logType::WARNING, "This is a warning");
+							break;
+						case 3:
+							log(logType::ERROR, "This is an error");
+							break;
+						}
+					}
+				}
+			}
+			ImGui::EndChild();
+
+		}
+		ImGui::End();
+	}
+#endif
+
+/*----------------------------------------------------------------------------------*/
+
+// Profiler
+
+#ifdef IMGUI_LAYER
+void imguiCategory::ProfilerGUI::process(Time delta_time) {
+	// Set window size and pos
+	ImGui::SetNextWindowSize(mWindowSize, ImGuiCond_Appearing);
+	ImGui::SetNextWindowPos(mWindowPos, ImGuiCond_Appearing);
+
+	ImGui::Begin("Profiler###profiler1");
+	{
+		// TODO:
+		// FPS
+		mFPS = getFramesPerSecond(delta_time);
+		ImGui::TextWrapped("FPS: %d", mFPS);
+
+	}
+	ImGui::End();
+}
+#endif
+
+/*----------------------------------------------------------------------------------*/
+
+// Console
+
+#ifdef IMGUI_LAYER
+void imguiCategory::ConsoleGUI::process() {
+	// Set window size and pos
+	ImGui::SetNextWindowSize(mWindowSize, ImGuiCond_Appearing);
+	ImGui::SetNextWindowPos(mWindowPos, ImGuiCond_Appearing);
+
+	ImGui::Begin("Console###console1");
+	{
+		if (ImGui::IsWindowHovered()) {
+			::should_isolate = true;
+		}
+
+		// TODO:
+	}
+	ImGui::End();
+}
+#endif
+
+/*----------------------------------------------------------------------------------*/
+
+// Text
+
+#ifdef IMGUI_LAYER
+
+#endif
+
+/*----------------------------------------------------------------------------------*/
 
 
 // Check if mouse is hovering over UI	
 #ifdef IMGUI_LAYER
-bool isMouseOverGUI() {
-	if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)) {
-		return true;
-	}
-	else {
-		return false;
-	}
+bool shouldIsolate() {
+	return ::should_isolate;
 }
 #endif
+
+/*----------------------------------------------------------------------------------*/

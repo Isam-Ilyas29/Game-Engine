@@ -16,7 +16,7 @@ polygonMode polygon_mode;
 
 namespace {
 	Framerate f;
-}
+} // namespace
 
 u16 getFramesPerSecond(Time dt) {
 	f.elapsed += dt;

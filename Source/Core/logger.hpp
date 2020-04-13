@@ -6,6 +6,8 @@
 #include <deque>
 
 
+/*----------------------------------------------------------------------------------*/
+
 // Determines severity of log
 enum class logType {
 	INFO,
@@ -23,6 +25,7 @@ void logToConsole(std::string log_msg);
 	void logToGUI(std::string log_prefix, std::string log_msg, std::string full_log_msg, logType log_type);
 #endif
 
+/*----------------------------------------------------------------------------------*/
 
 #ifdef IMGUI_LAYER
 	struct GUILogData {
@@ -37,7 +40,6 @@ void logToConsole(std::string log_msg);
 	void clearGUILog();
 
 	ImVec4 setGUILogTextColour(logType type);
-
-	void setGUILogWindow(bool predicate);
-	bool isGUILogWindowOpened();
 #endif
+
+/*----------------------------------------------------------------------------------*/

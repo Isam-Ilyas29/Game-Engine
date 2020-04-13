@@ -13,7 +13,6 @@ Time Time::now() {
 	return Time(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count());
 }
 
-
 Time& Time::operator-() {
 	micro_seconds = -micro_seconds;
 	return *this;

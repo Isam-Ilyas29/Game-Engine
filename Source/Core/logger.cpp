@@ -9,6 +9,8 @@
 #include <iostream>
 
 
+/*----------------------------------------------------------------------------------*/
+
 namespace {
 
 	// File
@@ -20,14 +22,14 @@ namespace {
 
 #ifdef IMGUI_LAYER
 	// GUI logs
-	bool is_gui_log_opened = false;
-
-	u8 gui_log_limit = 20;
+	u64 gui_log_limit = 1000000000;
 
 	std::deque<GUILogData> gui_log_data;
 #endif
-}
 
+} // namespace
+
+/*----------------------------------------------------------------------------------*/
 
 // Logging
 void log(logType type, std::string log_msg) {
@@ -58,6 +60,7 @@ void logToConsole(std::string log_msg) {
 	}
 #endif
 
+/*----------------------------------------------------------------------------------*/
 
 #ifdef DEBUG_MODE
 	// GUI Log
@@ -83,11 +86,6 @@ void logToConsole(std::string log_msg) {
 		}
 		return ImVec4(0.f, 0.f, 0.f, 0.f);
 	}
-
-	void setGUILogWindow(bool predicate) {
-		::is_gui_log_opened = predicate;
-	}
-	bool isGUILogWindowOpened() {
-		return ::is_gui_log_opened;
-	}
 #endif
+
+/*----------------------------------------------------------------------------------*/

@@ -1,5 +1,5 @@
 BuildDirectory
 .vs
-out/**
 .vscode
+out/**
 ExeDirectory

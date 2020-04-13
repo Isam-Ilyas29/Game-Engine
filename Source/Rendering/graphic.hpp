@@ -19,8 +19,10 @@
 namespace context {
 	namespace graphics {
 		bool initialiseGraphics();
-	}
-}
+
+	} // namespace graphics
+
+} // namespace context
 
 /*----------------------------------------------------------------------------------*/
 
@@ -83,11 +85,5 @@ public:
 	void createModel();
 	const glm::mat4 getModel() const;
 };
-
-/*----------------------------------------------------------------------------------*/
-
-// Set background colour
-
-void setBackgroundColour(f32 r, f32 g, f32 b, f32 a);
 
 /*----------------------------------------------------------------------------------*/

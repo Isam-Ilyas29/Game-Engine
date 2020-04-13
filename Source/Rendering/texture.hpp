@@ -13,7 +13,7 @@
 class Texture {
 private:
 	int mWidth, mHeight, mChannels;
-	u8* mData;
+	unsigned char* mData;
 	GLenum mInternalFormat, mFormat;
 	GLenum mID;
 	std::filesystem::path mPath, mShortenedPath;
@@ -27,7 +27,7 @@ public:
 	Texture(const std::filesystem::path& path);
 	~Texture();
 
-	GLuint dataToTextureID(u8* data, int width, int height, GLuint internal_format, GLuint type);
+	GLuint dataToTextureID(unsigned char* data, int width, int height, GLuint internal_format, GLuint type);
 
 	void bind(u16 tex_unit) const;
 	static void unbind(std::vector<u16> tex_units);

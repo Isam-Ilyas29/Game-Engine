@@ -7,6 +7,8 @@
 #include <vector>
 
 
+/*----------------------------------------------------------------------------------*/
+
 class GenerateSeedDRNG {
 private:
     std::minstd_rand mRNG;
@@ -58,6 +60,7 @@ namespace NDRNG {
     // For desired ranges
     int intInRange(s64 lower_bound, s64 upper_bound);
     float floatInRange(f64 lower_bound, f64 upper_bound);
-}
+
+} // namespace NDRNG
 
 /*----------------------------------------------------------------------------------*/

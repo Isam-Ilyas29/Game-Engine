@@ -20,7 +20,7 @@ Texture::Texture(const std::filesystem::path& path)
 
 	stbi_set_flip_vertically_on_load(true);
 
-	u8* local_data = nullptr;
+	unsigned char* local_data = nullptr;
 	local_data = stbi_load(mPath.string().data(), &mWidth, &mHeight, &mChannels, 0);
 
 	switch (mChannels) {
@@ -56,7 +56,7 @@ Texture::~Texture() {
 	GLAD_CHECK_ERROR(glDeleteTextures(1, &mID));
 }
 
-GLuint Texture::dataToTextureID(u8* data, int width, int height, GLuint internal_format, GLuint format) {
+GLuint Texture::dataToTextureID(unsigned char* data, int width, int height, GLuint internal_format, GLuint format) {
 
 	GLuint textureID;
 
