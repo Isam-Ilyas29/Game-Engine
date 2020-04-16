@@ -19,8 +19,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
-#include "Rendering/ImGUI/imgui_impl_glfw.hpp"
-#include "Rendering/ImGUI/imgui_impl_opengl3.hpp"
+#include <imgui_internal.h>
 #include <fmt/format.h>
 
 #include <filesystem>
@@ -257,9 +256,28 @@ bool gameloop::run(int argc, char* argv[]) {
 			last_frame = Time::now();
 
 #ifdef IMGUI_LAYER
-			// Editor GUI
 			context::beginImguiFrame();
 
+			// Dockspace
+			ImGuiViewport* viewport = ImGui::GetMainViewport();
+			ImGui::SetNextWindowPos(viewport->Pos);
+			ImGui::SetNextWindowSize(viewport->Size);
+			ImGui::SetNextWindowViewport(viewport->ID);
+			ImGui::SetNextWindowBgAlpha(0.0f);
+
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.f, 0.f));
+
+			ImGui::Begin("Dockspace", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus);
+			{
+				ImGui::PopStyleVar(3);
+
+				ImGui::DockSpace(ImGui::GetID("###dockspace1"), ImVec2(0.f, 0.f));
+			}
+			ImGui::End();
+
+			// Editor GUI
 			editor_gui.process(textures, std::move(solid_loaded_textures1), error_texture1, transparent_texture1);
 #else
 			// Background colour
@@ -314,6 +332,13 @@ bool gameloop::run(int argc, char* argv[]) {
 			logger_gui.process();
 			profiler_gui.process(delta_time);
 			console_gui.process();
+
+			// Bind back to default framebuffer and draw quad with attached framebuffer colour texture
+			GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+			GLAD_CHECK_ERROR(glDisable(GL_DEPTH_TEST));
+			// Clear framebuffers contents
+			GLAD_CHECK_ERROR(glClearColor(1.f, 1.f, 1.f, 1.f));
+			GLAD_CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT));
 			scene_gui.process();
 
 			should_isolte = shouldIsolate();

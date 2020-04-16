@@ -230,20 +230,12 @@
 	}
 	void imguiCategory::SceneGUI::process() {
 
-		// Bind back to default framebuffer and draw quad with attached framebuffer colour texture
-		GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-		GLAD_CHECK_ERROR(glDisable(GL_DEPTH_TEST));
-
-		// Clear framebuffers contents
-		GLAD_CHECK_ERROR(glClearColor(1.f, 1.f, 1.f, 1.f));
-		GLAD_CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT));
-
 		// Bind to texture attachment
 		GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mTexture));
 
 		//Scene
-		ImGui::SetNextWindowSize(ImVec2(context::window::getWidth() * 0.5f, context::window::getHeight() * 0.5f), ImGuiCond_Appearing);
-		ImGui::SetNextWindowPos(ImVec2(context::window::getWidth() * 0.5f, context::window::getHeight() * 0.5f), ImGuiCond_Appearing);
+		ImGui::SetNextWindowSize(mWindowSize, ImGuiCond_Appearing);
+		ImGui::SetNextWindowPos(mWindowPos, ImGuiCond_Appearing);
 		ImGui::Begin("Scene###scene1", nullptr/*, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse*/);
 		{
 			if (ImGui::IsWindowHovered()) {
@@ -253,37 +245,30 @@
 				::should_isolate = true;
 			}
 
-			if (ImGui::GetWindowWidth() != mPreviousWidth || ImGui::GetWindowHeight() != mPreviousHeight) {
+			if (ImGui::GetContentRegionAvail().x != mPreviousWidth || ImGui::GetContentRegionAvail().y != mPreviousHeight) {
 				isResizing = true;
 			}
-			if (isResizing && (ImGui::GetWindowWidth() == mPreviousWidth || ImGui::GetWindowHeight() == mPreviousHeight)) {
+			if (isResizing && (ImGui::GetContentRegionAvail().x == mPreviousWidth || ImGui::GetContentRegionAvail().y == mPreviousHeight)) {
 				isResizing = false;
 
 				// Viewport
-				glViewport(0, 0, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
+				glViewport(0, 0, ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y);
 
 				// Creates a color attachment texture
 				GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mTexture));
-				GLAD_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ImGui::GetWindowWidth(), ImGui::GetWindowHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+				GLAD_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
 
-				// Create a renderbuffer object for depth and stencil attachment
+				// Creates a renderbuffer object for depth and stencil attachment
 				GLAD_CHECK_ERROR(glBindRenderbuffer(GL_RENDERBUFFER, mRBO));
-				GLAD_CHECK_ERROR(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, ImGui::GetWindowWidth(), ImGui::GetWindowHeight()));
-
-				// Check if framebuffer is complete
-				if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-					log(logType::ERROR, "Framebuffer is not complete");
-				}
-
-				GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+				GLAD_CHECK_ERROR(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y));
 			}
 
 			// Draw scene texture
-			ImGui::Image((void*)mTexture, ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight()), ImVec2(0.f, 1.f), ImVec2(1.f, 0.f));
+			ImGui::Image((void*)mTexture, ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y), ImVec2(0.f, 1.f), ImVec2(1.f, 0.f));
 			
 			// Set previous width and height
-			mPreviousWidth = ImGui::GetWindowWidth();
-			mPreviousHeight = ImGui::GetWindowHeight();
+			mPreviousWidth = ImGui::GetContentRegionAvail().x;
+			mPreviousHeight = ImGui::GetContentRegionAvail().y;
 		}
 		ImGui::End();
 	}
