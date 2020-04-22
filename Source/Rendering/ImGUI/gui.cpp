@@ -203,6 +203,8 @@
 #ifdef IMGUI_LAYER
 	imguiCategory::SceneGUI::SceneGUI() {
 
+		glViewport(0, 0, mWindowSize.x, mWindowSize.y);
+
 		// FBO
 		GLAD_CHECK_ERROR(glGenFramebuffers(1, &mFBO));
 		GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, mFBO));
@@ -236,7 +238,7 @@
 		//Scene
 		ImGui::SetNextWindowSize(mWindowSize, ImGuiCond_Appearing);
 		ImGui::SetNextWindowPos(mWindowPos, ImGuiCond_Appearing);
-		ImGui::Begin("Scene###scene1", nullptr/*, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse*/);
+		ImGui::Begin("Scene###scene1", nullptr);
 		{
 			if (ImGui::IsWindowHovered()) {
 				::should_isolate = false;
@@ -245,30 +247,31 @@
 				::should_isolate = true;
 			}
 
-			if (ImGui::GetContentRegionAvail().x != mPreviousWidth || ImGui::GetContentRegionAvail().y != mPreviousHeight) {
+			if (ImGui::GetWindowContentRegionWidth() != mPreviousWidth || ImGui::GetWindowContentRegionHeight() != mPreviousHeight) {
 				isResizing = true;
 			}
-			if (isResizing && (ImGui::GetContentRegionAvail().x == mPreviousWidth || ImGui::GetContentRegionAvail().y == mPreviousHeight)) {
-				isResizing = false;
-
+			if (isResizing && (ImGui::GetWindowContentRegionWidth() == mPreviousWidth || ImGui::GetWindowContentRegionHeight() == mPreviousHeight)) {
 				// Viewport
-				glViewport(0, 0, ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y);
+				glViewport(0, 0, ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionHeight());
 
 				// Creates a color attachment texture
 				GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mTexture));
-				GLAD_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
-
+				GLAD_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+				
 				// Creates a renderbuffer object for depth and stencil attachment
 				GLAD_CHECK_ERROR(glBindRenderbuffer(GL_RENDERBUFFER, mRBO));
-				GLAD_CHECK_ERROR(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y));
+				GLAD_CHECK_ERROR(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionHeight()));
 			}
-
+			
 			// Draw scene texture
-			ImGui::Image((void*)mTexture, ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y), ImVec2(0.f, 1.f), ImVec2(1.f, 0.f));
+			ImGui::Image((void*)mTexture, ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionHeight()), ImVec2(0.f, 1.f), ImVec2(1.f, 0.f));
+
+			// Reset resizing
+			isResizing = false;
 			
 			// Set previous width and height
-			mPreviousWidth = ImGui::GetContentRegionAvail().x;
-			mPreviousHeight = ImGui::GetContentRegionAvail().y;
+			mPreviousWidth = ImGui::GetWindowContentRegionWidth();
+			mPreviousHeight = ImGui::GetWindowContentRegionHeight();
 		}
 		ImGui::End();
 	}

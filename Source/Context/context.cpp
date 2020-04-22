@@ -35,18 +35,14 @@ namespace {
 		return true;
 	}
 
-	// Viewport 
-	unsigned int viewport_width;
-	unsigned int viewport_height;
-
 } // namespace
 
 /*----------------------------------------------------------------------------------*/
 
 void context::initialiseGLFW() {
 	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	log(logType::INFO, "CONTEXT | GLFW Successfully Initialised");
@@ -86,7 +82,7 @@ void context::scrollContext(GLFWwindow* window, double xoffset, double yoffset) 
 		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
 		ImGui_ImplGlfw_InitForOpenGL(::window, true);
-		ImGui_ImplOpenGL3_Init("#version 460 core");
+		ImGui_ImplOpenGL3_Init("#version 330 core");
 
 		log(logType::INFO, "CONTEXT | ImGui Successfully Initialised");
 	}
