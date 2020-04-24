@@ -235,6 +235,7 @@ bool gameloop::run(int argc, char* argv[]) {
 
 #ifdef IMGUI_LAYER
 		// GUI
+		imguiCategory::DockspaceAndMenubarGUI dockspace_and_menubar;
 		imguiCategory::EditorGUI editor_gui;
 		imguiCategory::SceneGUI scene_gui;
 		imguiCategory::LoggerGUI logger_gui;
@@ -257,6 +258,9 @@ bool gameloop::run(int argc, char* argv[]) {
 
 #ifdef IMGUI_LAYER
 			context::beginImguiFrame();
+
+			// Dockspace and Menubar GUI
+			dockspace_and_menubar.process();
 
 			// Editor GUI
 			editor_gui.process(textures, std::move(solid_loaded_textures1), error_texture1, transparent_texture1);
@@ -318,7 +322,7 @@ bool gameloop::run(int argc, char* argv[]) {
 			GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 			GLAD_CHECK_ERROR(glDisable(GL_DEPTH_TEST));
 			// Clear framebuffers contents
-			GLAD_CHECK_ERROR(glClearColor(1.f, 1.f, 1.f, 1.f));
+			GLAD_CHECK_ERROR(glClearColor(0.09803921568f, 0.09803921568f, 0.09803921568f, 1.f));
 			GLAD_CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT));
 			scene_gui.process();
 
