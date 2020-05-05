@@ -4,6 +4,7 @@
 #include "Rendering/texture.hpp"
 
 #include <imgui.h>
+#include <imgui_internal.h>
 
 #include <vector>
 #include <string>
@@ -22,8 +23,12 @@
 				ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoBackground;
 			ImGuiDockNodeFlags mDockspaceFlags = ImGuiDockNodeFlags_PassthruCentralNode;
 
+			ImGuiID mDockspaceID;
+
 		public:
 			void process();
+
+			const ImGuiID getDockspaceID();
 		};
 
 		/*----------------------------------------------------------------------------------*/
@@ -32,6 +37,7 @@
 
 		class EditorGUI {
 		private:
+			// Window properties
 			ImVec2 mWindowSize = ImVec2(context::window::getWidth() * 0.25, context::window::getHeight() * 0.98f);
 			ImVec2 mWindowPos = ImVec2(context::window::getWidth() * 0.7465f, context::window::getHeight() * 0.0125);
 
@@ -54,7 +60,6 @@
 			static const char* mItems[];
 
 			void process(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture);
-		
 			const ImVec4 getBackgroundColour();
 		};
 
@@ -64,7 +69,8 @@
 
 		class SceneGUI {
 		private:
-			ImVec2 mWindowSize = ImVec2(context::window::getWidth() * 0.5f, context::window::getHeight() * 0.5f);
+			// Window properties
+			ImVec2 mWindowSize = ImVec2(2000.f, 2000.f);
 			ImVec2 mWindowPos = ImVec2(context::window::getWidth() * 0.5f, context::window::getHeight() * 0.5f);
 
 			u16 mPreviousWidth = 0;
@@ -87,10 +93,25 @@
 
 		/*----------------------------------------------------------------------------------*/
 
+		// Console
+
+		class ConsoleGUI {
+		private:
+			// Window properties
+			ImVec2 mWindowSize = ImVec2(context::window::getWidth() * 0.34f, context::window::getHeight() * 0.35f);
+			ImVec2 mWindowPos = ImVec2(context::window::getWidth() * 0.655f, context::window::getHeight() * 0.6455f);
+
+		public:
+			void process();
+		};
+
+		/*----------------------------------------------------------------------------------*/
+
 		// Logger
 
 		class LoggerGUI {
 		private:
+			// Window properties
 			ImVec2 mWindowSize = ImVec2(context::window::getWidth() * 0.34f, context::window::getHeight() * 0.3476f);
 			ImVec2 mWindowPos = ImVec2(context::window::getWidth() * 0.655f, context::window::getHeight() * 0.005);
 
@@ -109,6 +130,7 @@
 
 		class ProfilerGUI {
 		private:
+			// Window properties
 			ImVec2 mWindowSize = ImVec2(context::window::getWidth() * 0.36f, context::window::getHeight() * 0.38f);
 			ImVec2 mWindowPos = ImVec2(context::window::getWidth() * 0.005f, context::window::getHeight() * 0.6135f);
 
@@ -116,25 +138,6 @@
 		public:
 			void process(Time delta_time);
 		};
-
-		/*----------------------------------------------------------------------------------*/
-
-		// Console
-
-		class ConsoleGUI {
-		private:
-			ImVec2 mWindowSize = ImVec2(context::window::getWidth() * 0.34f, context::window::getHeight() * 0.35f);
-			ImVec2 mWindowPos = ImVec2(context::window::getWidth() * 0.655f, context::window::getHeight() * 0.6455f);
-
-		public:
-			void process();
-		};
-
-		/*----------------------------------------------------------------------------------*/
-
-		// Text
-
-
 
 		/*----------------------------------------------------------------------------------*/
 

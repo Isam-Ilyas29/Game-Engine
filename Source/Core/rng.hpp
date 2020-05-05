@@ -4,52 +4,13 @@
 #include "Core/Assert/assert.hpp"
 
 #include <random>
+#include <algorithm>
 #include <vector>
 
 
 /*----------------------------------------------------------------------------------*/
 
-class GenerateSeedDRNG {
-private:
-    std::minstd_rand mRNG;
-
-public:
-    GenerateSeedDRNG(int seed)
-        : mRNG(seed) {}
-
-    template <typename T>
-    void generate(T b, T e) {
-        std::generate(b, e, [&]() {return std::uniform_int_distribution<u32>{}(mRNG); });
-    }
-};
-
-/*----------------------------------------------------------------------------------*/
-
-auto getGenerator(int seed);
-
-/*----------------------------------------------------------------------------------*/
-
-class RandomBatch {
-private:
-    u16 mAmount;
-    u16 mCurrent = 1;
-    
-    std::vector<s64> seeds;
-
-public:
-    RandomBatch(u16 amount);
-
-    int intInRange(int lower_bound, int upper_bound);
-    float floatInRange(float lower_bound, float upper_bound);
-
-    void moveForward();
-    void reset();
-
-    u16 getCurrentIndex() const;
-    u16 getNextIndex() const;
-};
-
-/*----------------------------------------------------------------------------------*/
+// NDNRG
 
 namespace NDRNG {
 

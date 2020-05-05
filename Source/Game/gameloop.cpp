@@ -238,9 +238,9 @@ bool gameloop::run(int argc, char* argv[]) {
 		imguiCategory::DockspaceAndMenubarGUI dockspace_and_menubar;
 		imguiCategory::EditorGUI editor_gui;
 		imguiCategory::SceneGUI scene_gui;
+		imguiCategory::ConsoleGUI console_gui;
 		imguiCategory::LoggerGUI logger_gui;
 		imguiCategory::ProfilerGUI profiler_gui;
-		imguiCategory::ConsoleGUI console_gui;
 #endif
 
 		// Polygon Mode
@@ -314,17 +314,18 @@ bool gameloop::run(int argc, char* argv[]) {
 
 #ifdef IMGUI_LAYER
 			// GUI 
-			logger_gui.process();
-			profiler_gui.process(delta_time);
-			console_gui.process();
-
 			// Bind back to default framebuffer and draw quad with attached framebuffer colour texture
 			GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 			GLAD_CHECK_ERROR(glDisable(GL_DEPTH_TEST));
 			// Clear framebuffers contents
 			GLAD_CHECK_ERROR(glClearColor(0.09803921568f, 0.09803921568f, 0.09803921568f, 1.f));
 			GLAD_CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT));
+
 			scene_gui.process();
+
+			console_gui.process();
+			logger_gui.process();
+			profiler_gui.process(delta_time);
 
 			should_isolte = shouldIsolate();
 #endif

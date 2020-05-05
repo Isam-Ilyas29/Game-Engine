@@ -41,8 +41,8 @@ namespace {
 
 void context::initialiseGLFW() {
 	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	log(logType::INFO, "CONTEXT | GLFW Successfully Initialised");
@@ -130,20 +130,7 @@ bool context::window::setupWindow(std::string_view name, u16 width, u16 height) 
 void context::window::framebufferSizeCallback(GLFWwindow* window, int width, int height) {
 	::scr_width = width; ::scr_height = height;
 
-#ifdef IMGUI_LAYER
-	// Re-size/Re-position GUI
-	ImGui::SetWindowSize("###log1", ImVec2(width * 0.34f, height * 0.3476f));
-	ImGui::SetWindowPos("###log1", ImVec2(width * 0.655f, width * 0.005));
-
-	ImGui::SetWindowSize("###profiler1", ImVec2(width * 0.36f, height * 0.38f));
-	ImGui::SetWindowPos("###profiler1", ImVec2(width * 0.005f, height * 0.6135f));
-
-	ImGui::SetWindowSize("###console1", ImVec2(width * 0.34f, height * 0.35f));
-	ImGui::SetWindowPos("###console1", ImVec2(width * 0.655f, height * 0.6455f));
-
-	ImGui::SetWindowSize("###editor1", ImVec2(width * 0.25, height * 0.98f));
-	ImGui::SetWindowPos("###editor1", ImVec2(width * 0.7465f, height * 0.0125));
-#else
+#ifndef IMGUI_LAYER
 	GLAD_CHECK_ERROR(glViewport(0, 0, width, height));
 #endif		
 }

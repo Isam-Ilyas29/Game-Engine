@@ -52,8 +52,9 @@
 		{
 			ImGui::PopStyleVar(3);
 
-			ImGuiID dockspace_id = ImGui::GetID("Dockspace");
-			ImGui::DockSpace(dockspace_id, ImVec2(0.f, 0.f), mDockspaceFlags);
+			mDockspaceID = ImGui::GetID("Dockspace");
+			ImGui::DockSpace(mDockspaceID, ImVec2(0.f, 0.f), mDockspaceFlags);
+
 			// Menu bar
 			if (ImGui::BeginMenuBar()) {
 				if (ImGui::BeginMenu("View")) {
@@ -113,12 +114,34 @@
 						}
 					}
 
+					// Default docking
+					if (ImGui::MenuItem("Default Layout")) { 
+						ImGui::DockBuilderRemoveNode(mDockspaceID);
+						ImGui::DockBuilderAddNode(mDockspaceID, ImGuiDockNodeFlags_None);
+						ImGui::DockBuilderSetNodeSize(mDockspaceID, ImGui::GetMainViewport()->Size);
+
+						ImGuiID dock_main = mDockspaceID;
+						ImGuiID dock_right = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Right, 0.3f, nullptr, &dock_main);
+						ImGuiID dock_down = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Down, 0.3f, nullptr, &dock_main);
+
+						ImGui::DockBuilderDockWindow("Profiler##profiler1", dock_main);
+						ImGui::DockBuilderDockWindow("Scene##scene1", dock_main);
+						ImGui::DockBuilderDockWindow("Editor##editor1", dock_right);
+						ImGui::DockBuilderDockWindow("Console##console1", dock_down);
+						ImGui::DockBuilderDockWindow("Log##logger1", dock_down);
+						ImGui::DockBuilderFinish(mDockspaceID);
+					}
+
 					ImGui::EndMenu();
 				}
 				ImGui::EndMenuBar();
 			}
 		}
 		ImGui::End();
+	}
+
+	const ImGuiID imguiCategory::DockspaceAndMenubarGUI::getDockspaceID() {
+		return mDockspaceID;
 	}
 
 	/*----------------------------------------------------------------------------------*/
@@ -148,7 +171,7 @@
 			ImGui::SetNextWindowSize(mWindowSize, ImGuiCond_FirstUseEver);
 			ImGui::SetNextWindowPos(mWindowPos, ImGuiCond_FirstUseEver);
 
-			ImGui::Begin("Editor###editor1");
+			ImGui::Begin("Editor##editor1");
 			{
 				// Texture
 				if (ImGui::CollapsingHeader("Textures")) {
@@ -162,7 +185,7 @@
 
 					// Texture loader combo:
 					ImGui::TextWrapped("\nTexture Picker: ");
-					if (ImGui::BeginCombo("###texture_picker1", mCurrentItem, ImGuiComboFlags_NoArrowButton)) {
+					if (ImGui::BeginCombo("##texture_picker1", mCurrentItem, ImGuiComboFlags_NoArrowButton)) {
 						for (size_t i = 0; i < items.size(); i++) {
 							bool is_selected = (mCurrentItem == items[i]);
 							if (ImGui::Selectable(items[i], is_selected)) {
@@ -182,14 +205,14 @@
 
 					// Creates arrows and makes sure they cannot go beyond/below possible value limit
 					ImGui::SameLine(0, spacing);
-					if (ImGui::ArrowButton("###left1", ImGuiDir_Left)) {
+					if (ImGui::ArrowButton("##left1", ImGuiDir_Left)) {
 						if (mSelectedValue != 0) {
 							mSelectedValue -= 1;
 							mCurrentItem = items[mSelectedValue];
 						}
 					}
 					ImGui::SameLine(0, spacing);
-					if (ImGui::ArrowButton("###right1", ImGuiDir_Right)) {
+					if (ImGui::ArrowButton("##right1", ImGuiDir_Right)) {
 						if (mSelectedValue != (items.size() - 1)) {
 							mSelectedValue += 1;
 							mCurrentItem = items[mSelectedValue];
@@ -213,7 +236,7 @@
 							ImGui::TextWrapped("\n");
 							ImGui::TextWrapped("Apply: ");
 							ImGui::SameLine();
-							ImGui::Checkbox("###apply_texture1", &mApplyTexture);
+							ImGui::Checkbox("##apply_texture1", &mApplyTexture);
 
 							break;
 						}
@@ -223,7 +246,7 @@
 					ImGui::TextWrapped("\n");
 					ImGui::TextWrapped("Transparent Overlay: ");
 					ImGui::SameLine();
-					ImGui::Checkbox("###transparent_overlay1", &mApplyTransparentOverlay);
+					ImGui::Checkbox("##transparent_overlay1", &mApplyTransparentOverlay);
 
 					ImGui::Text("\n");
 				}
@@ -231,12 +254,12 @@
 				// Background Colour
 				if (ImGui::CollapsingHeader("Background Colour")) {
 					ImGui::TextWrapped("\nBackground Colour Picker: ");
-					ImGui::ColorEdit3("###background_colour_picker1", (float*)&mLocalColour);
+					ImGui::ColorEdit3("##background_colour_picker1", (float*)&mLocalColour);
 
 					ImGui::TextWrapped("\n");
 					ImGui::TextWrapped("Apply: ");
 					ImGui::SameLine();
-					ImGui::Checkbox("###apply_background1", &mApplyBackground);
+					ImGui::Checkbox("##apply_background1", &mApplyBackground);
 
 					ImGui::Text("\n");
 				}
@@ -246,7 +269,7 @@
 
 					// Polygon toggle checkbox: 
 					ImGui::TextWrapped("\nPolygon Mode: ");
-					ImGui::ListBox("###polygon_mode1", &mSelectedItem, mItems, IM_ARRAYSIZE(mItems), 3);
+					ImGui::ListBox("##polygon_mode1", &mSelectedItem, mItems, IM_ARRAYSIZE(mItems), 3);
 					ImGui::Text("\n");
 				}
 
@@ -334,7 +357,7 @@
 			//Scene
 			ImGui::SetNextWindowSize(mWindowSize, ImGuiCond_FirstUseEver);
 			ImGui::SetNextWindowPos(mWindowPos, ImGuiCond_FirstUseEver);
-			ImGui::Begin("Scene###scene1", nullptr);
+			ImGui::Begin("Scene##scene1", nullptr);
 			{
 				if (ImGui::IsWindowHovered()) {
 					::should_isolate = false;
@@ -385,6 +408,25 @@
 
 	/*----------------------------------------------------------------------------------*/
 
+	// Console
+
+	void imguiCategory::ConsoleGUI::process() {
+
+		if (::should_console_gui) {
+			// Set window size and pos
+			ImGui::SetNextWindowSize(mWindowSize, ImGuiCond_FirstUseEver);
+			ImGui::SetNextWindowPos(mWindowPos, ImGuiCond_FirstUseEver);
+
+			ImGui::Begin("Console##console1");
+			{
+				// TODO:
+			}
+			ImGui::End();
+		}
+	}
+
+	/*----------------------------------------------------------------------------------*/
+
 	// Logger
 
 	char imguiCategory::LoggerGUI::mFind[250];
@@ -399,7 +441,7 @@
 			ImGui::SetNextWindowSize(mWindowSize, ImGuiCond_FirstUseEver);
 			ImGui::SetNextWindowPos(mWindowPos, ImGuiCond_FirstUseEver);
 
-			ImGui::Begin("Log###log1");
+			ImGui::Begin("Log##logger1");
 			{
 				ImGui::Columns(2);
 
@@ -447,16 +489,16 @@
 					// Search
 					ImGui::Text("Find: ");
 					ImGui::SameLine();
-					ImGui::InputText("###find_log1", mFind, IM_ARRAYSIZE(mFind));
+					ImGui::InputText("##find_log1", mFind, IM_ARRAYSIZE(mFind));
 					ImGui::Text("\n\n\n");
 
 					ImGui::HorizontalSeparator();
 
 					// Clear & Copy
-					if (ImGui::Button(ICON_FA_TRASH_ALT "   Clear ###clear_log1")) {
+					if (ImGui::Button(ICON_FA_TRASH_ALT "   Clear ##clear_log1")) {
 						clearGUILog();
 					}
-					if (ImGui::Button(ICON_FA_COPY "   Copy ###copy_log1")) {
+					if (ImGui::Button(ICON_FA_COPY "   Copy ##copy_log1")) {
 						ImGui::LogToClipboard();
 						for (GUILogData log_data : gui_log_data) {
 							ImGui::LogText(fmt::format("{}\n", log_data.full_log).data());
@@ -469,15 +511,15 @@
 
 					// Categories
 					ImGui::TextWrapped("Categories");
-					ImGui::Checkbox("INFO###info_category1", &mInfoCategory);
-					ImGui::Checkbox("WARNING###warning_category1", &mWarningCategory);
-					ImGui::Checkbox("ERROR###error_category1", &mErrorCategory);
+					ImGui::Checkbox("INFO##info_category1", &mInfoCategory);
+					ImGui::Checkbox("WARNING##warning_category1", &mWarningCategory);
+					ImGui::Checkbox("ERROR##error_category1", &mErrorCategory);
 					ImGui::Text("\n\n\n");
 
 					ImGui::HorizontalSeparator();
 
 					// Dummy log
-					if (ImGui::Button(ICON_FA_PLUS "   Dummy Log ###dummy_log1")) {
+					if (ImGui::Button(ICON_FA_PLUS "   Dummy Log ##dummy_log1")) {
 						for (u8 i = 0; i < 5; i++) {
 							u8 ran = NDRNG::intInRange(1, 3);
 
@@ -513,7 +555,7 @@
 			ImGui::SetNextWindowSize(mWindowSize, ImGuiCond_FirstUseEver);
 			ImGui::SetNextWindowPos(mWindowPos, ImGuiCond_FirstUseEver);
 
-			ImGui::Begin("Profiler###profiler1");
+			ImGui::Begin("Profiler##profiler1");
 			{
 				// TODO:
 				// FPS
@@ -524,32 +566,7 @@
 			ImGui::End();
 		}
 	}
-
-	/*----------------------------------------------------------------------------------*/
-
-	// Console
-
-	void imguiCategory::ConsoleGUI::process() {
-
-		if (::should_console_gui) {
-			// Set window size and pos
-			ImGui::SetNextWindowSize(mWindowSize, ImGuiCond_FirstUseEver);
-			ImGui::SetNextWindowPos(mWindowPos, ImGuiCond_FirstUseEver);
-
-			ImGui::Begin("Console###console1");
-			{
-				// TODO:
-			}
-			ImGui::End();
-		}
-	}
-
-	/*----------------------------------------------------------------------------------*/
-
-	// Text
-
-
-
+	
 	/*----------------------------------------------------------------------------------*/
 
 

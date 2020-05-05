@@ -68,6 +68,9 @@ target_compile_definitions(glm INTERFACE GLM_FORCE_SILENT_WARNINGS GLM_FORCE_RAD
 
 target_include_directories(${PROJECT_NAME} INTERFACE SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/Libraries/glm/include")
 
+# ImGUI can assume we use glad
+target_compile_definitions(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLAD)
+
 # Exes
 foreach(CONFIG ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${CONFIG} CONFIG)

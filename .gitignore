@@ -3,3 +3,4 @@ BuildDirectory
 .vscode
 out/**
 ExeDirectory
+CMakeSettings.json

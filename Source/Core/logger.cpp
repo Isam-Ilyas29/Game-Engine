@@ -14,7 +14,7 @@
 namespace {
 
 	// File
-	std::string log_path = "../ExeDirectory/log.txt";
+	std::string log_path = "../../ExeDirectory/log.txt";
 	std::ofstream log_file(log_path, std::ios::out);
 
 	// Type specifier
