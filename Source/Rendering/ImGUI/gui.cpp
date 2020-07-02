@@ -37,7 +37,7 @@
 
 	// Dockspace and Menubar
 
-	void imguiCategory::DockspaceAndMenubarGUI::process() {
+	void imguiCategory::DockspaceAndMenubarGUI::update() {
 
 		ImGuiViewport* viewport = ImGui::GetMainViewport();
 		ImGui::SetNextWindowPos(viewport->GetWorkPos());
@@ -115,29 +115,44 @@
 					}
 
 					// Default docking
-					if (ImGui::MenuItem("Default Layout")) { 
-						ImGui::DockBuilderRemoveNode(mDockspaceID);
-						ImGui::DockBuilderAddNode(mDockspaceID, ImGuiDockNodeFlags_None);
-						ImGui::DockBuilderSetNodeSize(mDockspaceID, ImGui::GetMainViewport()->Size);
-
-						ImGuiID dock_main = mDockspaceID;
-						ImGuiID dock_right = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Right, 0.3f, nullptr, &dock_main);
-						ImGuiID dock_down = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Down, 0.3f, nullptr, &dock_main);
-
-						ImGui::DockBuilderDockWindow("Profiler##profiler1", dock_main);
-						ImGui::DockBuilderDockWindow("Scene##scene1", dock_main);
-						ImGui::DockBuilderDockWindow("Editor##editor1", dock_right);
-						ImGui::DockBuilderDockWindow("Console##console1", dock_down);
-						ImGui::DockBuilderDockWindow("Log##logger1", dock_down);
-						ImGui::DockBuilderFinish(mDockspaceID);
+					if (ImGui::MenuItem("Default Layout")) {
+						mShouldDefaultDock = true;
 					}
 
 					ImGui::EndMenu();
+				}
+				if (mShouldDefaultDock) {
+					mFrameCount++;
+				}
+				if (mFrameCount == 2) {
+					mShouldDefaultDock = false;
+					mFrameCount = 0;
 				}
 				ImGui::EndMenuBar();
 			}
 		}
 		ImGui::End();
+	}
+
+	void imguiCategory::DockspaceAndMenubarGUI::defaultDock() {
+		ImGui::DockBuilderRemoveNode(mDockspaceID);
+		ImGui::DockBuilderAddNode(mDockspaceID, ImGuiDockNodeFlags_None);
+		ImGui::DockBuilderSetNodeSize(mDockspaceID, ImGui::GetMainViewport()->Size);
+
+		ImGuiID dock_main = mDockspaceID;
+		ImGuiID dock_right = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Right, 0.24f, nullptr, &dock_main);
+		ImGuiID dock_down = ImGui::DockBuilderSplitNode(dock_main, ImGuiDir_Down, 0.23f, nullptr, &dock_main);
+
+		ImGui::DockBuilderDockWindow("Profiler##profiler1", dock_main);
+		ImGui::DockBuilderDockWindow("Scene##scene1", dock_main);
+		ImGui::DockBuilderDockWindow("Editor##editor1", dock_right);
+		ImGui::DockBuilderDockWindow("Console##console1", dock_down);
+		ImGui::DockBuilderDockWindow("Log##logger1", dock_down);
+		ImGui::DockBuilderFinish(mDockspaceID);
+	}
+
+	const bool imguiCategory::DockspaceAndMenubarGUI::getShouldDefaultDock() {
+		return mShouldDefaultDock;
 	}
 
 	const ImGuiID imguiCategory::DockspaceAndMenubarGUI::getDockspaceID() {
@@ -154,17 +169,22 @@
 	bool imguiCategory::EditorGUI::mApplyTexture;
 	bool imguiCategory::EditorGUI::mApplyTransparentOverlay;
 
-	// Background Colour
+	// Post-processing
+	bool imguiCategory::EditorGUI::mDefault = true;
+	bool imguiCategory::EditorGUI::mInvertedColour;
+	bool imguiCategory::EditorGUI::mGreyscale;
+	bool imguiCategory::EditorGUI::mSharpenedColours;
+	bool imguiCategory::EditorGUI::mBlur;
 
+	// Background Colour
 	ImVec4 imguiCategory::EditorGUI::mLocalColour = ImVec4(0.2f, 0.3f, 0.3f, 1.0f);
 	bool imguiCategory::EditorGUI::mApplyBackground;
 
 	// Polygon Mode
-
 	int imguiCategory::EditorGUI::mSelectedItem;
 	const char* imguiCategory::EditorGUI::mItems[] = { "Fill", "Line", "Point" };
 
-	void imguiCategory::EditorGUI::process(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture) {
+	void imguiCategory::EditorGUI::update(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture) {
 		
 		if (::should_editor_gui) {
 			// Set window size and pos
@@ -251,6 +271,49 @@
 					ImGui::Text("\n");
 				}
 
+				// Post processing
+				if (ImGui::CollapsingHeader("Post-processing")) {
+					ImGui::Text("\n");
+
+					if (ImGui::Checkbox("Default##post_processing_default1", &mDefault)) {
+						mInvertedColour = false;
+						mGreyscale = false;
+						mSharpenedColours = false;
+						mBlur = false;
+						mPostProcessingType = 0;
+					}
+					if (ImGui::Checkbox("Inverted Colours##post_processing_inverted_colours1", &mInvertedColour)) {
+						mDefault = false;
+						mGreyscale = false;
+						mSharpenedColours = false;
+						mBlur = false;
+						mPostProcessingType = 1;
+					}
+					if (ImGui::Checkbox("Greyscale##post_processing_grey_scale1", &mGreyscale)) {
+						mDefault = false;
+						mInvertedColour = false;
+						mSharpenedColours = false;
+						mBlur = false;
+						mPostProcessingType = 2;
+					}
+					if (ImGui::Checkbox("Sharpened Colours##post_processing_sharpened_colours_1", &mSharpenedColours)) {
+						mDefault = false;
+						mInvertedColour = false;
+						mGreyscale = false;
+						mBlur = false;
+						mPostProcessingType = 3;
+					}
+					if (ImGui::Checkbox("Blur##post_processing_blur1", &mBlur)) {
+						mDefault = false;
+						mInvertedColour = false;
+						mGreyscale = false;
+						mSharpenedColours = false;
+						mPostProcessingType = 4;
+					}
+
+					ImGui::Text("\n");
+				}
+
 				// Background Colour
 				if (ImGui::CollapsingHeader("Background Colour")) {
 					ImGui::TextWrapped("\nBackground Colour Picker: ");
@@ -311,106 +374,113 @@
 		// Polygon Mode
 		polygon_mode = static_cast<polygonMode>(mSelectedItem);
 	}
+
 	const ImVec4 imguiCategory::EditorGUI::getBackgroundColour() {
 		return mFinalColour;
+	}
+
+	const u32 imguiCategory::EditorGUI::getPostProcessingType() {
+		return mPostProcessingType;
 	}
 
 	/*----------------------------------------------------------------------------------*/
 
 	// Scene
 
-	imguiCategory::SceneGUI::SceneGUI() {
+imguiCategory::SceneGUI::SceneGUI() {
 
-		glViewport(0, 0, mWindowSize.x, mWindowSize.y);
+	glViewport(0, 0, mWindowSize.x, mWindowSize.y);
 
-		// FBO
-		GLAD_CHECK_ERROR(glGenFramebuffers(1, &mFBO));
-		GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, mFBO));
+	// FBO
+	GLAD_CHECK_ERROR(glGenFramebuffers(1, &mFBO));
+	GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, mFBO));
 
-		// Creates a color attachment texture
-		GLAD_CHECK_ERROR(glGenTextures(1, &mTexture));
-		GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mTexture));
-		GLAD_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWindowSize.x, mWindowSize.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
-		GLAD_CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-		GLAD_CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-		GLAD_CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTexture, 0));
+	// Creates a colour attachment texture
+	GLAD_CHECK_ERROR(glGenTextures(1, &mTexture));
+	GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mTexture));
+	GLAD_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mWindowSize.x, mWindowSize.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+	GLAD_CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+	GLAD_CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+	GLAD_CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTexture, 0));
 
-		// Create a renderbuffer object for depth and stencil attachment
-		GLAD_CHECK_ERROR(glGenRenderbuffers(1, &mRBO));
-		GLAD_CHECK_ERROR(glBindRenderbuffer(GL_RENDERBUFFER, mRBO));
-		GLAD_CHECK_ERROR(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, mWindowSize.x, mWindowSize.y));
-		GLAD_CHECK_ERROR(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mRBO));
+	// Creates a renderbuffer object for depth and stencil attachment
+	GLAD_CHECK_ERROR(glGenRenderbuffers(1, &mRBO));
+	GLAD_CHECK_ERROR(glBindRenderbuffer(GL_RENDERBUFFER, mRBO));
+	GLAD_CHECK_ERROR(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, mWindowSize.x, mWindowSize.y));
+	GLAD_CHECK_ERROR(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mRBO));
 
-		// Check if framebuffer is complete
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-			log(logType::ERROR, "Framebuffer is not complete");
-		}
-
-		GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+	// Checks if framebuffer is complete
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		log(logType::ERROR, "Framebuffer is not complete");
 	}
-	void imguiCategory::SceneGUI::process() {
 
-		if (::should_scene_gui) {
-			// Bind to texture attachment
-			GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mTexture));
 
-			//Scene
-			ImGui::SetNextWindowSize(mWindowSize, ImGuiCond_FirstUseEver);
-			ImGui::SetNextWindowPos(mWindowPos, ImGuiCond_FirstUseEver);
-			ImGui::Begin("Scene##scene1", nullptr);
-			{
-				if (ImGui::IsWindowHovered()) {
-					::should_isolate = false;
-				}
-				else {
-					::should_isolate = true;
-				}
+	GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+}
+void imguiCategory::SceneGUI::update(unsigned int post_processing_fbo_texture, unsigned int post_processing_rbo) {
 
-				if (ImGui::GetWindowContentRegionWidth() != mPreviousWidth || ImGui::GetWindowContentRegionHeight() != mPreviousHeight) {
-					isResizing = true;
-				}
-				if (isResizing && (ImGui::GetWindowContentRegionWidth() == mPreviousWidth || ImGui::GetWindowContentRegionHeight() == mPreviousHeight)) {
-					// Viewport
-					glViewport(0, 0, ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionHeight());
-
-					// Creates a color attachment texture
-					GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mTexture));
-					GLAD_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
-
-					// Creates a renderbuffer object for depth and stencil attachment
-					GLAD_CHECK_ERROR(glBindRenderbuffer(GL_RENDERBUFFER, mRBO));
-					GLAD_CHECK_ERROR(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionHeight()));
-				}
-
-				// Draw scene texture
-				ImGui::Image((void*)mTexture, ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionHeight()), ImVec2(0.f, 1.f), ImVec2(1.f, 0.f));
-
-				// Reset resizing
-				isResizing = false;
-
-				// Set previous width and height
-				mPreviousWidth = ImGui::GetWindowContentRegionWidth();
-				mPreviousHeight = ImGui::GetWindowContentRegionHeight();
+	if (::should_scene_gui) {
+		//Scene
+		ImGui::SetNextWindowSize(mWindowSize, ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowPos(mWindowPos, ImGuiCond_FirstUseEver);
+		ImGui::Begin("Scene##scene1", nullptr);
+		{
+			if (ImGui::IsWindowHovered()) {
+				::should_isolate = false;
 			}
-			ImGui::End();
-		}
-	}
+			else {
+				::should_isolate = true;
+			}
 
-	const unsigned int imguiCategory::SceneGUI::getFBO() {
-		return mFBO;
+			if (ImGui::GetWindowContentRegionWidth() != mPreviousWidth || ImGui::GetWindowContentRegionHeight() != mPreviousHeight) {
+				isResizing = true;
+			}
+			if (isResizing && (ImGui::GetWindowContentRegionWidth() == mPreviousWidth || ImGui::GetWindowContentRegionHeight() == mPreviousHeight) && (ImGui::GetWindowContentRegionWidth() > 0 && ImGui::GetWindowContentRegionHeight() > 0)) {
+				// Viewport
+				GLAD_CHECK_ERROR(glViewport(0, 0, ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionHeight()));
+
+				// Resizes the texture
+				GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, post_processing_fbo_texture));
+				GLAD_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+				GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mTexture));
+				GLAD_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+
+				// Resizes the RBO
+				GLAD_CHECK_ERROR(glBindRenderbuffer(GL_RENDERBUFFER, mRBO));
+				GLAD_CHECK_ERROR(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionHeight()));
+				GLAD_CHECK_ERROR(glBindRenderbuffer(GL_RENDERBUFFER, post_processing_rbo));
+				GLAD_CHECK_ERROR(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionHeight()));
+			}
+
+			// Draw scene texture
+			ImGui::Image((void*)mTexture, ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionHeight()), ImVec2(0.f, 1.f), ImVec2(1.f, 0.f));
+
+			// Reset resizing
+			isResizing = false;
+
+			// Set previous width and height
+			mPreviousWidth = ImGui::GetWindowContentRegionWidth();
+			mPreviousHeight = ImGui::GetWindowContentRegionHeight();
+		}
+		ImGui::End();
 	}
-	const unsigned int imguiCategory::SceneGUI::getTexture() {
-		return mTexture;
-	}
-	const unsigned int imguiCategory::SceneGUI::getRBO() {
-		return mRBO;
-	}
+}
+
+const unsigned int imguiCategory::SceneGUI::getFBO() {
+	return mFBO;
+}
+const unsigned int imguiCategory::SceneGUI::getTexture() {
+	return mTexture;
+}
+const unsigned int imguiCategory::SceneGUI::getRBO() {
+	return mRBO;
+}
 
 	/*----------------------------------------------------------------------------------*/
 
 	// Console
 
-	void imguiCategory::ConsoleGUI::process() {
+	void imguiCategory::ConsoleGUI::update() {
 
 		if (::should_console_gui) {
 			// Set window size and pos
@@ -434,7 +504,7 @@
 	bool imguiCategory::LoggerGUI::mWarningCategory = true;
 	bool imguiCategory::LoggerGUI::mErrorCategory = true;
 
-	void imguiCategory::LoggerGUI::process() {
+	void imguiCategory::LoggerGUI::update() {
 
 		if (::should_logger_gui) {
 			// Set window size and pos
@@ -443,48 +513,45 @@
 
 			ImGui::Begin("Log##logger1");
 			{
-				ImGui::Columns(2);
-
-				//  Output log onto window
-				ImGui::BeginChild("log_text1", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-
 				std::deque<GUILogData> gui_log_data = getGUILogData();
 
-				for (GUILogData log_data : gui_log_data) {
-					if (std::count(std::begin(mFind), std::begin(mFind) + strlen(mFind), ' ') == strlen(mFind)) {
-						if (mInfoCategory && log_data.type == logType::INFO) {
-							ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
-							ImGui::TextWrapped("%s", log_data.full_log.data());
-							ImGui::PopStyleColor();
+				//  Output log onto window
+				ImGui::BeginChild("log_text1", ImVec2(0.f, 0.f), false, ImGuiWindowFlags_HorizontalScrollbar);
+				{
+					for (GUILogData const& log_data : gui_log_data) {
+						if (std::count(std::begin(mFind), std::begin(mFind) + strlen(mFind), ' ') == strlen(mFind)) {
+							if (mInfoCategory && log_data.type == logType::INFO) {
+								ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
+								ImGui::TextWrapped("%s", log_data.full_log.data());
+								ImGui::PopStyleColor();
+							}
+							if (mWarningCategory && log_data.type == logType::WARNING) {
+								ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
+								ImGui::TextWrapped("%s", log_data.full_log.data());
+								ImGui::PopStyleColor();
+							}
+							if (mErrorCategory && log_data.type == logType::ERROR) {
+								ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
+								ImGui::TextWrapped("%s", log_data.full_log.data());
+								ImGui::PopStyleColor();
+							}
 						}
-						if (mWarningCategory && log_data.type == logType::WARNING) {
-							ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
-							ImGui::TextWrapped("%s", log_data.full_log.data());
-							ImGui::PopStyleColor();
-						}
-						if (mErrorCategory && log_data.type == logType::ERROR) {
-							ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
-							ImGui::TextWrapped("%s", log_data.full_log.data());
-							ImGui::PopStyleColor();
-						}
-					}
-					// User searching for log
-					else {
-						if (startsWith(log_data.message, mFind)) {
-							ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
-							ImGui::TextWrapped("%s", log_data.full_log.data());
-							ImGui::PopStyleColor();
+						// User searching for log
+						else {
+							if (startsWith(log_data.message, mFind)) {
+								ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
+								ImGui::TextWrapped("%s", log_data.full_log.data());
+								ImGui::PopStyleColor();
+							}
 						}
 					}
 				}
-
 				ImGui::EndChild();
 
-				// Sidebar
-				ImGui::NextColumn();
-				ImGui::SetColumnOffset(-1, ImGui::GetWindowSize().x * 0.65f);
+				//ImGui::
 
-				ImGui::BeginChild("log_sidebar1", ImVec2(0, 0), false);
+				// Sidebar
+				ImGui::BeginChild("log_sidebar1", ImVec2(0.f, 0.f), false);
 				{
 					// Search
 					ImGui::Text("Find: ");
@@ -492,7 +559,9 @@
 					ImGui::InputText("##find_log1", mFind, IM_ARRAYSIZE(mFind));
 					ImGui::Text("\n\n\n");
 
-					ImGui::HorizontalSeparator();
+					ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.f, 10.f));
+					ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+					ImGui::PopStyleVar();
 
 					// Clear & Copy
 					if (ImGui::Button(ICON_FA_TRASH_ALT "   Clear ##clear_log1")) {
@@ -507,7 +576,9 @@
 					}
 					ImGui::Text("\n\n\n");
 
-					ImGui::HorizontalSeparator();
+					ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.f, 10.f));
+					ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+					ImGui::PopStyleVar();
 
 					// Categories
 					ImGui::TextWrapped("Categories");
@@ -516,7 +587,9 @@
 					ImGui::Checkbox("ERROR##error_category1", &mErrorCategory);
 					ImGui::Text("\n\n\n");
 
-					ImGui::HorizontalSeparator();
+					ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8.f, 10.f));
+					ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+					ImGui::PopStyleVar();
 
 					// Dummy log
 					if (ImGui::Button(ICON_FA_PLUS "   Dummy Log ##dummy_log1")) {
@@ -548,7 +621,7 @@
 
 	// Profiler
 
-	void imguiCategory::ProfilerGUI::process(Time delta_time) {
+	void imguiCategory::ProfilerGUI::update(Time delta_time) {
 
 		if (::should_profiler_gui) {
 			// Set window size and pos

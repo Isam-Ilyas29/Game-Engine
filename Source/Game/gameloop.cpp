@@ -80,13 +80,13 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		/*----------------------------------------------------------------------------------*/
 
-		// Creating vertex data
+		// Vertex data
 
 		// Cubes
 
 		std::array cube_vertices = {
 		   -0.5f, -0.5f, -0.5f,  0.f, 0.f,
-			0.5f, -0.5f, -0.5f,  1.f, 0.f,
+		    0.5f, -0.5f, -0.5f,  1.f, 0.f,
 			0.5f,  0.5f, -0.5f,  1.f, 1.f,
 			0.5f,  0.5f, -0.5f,  1.f, 1.f,
 		   -0.5f,  0.5f, -0.5f,  0.f, 1.f,
@@ -140,11 +140,19 @@ bool gameloop::run(int argc, char* argv[]) {
 			glm::vec3(2.f, 2.f, -5.f),
 		};
 
-		std::vector<unsigned int> indices = {};
+		// Screen quad
+
+		std::array screen_quad_vertices = { 
+		   -1.f,  1.f,  0.f, 1.f,
+		   -1.f, -1.f,  0.f, 0.f,
+			1.f, -1.f,  1.f, 0.f,
+
+		   -1.f,  1.f,  0.f, 1.f,
+			1.f, -1.f,  1.f, 0.f,
+			1.f,  1.f,  1.f, 1.f
+		};
 
 		/*----------------------------------------------------------------------------------*/
-
-		// Sending Vertex data to GPU
 
 		// Cubes
 
@@ -152,16 +160,31 @@ bool gameloop::run(int argc, char* argv[]) {
 		GLAD_CHECK_ERROR(glGenBuffers(1, &cube_VBO));
 		GLAD_CHECK_ERROR(glGenVertexArrays(1, &cube_VAO));
 
-		VertexData cube_vertex_data;
+		GLAD_CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, cube_VBO));
+		GLAD_CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertices), cube_vertices.data(), GL_STATIC_DRAW));
 
-		cube_vertex_data.setVBO(cube_VBO);
-		cube_vertex_data.setVAO(cube_VAO);
+		GLAD_CHECK_ERROR(glBindVertexArray(cube_VAO));
 
-		cube_vertex_data.bindVBO(cube_vertices.data(), sizeof(cube_vertices), cube_VBO);
-		cube_vertex_data.bindVAO(cube_VAO);
+		//Position attribute
+		GLAD_CHECK_ERROR(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(f32), (void*)0));
+		GLAD_CHECK_ERROR(glEnableVertexAttribArray(0));
+		//Texture co-ordinates attribute
+		GLAD_CHECK_ERROR(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(f32), (void*)(3 * sizeof(float))));
+		GLAD_CHECK_ERROR(glEnableVertexAttribArray(2));
 
-		cube_vertex_data.positionAttrib(0, 5 * sizeof(f32));
-		cube_vertex_data.textureAttrib(2, 5 * sizeof(f32));
+
+		// Screen quad
+
+		unsigned int screen_quad_VBO, screen_quad_VAO;
+		glGenVertexArrays(1, &screen_quad_VAO);
+		glGenBuffers(1, &screen_quad_VBO);
+		glBindVertexArray(screen_quad_VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, screen_quad_VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(screen_quad_vertices), &screen_quad_vertices, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
 		/*----------------------------------------------------------------------------------*/
 		
@@ -193,12 +216,14 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		// Shader
 		main_shader.use();
-		main_shader.setInt("transparent_texture1", 1);
+		main_shader.setInt("transparentTexture1", 1);
 
 		post_processing_shader.use();
 		post_processing_shader.setInt("screenTexture", 0);
 
 		/*----------------------------------------------------------------------------------*/
+
+		// Transformations
 
 		// Cubes
 
@@ -226,16 +251,45 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		/*----------------------------------------------------------------------------------*/
 
+#ifdef IMGUI_LAYER
+		// FBO
+		unsigned int screen_quad_FBO;
+		GLAD_CHECK_ERROR(glGenFramebuffers(1, &screen_quad_FBO));
+		GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, screen_quad_FBO));
+
+		// Creates a color attachment texture
+		unsigned int screen_quad_texture;
+		GLAD_CHECK_ERROR(glGenTextures(1, &screen_quad_texture));
+		GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, screen_quad_texture));
+		GLAD_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1920, 1006, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
+		GLAD_CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+		GLAD_CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+		GLAD_CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, screen_quad_texture, 0));
+
+		// Creates a renderbuffer object for depth and stencil attachment
+		unsigned int screen_quad_RBO;
+		GLAD_CHECK_ERROR(glGenRenderbuffers(1, &screen_quad_RBO));
+		GLAD_CHECK_ERROR(glBindRenderbuffer(GL_RENDERBUFFER, screen_quad_RBO));
+		GLAD_CHECK_ERROR(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1920, 1006));
+		GLAD_CHECK_ERROR(glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, screen_quad_RBO));
+
+		// Checks if framebuffer is complete
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+			log(logType::ERROR, "Framebuffer is not complete");
+		}
+#endif
+
+		/*----------------------------------------------------------------------------------*/
+
+		// Camera object
+
 		Camera camera(-90.f, 0.f, (800.f / 2.f), (600.f / 2.f), 45.f, 100.f, 2.25f);
-
-		Time last_frame = Time::now();
-
-		bool should_isolte = false;
-
+		
+		/*----------------------------------------------------------------------------------*/
 
 #ifdef IMGUI_LAYER
 		// GUI
-		imguiCategory::DockspaceAndMenubarGUI dockspace_and_menubar;
+		imguiCategory::DockspaceAndMenubarGUI dockspace_and_menubar_gui;
 		imguiCategory::EditorGUI editor_gui;
 		imguiCategory::SceneGUI scene_gui;
 		imguiCategory::ConsoleGUI console_gui;
@@ -243,9 +297,16 @@ bool gameloop::run(int argc, char* argv[]) {
 		imguiCategory::ProfilerGUI profiler_gui;
 #endif
 
-		// Polygon Mode
+		/*----------------------------------------------------------------------------------*/
 
+		// Polygon Mode
 		std::array polygon_modes = { GL_FILL, GL_LINE, GL_POINT };
+
+		/*----------------------------------------------------------------------------------*/
+
+		Time last_frame = Time::now();
+
+		bool should_isolte = false;
 
 		/*----------------------------------------------------------------------------------*/
 
@@ -259,11 +320,9 @@ bool gameloop::run(int argc, char* argv[]) {
 #ifdef IMGUI_LAYER
 			context::beginImguiFrame();
 
-			// Dockspace and Menubar GUI
-			dockspace_and_menubar.process();
-
-			// Editor GUI
-			editor_gui.process(textures, std::move(solid_loaded_textures1), error_texture1, transparent_texture1);
+			// GUI
+			dockspace_and_menubar_gui.update();
+			editor_gui.update(textures, std::move(solid_loaded_textures1), error_texture1, transparent_texture1);
 #else
 			// Background colour
 			GLAD_CHECK_ERROR(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
@@ -280,16 +339,15 @@ bool gameloop::run(int argc, char* argv[]) {
 			camera.update(delta_time.getSeconds());
 
 #ifdef IMGUI_LAYER
-			// Bind FBO & Enable depth test
-			GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, scene_gui.getFBO()));
-			GLAD_CHECK_ERROR(glEnable(GL_DEPTH_TEST));
-
-			// Clear framebuffers content
-			glClearColor(editor_gui.getBackgroundColour().x, editor_gui.getBackgroundColour().y, editor_gui.getBackgroundColour().z, editor_gui.getBackgroundColour().w);
+			// First pass
+			// Clear framebuffers content and enable depth test
+			GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, screen_quad_FBO));
+			GLAD_CHECK_ERROR(glClearColor(editor_gui.getBackgroundColour().x, editor_gui.getBackgroundColour().y, editor_gui.getBackgroundColour().z, editor_gui.getBackgroundColour().w));
 			GLAD_CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+			GLAD_CHECK_ERROR(glEnable(GL_DEPTH_TEST));
 #endif
-
 			// Projection + View + Transform [MATRICES]
+
 			main_shader.use();
 
 			glm::mat4 projection = camera.getMat4Projection();
@@ -302,6 +360,10 @@ bool gameloop::run(int argc, char* argv[]) {
 			s32 transform_loc = glGetUniformLocation(main_shader.mID, "transform");
 			main_shader.modMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(transform));
 
+			// Polygon Mode
+			int pm = polygon_modes[static_cast<u8>(polygon_mode)];
+			GLAD_CHECK_ERROR(glPolygonMode(GL_FRONT_AND_BACK, pm));
+
 			// Draw boxes
 			GLAD_CHECK_ERROR(glBindVertexArray(cube_VAO));
 
@@ -313,26 +375,34 @@ bool gameloop::run(int argc, char* argv[]) {
 			}
 
 #ifdef IMGUI_LAYER
-			// GUI 
-			// Bind back to default framebuffer and draw quad with attached framebuffer colour texture
-			GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-			GLAD_CHECK_ERROR(glDisable(GL_DEPTH_TEST));
-			// Clear framebuffers contents
-			GLAD_CHECK_ERROR(glClearColor(0.09803921568f, 0.09803921568f, 0.09803921568f, 1.f));
+			// Second pass
+			GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0)); 
+			GLAD_CHECK_ERROR(glClearColor(1.f, 1.f, 1.f, 1.f)); 
 			GLAD_CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT));
 
-			scene_gui.process();
+			// Draw post-processed scene on a qaud covering the screen and copy that texture into second FBO
+			post_processing_shader.use();
+			post_processing_shader.setUint("postProcessingType", editor_gui.getPostProcessingType());
+			GLAD_CHECK_ERROR(glBindVertexArray(screen_quad_VAO));
+			GLAD_CHECK_ERROR(glDisable(GL_DEPTH_TEST));
+			GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, scene_gui.getFBO()));
+			GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, screen_quad_texture));
+			GLAD_CHECK_ERROR(glDrawArrays(GL_TRIANGLES, 0, 6));
+			GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 
-			console_gui.process();
-			logger_gui.process();
-			profiler_gui.process(delta_time);
+			// GUI
+			console_gui.update();
+			logger_gui.update();
+			profiler_gui.update(delta_time);
+			scene_gui.update(screen_quad_texture, screen_quad_RBO);
+
+			// Check whether to default dock
+			if (dockspace_and_menubar_gui.getShouldDefaultDock()) {
+				dockspace_and_menubar_gui.defaultDock();
+			}
 
 			should_isolte = shouldIsolate();
 #endif
-
-			// Polygon Mode
-			int pm = polygon_modes[static_cast<u8>(polygon_mode)];
-			GLAD_CHECK_ERROR(glPolygonMode(GL_FRONT_AND_BACK, pm));
 
 			// Unbind all texture units at end of frame (helps toggling of textures)
 			std::vector<u16> tex_units = { 0, 1, 2 };

@@ -1,13 +1,14 @@
 // dear imgui: Platform Binding for GLFW
 // This needs to be used along with a Renderer (e.g. OpenGL3, Vulkan..)
 // (Info: GLFW is a cross-platform general purpose library for handling windows, inputs, OpenGL/Vulkan graphics context creation, etc.)
-// (Requires: GLFW 3.1+)
+// (Requires: GLFW 3.1+. Prefer GLFW 3.3+ for full feature support.)
 
 // Implemented features:
 //  [X] Platform: Clipboard support.
 //  [X] Platform: Gamepad support. Enable with 'io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad'.
-//  [x] Platform: Mouse cursor shape and visibility. Disable with 'io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange'. FIXME: 3 cursors types are missing from GLFW.
+//  [X] Platform: Mouse cursor shape and visibility. Disable with 'io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange' (note: the resizing cursors requires GLFW 3.4+).
 //  [X] Platform: Keyboard arrays indexed using GLFW_KEY_* codes, e.g. ImGui::IsKeyPressed(GLFW_KEY_SPACE).
+//  [X] Platform: Multi-viewport support (multiple windows). Enable with 'io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable'.
 
 // You can copy and use unmodified imgui_impl_* files in your project. See main.cpp for an example of using this.
 // If you are new to dear imgui, read examples/README.txt and read the documentation at the top of imgui.cpp.
@@ -15,6 +16,9 @@
 
 // CHANGELOG
 // (minor and older changes stripped away, please see git history for details)
+//  2020-XX-XX: Platform: Added support for multiple windows via the ImGuiPlatformIO interface.
+//  2020-01-17: Inputs: Disable error callback while assigning mouse cursors because some X11 setup don't have them and it generates errors.
+//  2019-12-05: Inputs: Added support for new mouse cursors added in GLFW 3.4+ (resizing cursors, not allowed cursor).
 //  2019-10-18: Misc: Previously installed user callbacks are now restored on shutdown.
 //  2019-07-21: Inputs: Added mapping for ImGuiKey_KeyPadEnter.
 //  2019-05-11: Inputs: Don't filter value from character callback before calling AddInputCharacter().
@@ -60,6 +64,7 @@
     #define GLFW_HAS_NEW_CURSORS          (0)
     #endif
 
+
     // Data
     enum GlfwClientApi
     {
@@ -67,11 +72,11 @@
         GlfwClientApi_OpenGL,
         GlfwClientApi_Vulkan
     };
-    static GLFWwindow* g_Window = NULL;    // Main window
+    static GLFWwindow*          g_Window = NULL;    // Main window
     static GlfwClientApi        g_ClientApi = GlfwClientApi_Unknown;
     static double               g_Time = 0.0;
     static bool                 g_MouseJustPressed[5] = { false, false, false, false, false };
-    static GLFWcursor* g_MouseCursors[ImGuiMouseCursor_COUNT] = {};
+    static GLFWcursor*          g_MouseCursors[ImGuiMouseCursor_COUNT] = {};
     static bool                 g_InstalledCallbacks = false;
     static bool                 g_WantUpdateMonitors = true;
 
@@ -385,29 +390,29 @@
             return;
 
         // Update gamepad inputs
-    #define MAP_BUTTON(NAV_NO, BUTTON_NO)       { if (buttons_count > BUTTON_NO && buttons[BUTTON_NO] == GLFW_PRESS) io.NavInputs[NAV_NO] = 1.0f; }
-    #define MAP_ANALOG(NAV_NO, AXIS_NO, V0, V1) { float v = (axes_count > AXIS_NO) ? axes[AXIS_NO] : V0; v = (v - V0) / (V1 - V0); if (v > 1.0f) v = 1.0f; if (io.NavInputs[NAV_NO] < v) io.NavInputs[NAV_NO] = v; }
+        #define MAP_BUTTON(NAV_NO, BUTTON_NO)       { if (buttons_count > BUTTON_NO && buttons[BUTTON_NO] == GLFW_PRESS) io.NavInputs[NAV_NO] = 1.0f; }
+        #define MAP_ANALOG(NAV_NO, AXIS_NO, V0, V1) { float v = (axes_count > AXIS_NO) ? axes[AXIS_NO] : V0; v = (v - V0) / (V1 - V0); if (v > 1.0f) v = 1.0f; if (io.NavInputs[NAV_NO] < v) io.NavInputs[NAV_NO] = v; }
         int axes_count = 0, buttons_count = 0;
         const float* axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axes_count);
         const unsigned char* buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttons_count);
-        MAP_BUTTON(ImGuiNavInput_Activate, 0);     // Cross / A
-        MAP_BUTTON(ImGuiNavInput_Cancel, 1);     // Circle / B
-        MAP_BUTTON(ImGuiNavInput_Menu, 2);     // Square / X
-        MAP_BUTTON(ImGuiNavInput_Input, 3);     // Triangle / Y
-        MAP_BUTTON(ImGuiNavInput_DpadLeft, 13);    // D-Pad Left
-        MAP_BUTTON(ImGuiNavInput_DpadRight, 11);    // D-Pad Right
-        MAP_BUTTON(ImGuiNavInput_DpadUp, 10);    // D-Pad Up
-        MAP_BUTTON(ImGuiNavInput_DpadDown, 12);    // D-Pad Down
-        MAP_BUTTON(ImGuiNavInput_FocusPrev, 4);     // L1 / LB
-        MAP_BUTTON(ImGuiNavInput_FocusNext, 5);     // R1 / RB
-        MAP_BUTTON(ImGuiNavInput_TweakSlow, 4);     // L1 / LB
-        MAP_BUTTON(ImGuiNavInput_TweakFast, 5);     // R1 / RB
-        MAP_ANALOG(ImGuiNavInput_LStickLeft, 0, -0.3f, -0.9f);
-        MAP_ANALOG(ImGuiNavInput_LStickRight, 0, +0.3f, +0.9f);
-        MAP_ANALOG(ImGuiNavInput_LStickUp, 1, +0.3f, +0.9f);
-        MAP_ANALOG(ImGuiNavInput_LStickDown, 1, -0.3f, -0.9f);
-    #undef MAP_BUTTON
-    #undef MAP_ANALOG
+        MAP_BUTTON(ImGuiNavInput_Activate,   0);     // Cross / A
+        MAP_BUTTON(ImGuiNavInput_Cancel,     1);     // Circle / B
+        MAP_BUTTON(ImGuiNavInput_Menu,       2);     // Square / X
+        MAP_BUTTON(ImGuiNavInput_Input,      3);     // Triangle / Y
+        MAP_BUTTON(ImGuiNavInput_DpadLeft,   13);    // D-Pad Left
+        MAP_BUTTON(ImGuiNavInput_DpadRight,  11);    // D-Pad Right
+        MAP_BUTTON(ImGuiNavInput_DpadUp,     10);    // D-Pad Up
+        MAP_BUTTON(ImGuiNavInput_DpadDown,   12);    // D-Pad Down
+        MAP_BUTTON(ImGuiNavInput_FocusPrev,  4);     // L1 / LB
+        MAP_BUTTON(ImGuiNavInput_FocusNext,  5);     // R1 / RB
+        MAP_BUTTON(ImGuiNavInput_TweakSlow,  4);     // L1 / LB
+        MAP_BUTTON(ImGuiNavInput_TweakFast,  5);     // R1 / RB
+        MAP_ANALOG(ImGuiNavInput_LStickLeft, 0,  -0.3f,  -0.9f);
+        MAP_ANALOG(ImGuiNavInput_LStickRight,0,  +0.3f,  +0.9f);
+        MAP_ANALOG(ImGuiNavInput_LStickUp,   1,  +0.3f,  +0.9f);
+        MAP_ANALOG(ImGuiNavInput_LStickDown, 1,  -0.3f,  -0.9f);
+        #undef MAP_BUTTON
+        #undef MAP_ANALOG
         if (axes_count > 0 && buttons_count > 0)
             io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
         else
@@ -466,7 +471,7 @@
 
         // Setup time step
         double current_time = glfwGetTime();
-        io.DeltaTime = g_Time > 0.0 ? (float)(current_time - g_Time) : (float)(1.0f / 60.0f);
+        io.DeltaTime = g_Time > 0.0 ? (float)(current_time - g_Time) : (float)(1.0f/60.0f);
         g_Time = current_time;
 
         ImGui_ImplGlfw_UpdateMousePosAndButtons();
@@ -489,7 +494,7 @@
         bool        WindowOwned;
         int         IgnoreWindowSizeEventFrame;
 
-        ImGuiViewportDataGlfw() { Window = NULL; WindowOwned = false; IgnoreWindowSizeEventFrame = -1; }
+        ImGuiViewportDataGlfw()  { Window = NULL; WindowOwned = false; IgnoreWindowSizeEventFrame = -1; }
         ~ImGuiViewportDataGlfw() { IM_ASSERT(Window == NULL); }
     };
 

@@ -1,0 +1,8 @@
+[2020-05-27 15:55:44] [INFO] CONTEXT | GLFW Successfully Initialised
+[2020-05-27 15:55:44] [INFO] WINDOW | Window With Properties ("Game Engine", 600, 450) Successfully Created
+[2020-05-27 15:55:44] [INFO] CONTEXT | glad Successfully Initialised
+[2020-05-27 15:55:44] [INFO] CONTEXT | ImGui Successfully Initialised
+[2020-05-27 15:55:45] [INFO] TEXTURE | Successfully Loaded  | Width: 400, Height: 235, Channels: 4
+[2020-05-27 15:55:46] [INFO] TEXTURE | Successfully Loaded  | Width: 1920, Height: 1920, Channels: 3
+[2020-05-27 15:55:46] [INFO] TEXTURE | Successfully Loaded  | Width: 400, Height: 300, Channels: 3
+[2020-05-27 15:55:46] [INFO] TEXTURE | Successfully Loaded  | Width: 1920, Height: 1920, Channels: 4

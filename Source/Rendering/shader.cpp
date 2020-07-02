@@ -102,44 +102,56 @@ void Shader::use() {
 // Utility uniform functions (query a uniform location and set its value)
 
 /*------------------------------------------------------------------------*/
-void Shader::setBool(const std::string_view& name, bool value) const {
+
+void Shader::setBool(std::string_view name, bool value) const {
     GLAD_CHECK_ERROR(glUniform1i(glGetUniformLocation(mID, name.data()), (int)value));
 }
-void Shader::setInt(const std::string_view& name, u16 value) const {
+void Shader::setInt(std::string_view name, s32 value) const {
     GLAD_CHECK_ERROR(glUniform1i(glGetUniformLocation(mID, name.data()), value));
 }
-void Shader::setFloat(const std::string_view& name, f32 value) const {
+void Shader::setUint(std::string_view name, u32 value) const {
+    GLAD_CHECK_ERROR(glUniform1ui(glGetUniformLocation(mID, name.data()), value));
+}
+void Shader::setFloat(std::string_view name, f32 value) const {
     GLAD_CHECK_ERROR(glUniform1f(glGetUniformLocation(mID, name.data()), value));
 }
+void Shader::setDouble(std::string_view name, f64 value) const {
+    GLAD_CHECK_ERROR(glUniform1f(glGetUniformLocation(mID, name.data()), value));
+}
+
 /*------------------------------------------------------------------------*/
-void Shader::setVec2(const std::string_view& name, const glm::vec2& value) const {
+
+void Shader::setVec2(std::string_view name, const glm::vec2& value) const {
     GLAD_CHECK_ERROR(glUniform2fv(glGetUniformLocation(mID, name.data()), 1, &value[0]));
 }
-void Shader::setVec2(const std::string_view& name, f32 x, f32 y) const {
+void Shader::setVec2(std::string_view name, f32 x, f32 y) const {
     GLAD_CHECK_ERROR((glGetUniformLocation(mID, name.data()), x, y));
 }
-void Shader::setVec3(const std::string_view& name, const glm::vec3& value) const {
+void Shader::setVec3(std::string_view name, const glm::vec3& value) const {
     GLAD_CHECK_ERROR((glGetUniformLocation(mID, name.data()), 1, &value[0]));
 }
-void Shader::setVec3(const std::string_view& name, f32 x, f32 y, f32 z) const {
+void Shader::setVec3(std::string_view name, f32 x, f32 y, f32 z) const {
     GLAD_CHECK_ERROR((glGetUniformLocation(mID, name.data()), x, y, z));
 }
-void Shader::setVec4(const std::string_view& name, const glm::vec4& value) const {
+void Shader::setVec4(std::string_view name, const glm::vec4& value) const {
     GLAD_CHECK_ERROR(glUniform4fv(glGetUniformLocation(mID, name.data()), 1, &value[0]));
 }
-void Shader::setVec4(const std::string_view& name, f32 x, f32 y, f32 z, f32 w){
+void Shader::setVec4(std::string_view name, f32 x, f32 y, f32 z, f32 w){
     GLAD_CHECK_ERROR(glUniform4f(glGetUniformLocation(mID, name.data()), x, y, z, w));
 }
-// ------------------------------------------------------------------------
-void Shader::setMat2(const std::string_view& name, const glm::mat2& mat) const {
+
+/*------------------------------------------------------------------------*/
+
+void Shader::setMat2(std::string_view name, const glm::mat2& mat) const {
     GLAD_CHECK_ERROR(glUniformMatrix2fv(glGetUniformLocation(mID, name.data()), 1, GL_FALSE, &mat[0][0]));
 }
-void Shader::setMat3(const std::string_view& name, const glm::mat3& mat) const {
+void Shader::setMat3(std::string_view name, const glm::mat3& mat) const {
     GLAD_CHECK_ERROR(glUniformMatrix3fv(glGetUniformLocation(mID, name.data()), 1, GL_FALSE, &mat[0][0]));
 }
-void Shader::setMat4(const std::string_view& name, const glm::mat4& mat) const {
+void Shader::setMat4(std::string_view name, const glm::mat4& mat) const {
     GLAD_CHECK_ERROR(glUniformMatrix4fv(glGetUniformLocation(mID, name.data()), 1, GL_FALSE, &mat[0][0]));
 }
+
 /*------------------------------------------------------------------------*/
 
 void Shader::modMatrix4fv(u16 location, u16 count, unsigned char transpose, const f32* value) {

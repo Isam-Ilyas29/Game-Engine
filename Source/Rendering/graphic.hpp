@@ -39,32 +39,6 @@ void gladCheckError(std::filesystem::path file, u32 line_number);
 
 /*----------------------------------------------------------------------------------*/
 
-// Vertex and Attribute class
-
-class VertexData final {
-private:
-	unsigned int mVAO, mVBO, mEBO = 0;
-
-public:
-	void setVBO(unsigned int VBO);
-	void setEBO(unsigned int EBO);
-	void setVAO(unsigned int VAO);
-
-	~VertexData();
-
-	void bindVBO(const std::vector<f32>& vertices, unsigned int VBO);			// Accepts Vectors
-	void bindVBO(f32 vertices[], size_t size, unsigned int VBO);			    // Accepts Arrays
-	void bindEBO(const std::vector<u8>& indices, unsigned int EBO);
-	void bindVAO(unsigned int VAO);
-
-	void positionAttrib(unsigned int location, size_t stride);
-	void colourAttrib(unsigned int location, size_t stride);
-	void textureAttrib(unsigned int location, size_t stride);
-};
-
-
-/*----------------------------------------------------------------------------------*/
-
 // Transform class
 
 class Transform {

@@ -48,8 +48,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${EXE
 
 # Compiler warnings
 target_compile_options(${PROJECT_NAME} PRIVATE 
-    $<$<CXX_COMPILER_ID:CLANG>:/W4>
-    $<$<NOT:$<BOOL:$<CXX_COMPILER_ID:CLANG>>>:-Wextra>
+    $<$<NOT:$<BOOL:$<CXX_COMPILER_ID:MSVC>>>:-W4>
+    $<$<CXX_COMPILER_ID:MSVC>:/Wextra>
 )
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
 	if (CMAKE_CXX_COMPILER_ID MATCHES Clang)

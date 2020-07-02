@@ -25,8 +25,15 @@
 
 			ImGuiID mDockspaceID;
 
+			bool mShouldDefaultDock = false;
+			u8 mFrameCount = 0;
+
 		public:
-			void process();
+			void update();
+
+			void defaultDock();
+
+			const bool getShouldDefaultDock();
 
 			const ImGuiID getDockspaceID();
 		};
@@ -38,8 +45,8 @@
 		class EditorGUI {
 		private:
 			// Window properties
-			ImVec2 mWindowSize = ImVec2(context::window::getWidth() * 0.25, context::window::getHeight() * 0.98f);
-			ImVec2 mWindowPos = ImVec2(context::window::getWidth() * 0.7465f, context::window::getHeight() * 0.0125);
+			ImVec2 mWindowSize = ImVec2(1920.f, 1006.f);
+			ImVec2 mWindowPos = ImVec2(0.f, 25.f);
 
 			// Colour
 			ImVec4 mFinalColour;
@@ -51,6 +58,14 @@
 			static bool mApplyTexture;
 			static bool mApplyTransparentOverlay;
 
+			// Post-processing
+			static bool mDefault;
+			static bool mInvertedColour;
+			static bool mGreyscale;
+			static bool mSharpenedColours;
+			static bool mBlur;
+			u32 mPostProcessingType = 0;
+
 			// Colour
 			static ImVec4 mLocalColour;
 			static bool mApplyBackground;
@@ -59,8 +74,9 @@
 			static int mSelectedItem;
 			static const char* mItems[];
 
-			void process(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture);
+			void update(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture);
 			const ImVec4 getBackgroundColour();
+			const u32 getPostProcessingType();
 		};
 
 		/*----------------------------------------------------------------------------------*/
@@ -70,8 +86,8 @@
 		class SceneGUI {
 		private:
 			// Window properties
-			ImVec2 mWindowSize = ImVec2(2000.f, 2000.f);
-			ImVec2 mWindowPos = ImVec2(context::window::getWidth() * 0.5f, context::window::getHeight() * 0.5f);
+			ImVec2 mWindowSize = ImVec2(1920.f, 1006.f);
+			ImVec2 mWindowPos = ImVec2(0.f, 25.f);
 
 			u16 mPreviousWidth = 0;
 			u16 mPreviousHeight = 0;
@@ -81,10 +97,11 @@
 			unsigned int mFBO;
 			unsigned int mTexture;
 			unsigned int mRBO;
+
 		public:
 			SceneGUI();
 
-			void process();
+			void update(unsigned int post_processing_fbo_texture, unsigned int post_processing_rbo);
 
 			const unsigned int getFBO();
 			const unsigned int getTexture();
@@ -98,11 +115,11 @@
 		class ConsoleGUI {
 		private:
 			// Window properties
-			ImVec2 mWindowSize = ImVec2(context::window::getWidth() * 0.34f, context::window::getHeight() * 0.35f);
-			ImVec2 mWindowPos = ImVec2(context::window::getWidth() * 0.655f, context::window::getHeight() * 0.6455f);
+			ImVec2 mWindowSize = ImVec2(1920.f, 1006.f);
+			ImVec2 mWindowPos = ImVec2(0.f, 25.f);
 
 		public:
-			void process();
+			void update();
 		};
 
 		/*----------------------------------------------------------------------------------*/
@@ -112,8 +129,8 @@
 		class LoggerGUI {
 		private:
 			// Window properties
-			ImVec2 mWindowSize = ImVec2(context::window::getWidth() * 0.34f, context::window::getHeight() * 0.3476f);
-			ImVec2 mWindowPos = ImVec2(context::window::getWidth() * 0.655f, context::window::getHeight() * 0.005);
+			ImVec2 mWindowSize = ImVec2(1920.f, 1006.f);
+			ImVec2 mWindowPos = ImVec2(0.f, 25.f);
 
 		public:
 			static char mFind[250];
@@ -121,7 +138,7 @@
 			static bool mWarningCategory;
 			static bool mErrorCategory;
 
-			void process();
+			void update();
 		};
 
 		/*----------------------------------------------------------------------------------*/
@@ -131,12 +148,12 @@
 		class ProfilerGUI {
 		private:
 			// Window properties
-			ImVec2 mWindowSize = ImVec2(context::window::getWidth() * 0.36f, context::window::getHeight() * 0.38f);
-			ImVec2 mWindowPos = ImVec2(context::window::getWidth() * 0.005f, context::window::getHeight() * 0.6135f);
+			ImVec2 mWindowSize = ImVec2(1920.f, 1006.f);
+			ImVec2 mWindowPos = ImVec2(0.f, 25.f);
 
 			u16 mFPS;
 		public:
-			void process(Time delta_time);
+			void update(Time delta_time);
 		};
 
 		/*----------------------------------------------------------------------------------*/

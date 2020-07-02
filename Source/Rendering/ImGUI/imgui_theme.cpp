@@ -6,9 +6,9 @@
 #ifdef IMGUI_LAYER
     void themeGrey() {
 
-        ImGui::GetStyle().FrameRounding = 5;
-        ImGui::GetStyle().ChildRounding = 5;
-        ImGui::GetStyle().PopupRounding = 5;
+        ImGui::GetStyle().FrameRounding = 5.f;
+        ImGui::GetStyle().ChildRounding = 5.f;
+        ImGui::GetStyle().PopupRounding = 5.f;
 
         ImGui::GetStyle().Colors[ImGuiCol_Text] = ImVec4(1.f, 1.f, 1.f, 1.f);
         ImGui::GetStyle().Colors[ImGuiCol_TextDisabled] = ImVec4(0.5f, 0.5f, 0.5f, 1.f);

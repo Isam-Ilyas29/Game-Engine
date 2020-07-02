@@ -5,6 +5,7 @@
 
 // Implemented features:
 //  [X] Renderer: User texture binding. Use 'GLuint' OpenGL texture identifier as void*/ImTextureID. Read the FAQ about ImTextureID!
+//  [X] Renderer: Multi-viewport support. Enable with 'io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable'.
 //  [x] Renderer: Desktop GL only: Support for large meshes (64k+ vertices) with 16-bit indices.
 
 // You can copy and use unmodified imgui_impl_* files in your project. See main.cpp for an example of using this.
@@ -46,27 +47,27 @@
     // you are likely to get a crash in ImGui_ImplOpenGL3_Init().
     // You can explicitly select a loader by using '#define IMGUI_IMPL_OPENGL_LOADER_XXX' in imconfig.h or compiler command-line.
     #if !defined(IMGUI_IMPL_OPENGL_LOADER_GL3W) \
-     && !defined(IMGUI_IMPL_OPENGL_LOADER_GLEW) \
-     && !defined(IMGUI_IMPL_OPENGL_LOADER_GLAD) \
-     && !defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING2) \
-     && !defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING3) \
-     && !defined(IMGUI_IMPL_OPENGL_LOADER_CUSTOM)
-    #if defined(__has_include)
-    #if __has_include(<GL/glew.h>)
-    #define IMGUI_IMPL_OPENGL_LOADER_GLEW
-    #elif __has_include(<glad/glad.h>)
-    #define IMGUI_IMPL_OPENGL_LOADER_GLAD
-    #elif __has_include(<GL/gl3w.h>)
-    #define IMGUI_IMPL_OPENGL_LOADER_GL3W
-    #elif __has_include(<glbinding/glbinding.h>)
-    #define IMGUI_IMPL_OPENGL_LOADER_GLBINDING3
-    #elif __has_include(<glbinding/Binding.h>)
-    #define IMGUI_IMPL_OPENGL_LOADER_GLBINDING2
-    #else
-    #error "Cannot detect OpenGL loader!"
-    #endif
-    #else
-    #define IMGUI_IMPL_OPENGL_LOADER_GL3W       // Default to GL3W
-    #endif
+    && !defined(IMGUI_IMPL_OPENGL_LOADER_GLEW) \
+    && !defined(IMGUI_IMPL_OPENGL_LOADER_GLAD) \
+    && !defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING2) \
+    && !defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING3) \
+    && !defined(IMGUI_IMPL_OPENGL_LOADER_CUSTOM)
+        #if defined(__has_include)
+            #if __has_include(<GL/glew.h>)
+                #define IMGUI_IMPL_OPENGL_LOADER_GLEW
+            #elif __has_include(<glad/glad.h>)
+                #define IMGUI_IMPL_OPENGL_LOADER_GLAD
+            #elif __has_include(<GL/gl3w.h>)
+                #define IMGUI_IMPL_OPENGL_LOADER_GL3W
+            #elif __has_include(<glbinding/glbinding.h>)
+                #define IMGUI_IMPL_OPENGL_LOADER_GLBINDING3
+            #elif __has_include(<glbinding/Binding.h>)
+                #define IMGUI_IMPL_OPENGL_LOADER_GLBINDING2
+            #else
+                #error "Cannot detect OpenGL loader!"
+            #endif
+        #else
+            #define IMGUI_IMPL_OPENGL_LOADER_GL3W       // Default to GL3W
+        #endif
     #endif
 #endif
