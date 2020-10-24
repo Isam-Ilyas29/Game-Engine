@@ -2,6 +2,7 @@
 
 #include "Core/logger.hpp"
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <fmt/format.h>
 
@@ -14,12 +15,12 @@
 
 bool context::graphics::initialiseGraphics() {
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		log(logType::ERROR, "CONTEXT | Failed to initialise GLAD");
+		log(LogType::ERROR, "CONTEXT | Failed to initialise GLAD");
 		return false;
 	}
 	GLAD_CHECK_ERROR(glEnable(GL_DEPTH_TEST));
 
-	log(logType::INFO, "CONTEXT | glad Successfully Initialised");
+	log(LogType::INFO, "CONTEXT | glad Successfully Initialised");
 	return true;
 }
 
@@ -68,32 +69,8 @@ void gladCheckError(std::filesystem::path file, u32 line_number) {
 	}
 
 	if (error_code != GL_NO_ERROR) {
-		log(logType::ERROR, fmt::format("GLAD ERROR | {} | {} : {} | \"{}\", \"Line. {}\"", error_code, error_type, error_description, file.generic_string(), line_number));
+		log(LogType::ERROR, fmt::format("GLAD ERROR | {} | {} : {} | \"{}\", \"Line. {}\"", error_code, error_type, error_description, file.generic_string(), line_number));
 	}
-}
-
-/*----------------------------------------------------------------------------------*/
-
-// Transform class
-
-Transform::Transform(u16 rotation_axis, glm::vec3 position, glm::quat rotation, glm::vec3 scale)
-	: mRotationAxis(rotation_axis), mPosition(position), mRotation(rotation), mScale(scale), mTransform(glm::mat4(1.f)) {
-
-	createModel();
-}
-
-void Transform::createModel() {
-	auto const originalMat = glm::mat4(1.0f);
-
-	auto const scale = glm::scale(originalMat, mScale);
-	auto const translate = glm::translate(originalMat, mPosition);
-	auto const rotate = glm::toMat4(mRotation);
-
-	mTransform = translate * rotate * scale;
-}
-
-const glm::mat4 Transform::getModel() const {
-	return mTransform;
 }
 
 /*----------------------------------------------------------------------------------*/

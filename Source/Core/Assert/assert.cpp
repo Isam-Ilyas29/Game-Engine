@@ -60,7 +60,7 @@ void assertMessage(bool predicate, std::string_view message, std::filesystem::pa
 		return;
 	}
 
-	log(logType::ERROR, fmt::format("ASSERTION FAILED | {} | \"{}\", \"Line. {}\"", message, file.generic_string(), line_number));
+	log(LogType::ERROR, fmt::format("ASSERTION FAILED | {} | \"{}\", \"Line. {}\"", message, file.generic_string(), line_number));
 	
 	if (os::isDebuggerAttached()) {
 		os::debugBreak();

@@ -18,7 +18,7 @@ namespace {
 	std::ofstream log_file(log_path, std::ios::out);
 
 	// Type specifier
-	std::array<std::string, static_cast<u8>(logType::_COUNT)> log_type = { "INFO", "WARNING", "ERROR" };
+	std::array<std::string, static_cast<u8>(LogType::_COUNT)> log_type = { "INFO", "WARNING", "ERROR" };
 
 #ifdef IMGUI_LAYER
 	// GUI logs
@@ -32,7 +32,7 @@ namespace {
 /*----------------------------------------------------------------------------------*/
 
 // Logging
-void log(logType type, std::string log_msg) {
+void log(LogType type, std::string log_msg) {
 	std::string log_type = ::log_type[static_cast<u8>(type)];
 	std::string prefix = fmt::format("[{}] [{}]", getCurrentTime(), log_type);
 	std::string full_log_msg = fmt::format("{} {}", prefix, log_msg);
@@ -51,7 +51,7 @@ void logToConsole(std::string log_msg) {
 	std::cerr << log_msg << std::endl;
 }
 #ifdef IMGUI_LAYER
-	void logToGUI(std::string log_prefix, std::string log_msg, std::string full_log_msg, logType log_type) {
+	void logToGUI(std::string log_prefix, std::string log_msg, std::string full_log_msg, LogType log_type) {
 		if (::gui_log_data.size() >= ::gui_log_limit) {
 			gui_log_data.pop_front();
 		}
@@ -72,15 +72,15 @@ void logToConsole(std::string log_msg) {
 		::gui_log_data.clear();
 	}
 
-	ImVec4 setGUILogTextColour(logType type) {
+	ImVec4 setGUILogTextColour(LogType type) {
 		switch (type) {
-		case logType::INFO:
+		case LogType::INFO:
 			return ImVec4(1.f, 1.f, 1.f, 1.f);
 			break;
-		case logType::WARNING:
+		case LogType::WARNING:
 			return ImVec4(0.9333f, 0.8235f, 0.0078f, 1.f);
 			break;
-		case logType::ERROR:
+		case LogType::ERROR:
 			return ImVec4(1.f, 0.f, 0.f, 1.f);
 			break;
 		}

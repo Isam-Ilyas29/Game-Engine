@@ -10,10 +10,6 @@
 
 /*----------------------------------------------------------------------------------*/
 
-polygonMode polygon_mode;
-
-/*----------------------------------------------------------------------------------*/
-
 namespace {
 	Framerate f;
 } // namespace
@@ -53,7 +49,7 @@ std::vector<std::string> readFile(std::filesystem::path path) {
 
 	// Check if object is valid
 	if (!file) {
-		log(logType::ERROR, fmt::format("FILE | Cannot Open {}", path.generic_string()));
+		log(LogType::ERROR, fmt::format("FILE | Cannot Open {}", path.generic_string()));
 		return data;
 	}
 

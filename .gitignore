@@ -1,6 +1,6 @@
 BuildDirectory
-ExeDirectory
 .vs
 .vscode
 out/**
+ExeDirectory
 CMakeSettings.json

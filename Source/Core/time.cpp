@@ -18,40 +18,40 @@ Time& Time::operator-() {
 	return *this;
 }
 
-Time& Time::operator+=(Time const& rhs) {
+Time& Time::operator+=(const Time& rhs) {
 	micro_seconds += rhs.micro_seconds;
 	return *this;
 }
-Time& Time::operator-=(Time const& rhs) {
+Time& Time::operator-=(const Time& rhs) {
 	micro_seconds -= rhs.micro_seconds;
 	return *this;
 }
-Time& Time::operator*=(Time const& rhs) {
+Time& Time::operator*=(const Time& rhs) {
 	micro_seconds *= rhs.micro_seconds.count();
 	return *this;
 }
-Time& Time::operator/=(Time const& rhs) {
+Time& Time::operator/=(const Time& rhs) {
 	micro_seconds = (rhs.micro_seconds == micro_seconds.zero()) ? micro_seconds.zero() : micro_seconds /= rhs.micro_seconds.count();
 	return *this;
 }
 
-bool Time::operator==(Time const& rhs) {
+bool Time::operator==(const Time& rhs) {
 	return micro_seconds == rhs.micro_seconds;
 }
-bool Time::operator!=(Time const& rhs) {
+bool Time::operator!=(const Time& rhs) {
 	return !(*this == rhs);
 }
 
-bool Time::operator<(Time const& rhs) {
+bool Time::operator<(const Time& rhs) {
 	return micro_seconds < rhs.micro_seconds;
 }
-bool Time::operator<=(Time const& rhs) {
+bool Time::operator<=(const Time& rhs) {
 	return micro_seconds <= rhs.micro_seconds;
 }
-bool Time::operator>(Time const& rhs) {
+bool Time::operator>(const Time& rhs) {
 	return micro_seconds > rhs.micro_seconds;
 }
-bool Time::operator>=(Time const& rhs) {
+bool Time::operator>=(const Time& rhs) {
 	return micro_seconds >= rhs.micro_seconds;
 }
 
@@ -63,22 +63,22 @@ f32 Time::getMilliseconds() const {
 	return f32(micro_seconds.count()) / (1000);
 }
 
-float Time::getMicroseconds() const {
+f32 Time::getMicroseconds() const {
 	return micro_seconds.count();
 }
 
-Time operator+(Time const& lhs, Time const& rhs) {
+Time operator+(const Time& lhs, const Time& rhs) {
 	return Time(lhs) -= rhs;
 }
 
-Time operator-(Time const& lhs, Time const& rhs) {
+Time operator-(const Time& lhs, const Time& rhs) {
 	return Time(lhs) -= rhs;
 }
 
-Time operator*(Time const& lhs, Time const& rhs) {
+Time operator*(const Time& lhs, const Time& rhs) {
 	return Time(lhs) *= rhs;
 }
 
-Time operator/(Time const& lhs, Time const& rhs) {
+Time operator/(const Time& lhs, const Time& rhs) {
 	return Time(lhs) /= rhs;
 }

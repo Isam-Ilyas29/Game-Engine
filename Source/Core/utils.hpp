@@ -10,17 +10,6 @@
 
 /*----------------------------------------------------------------------------------*/
 
-// Switch between polygon mode's
-enum class polygonMode {
-	FILL,
-	LINE,
-	POINT
-};
-
-extern polygonMode polygon_mode;
-
-/*----------------------------------------------------------------------------------*/
-
 // Accurate FPS reader
 struct Framerate {
 	Time elapsed;

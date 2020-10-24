@@ -21,24 +21,24 @@ public:
 	explicit constexpr Time(std::chrono::microseconds micro_seconds) noexcept : micro_seconds(micro_seconds) {}
 
 	Time& operator-();
-	Time& operator+=(Time const& rhs);
-	Time& operator-=(Time const& rhs);
-	Time& operator*=(Time const& rhs);
-	Time& operator/=(Time const& rhs);
+	Time& operator+=(const Time& rhs);
+	Time& operator-=(const Time& rhs);
+	Time& operator*=(const Time& rhs);
+	Time& operator/=(const Time& rhs);
 
-	bool operator==(Time const& rhs);
-	bool operator!=(Time const& rhs);
-	bool operator<(Time const& rhs);
-	bool operator<=(Time const& rhs);
-	bool operator>(Time const& rhs);
-	bool operator>=(Time const& rhs);
+	bool operator==(const Time& rhs);
+	bool operator!=(const Time& rhs);
+	bool operator<(const Time& rhs);
+	bool operator<=(const Time& rhs);
+	bool operator>(const Time& rhs);
+	bool operator>=(const Time& rhs);
 
 	f32 getSeconds() const;
 	f32 getMilliseconds() const;
 	f32 getMicroseconds() const;
 };
 
-Time operator+(Time const& lhs, Time const& rhs);
-Time operator-(Time const& lhs, Time const& rhs);
-Time operator*(Time const& lhs, Time const& rhs);
-Time operator/(Time const& lhs, Time const& rhs);
+Time operator+(const Time& lhs, const Time& rhs);
+Time operator-(const Time& lhs, const Time& rhs);
+Time operator*(const Time& lhs, const Time& rhs);
+Time operator/(const Time& lhs, const Time& rhs);

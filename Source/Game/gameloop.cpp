@@ -4,13 +4,18 @@
 #include "Core/profiler.hpp"
 #include "Core/time.hpp"
 #include "Core/rng.hpp"
+#include "Environment/environment.hpp"
 #include "Context/context.hpp"
-#include "Rendering/ImGUI/imgui_theme.hpp"
 #include "Rendering/graphic.hpp"
+#include "Rendering/geometry.hpp"
+#include "Rendering/mesh.hpp"
+#include "Rendering/transform.hpp"
 #include "Rendering/shader.hpp"
 #include "Rendering/texture.hpp"
+#include "Camera/camera.hpp"
 #include "Rendering/ImGUI/gui.hpp"
-#include "Input/input_responder.hpp"
+#include "Rendering/ImGUI/imgui_theme.hpp"
+#include "Game/input_responder.hpp"
 #include "Core/utils.hpp"
 
 #include <GLFW/glfw3.h>
@@ -27,6 +32,7 @@
 #include <array>
 #include <vector>
 #include <memory>
+#include <optional>
 
 
 bool gameloop::run(int argc, char* argv[]) {
@@ -51,7 +57,7 @@ bool gameloop::run(int argc, char* argv[]) {
 		return false;
 	}
 	else {
-		log(logType::INFO , fmt::format("WINDOW | Window With Properties (\"{}\", {}, {}) Successfully Created", name, width, height));
+		log(LogType::INFO, fmt::format("WINDOW | Window With Properties (\"{}\", {}, {}) Successfully Created", name, width, height));
 	}
 
 	success = context::graphics::initialiseGraphics();
@@ -68,81 +74,16 @@ bool gameloop::run(int argc, char* argv[]) {
 
 	/*----------------------------------------------------------------------------------*/
 
-	// Read directories and append file paths to txt
-
-	directoryReader("textures_list.txt", environment::getResourcePath("Textures/Solid"));
-
-	/*----------------------------------------------------------------------------------*/
-
 	{
 		Shader main_shader(environment::getResourcePath("Shaders/main.vs"), environment::getResourcePath("Shaders/main.fs"));
+
 		Shader post_processing_shader(environment::getResourcePath("Shaders/post_processing.vs"), environment::getResourcePath("Shaders/post_processing.fs"));
 
 		/*----------------------------------------------------------------------------------*/
 
-		// Vertex data
-
-		// Cubes
-
-		std::array cube_vertices = {
-		   -0.5f, -0.5f, -0.5f,  0.f, 0.f,
-		    0.5f, -0.5f, -0.5f,  1.f, 0.f,
-			0.5f,  0.5f, -0.5f,  1.f, 1.f,
-			0.5f,  0.5f, -0.5f,  1.f, 1.f,
-		   -0.5f,  0.5f, -0.5f,  0.f, 1.f,
-		   -0.5f, -0.5f, -0.5f,  0.f, 0.f,
-		   
-		   -0.5f, -0.5f,  0.5f,  0.f, 0.f,
-			0.5f, -0.5f,  0.5f,  1.f, 0.f,
-			0.5f,  0.5f,  0.5f,  1.f, 1.f,
-			0.5f,  0.5f,  0.5f,  1.f, 1.f,
-		   -0.5f,  0.5f,  0.5f,  0.f, 1.f,
-		   -0.5f, -0.5f,  0.5f,  0.f, 0.f,
-
-		   -0.5f,  0.5f,  0.5f,  1.f, 0.f,
-		   -0.5f,  0.5f, -0.5f,  1.f, 1.f,
-		   -0.5f, -0.5f, -0.5f,  0.f, 1.f,
-		   -0.5f, -0.5f, -0.5f,  0.f, 1.f,
-		   -0.5f, -0.5f,  0.5f,  0.f, 0.f,
-		   -0.5f,  0.5f,  0.5f,  1.f, 0.f,
-
-			0.5f,  0.5f,  0.5f,  1.f, 0.f,
-			0.5f,  0.5f, -0.5f,  1.f, 1.f,
-			0.5f, -0.5f, -0.5f,  0.f, 1.f,
-			0.5f, -0.5f, -0.5f,  0.f, 1.f,
-			0.5f, -0.5f,  0.5f,  0.f, 0.f,
-			0.5f,  0.5f,  0.5f,  1.f, 0.f,
-
-		   -0.5f, -0.5f, -0.5f,  0.f, 1.f,
-			0.5f, -0.5f, -0.5f,  1.f, 1.f,
-			0.5f, -0.5f,  0.5f,  1.f, 0.f,
-			0.5f, -0.5f,  0.5f,  1.f, 0.f,
-		   -0.5f, -0.5f,  0.5f,  0.f, 0.f,
-		   -0.5f, -0.5f, -0.5f,  0.f, 1.f,
-
-		   -0.5f,  0.5f, -0.5f,  0.f, 1.f,
-			0.5f,  0.5f, -0.5f,  1.f, 1.f,
-			0.5f,  0.5f,  0.5f,  1.f, 0.f,
-			0.5f,  0.5f,  0.5f,  1.f, 0.f,
-		   -0.5f,  0.5f,  0.5f,  0.f, 0.f,
-		   -0.5f,  0.5f, -0.5f,  0.f, 1.f
-		};
-
-		std::array cube_positions = {
-			glm::vec3(-2.f, -2.f, -5.f),
-			glm::vec3(0.f, -2.f, -5.f),
-			glm::vec3(2.f, -2.f, -5.f),
-			glm::vec3(-2.f, 0.f, -5.f),
-			glm::vec3(0.f, 0.f, -5.f),
-			glm::vec3(2.f, 0.f, -5.f),
-			glm::vec3(-2.f, 2.f, -5.f),
-			glm::vec3(0.f, 2.f, -5.f),
-			glm::vec3(2.f, 2.f, -5.f),
-		};
-
 		// Screen quad
 
-		std::array screen_quad_vertices = { 
+		std::array screen_quad_vertices = {
 		   -1.f,  1.f,  0.f, 1.f,
 		   -1.f, -1.f,  0.f, 0.f,
 			1.f, -1.f,  1.f, 0.f,
@@ -151,29 +92,6 @@ bool gameloop::run(int argc, char* argv[]) {
 			1.f, -1.f,  1.f, 0.f,
 			1.f,  1.f,  1.f, 1.f
 		};
-
-		/*----------------------------------------------------------------------------------*/
-
-		// Cubes
-
-		unsigned int cube_VBO, cube_VAO;
-		GLAD_CHECK_ERROR(glGenBuffers(1, &cube_VBO));
-		GLAD_CHECK_ERROR(glGenVertexArrays(1, &cube_VAO));
-
-		GLAD_CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, cube_VBO));
-		GLAD_CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertices), cube_vertices.data(), GL_STATIC_DRAW));
-
-		GLAD_CHECK_ERROR(glBindVertexArray(cube_VAO));
-
-		//Position attribute
-		GLAD_CHECK_ERROR(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(f32), (void*)0));
-		GLAD_CHECK_ERROR(glEnableVertexAttribArray(0));
-		//Texture co-ordinates attribute
-		GLAD_CHECK_ERROR(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(f32), (void*)(3 * sizeof(float))));
-		GLAD_CHECK_ERROR(glEnableVertexAttribArray(2));
-
-
-		// Screen quad
 
 		unsigned int screen_quad_VBO, screen_quad_VAO;
 		glGenVertexArrays(1, &screen_quad_VAO);
@@ -186,68 +104,317 @@ bool gameloop::run(int argc, char* argv[]) {
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
-		/*----------------------------------------------------------------------------------*/
-		
-		// Textures
-
-#ifdef IMGUI_LAYER
-		// Dropdown list of .txt file which contains all texture paths
-		std::vector<std::string> textures = readFile(environment::getResourcePath("DirectoryReader/textures_list.txt"));
-#endif
-
-		// Initialise texture objects
-		Texture transparent_texture1(environment::getResourcePath("Textures/Transparent/Graffiti/graffiti_texture1.png"));
-
-		auto solid_texture1 = std::make_unique<Texture>(environment::getResourcePath("Textures/Solid/Metal/metal_bricks1.jpg"));
-		auto solid_texture2 = std::make_unique<Texture>(environment::getResourcePath("Textures/Solid/Wood/wood_planks1.jpg"));
-
-		Texture error_texture1(environment::getResourcePath("Textures/Other/error_texture1.png"));
-
-#ifdef IMGUI_LAYER
-		// Add all textures to vector
-		std::vector<std::unique_ptr<Texture>> solid_loaded_textures1;
-
-		solid_loaded_textures1.push_back(NULL);
-		solid_loaded_textures1.push_back(std::move(solid_texture1));
-		solid_loaded_textures1.push_back(std::move(solid_texture2));
-#endif
 
 		/*----------------------------------------------------------------------------------*/
+
+		// Plane mesh
+
+		Geometry plane_geometry;
+		plane_geometry.addVertices({
+			{ glm::vec3(9.0f, -0.5f,  9.0f),  glm::vec3(0.44f, 0.47f, 0.47f), glm::vec2(2.0f, 0.0f) },
+			{ glm::vec3(-9.0f, -0.5f,  9.0f), glm::vec3(0.44f, 0.47f, 0.47f), glm::vec2(0.0f, 0.0f) },
+			{ glm::vec3(-9.0f, -0.5f, -9.0f), glm::vec3(0.44f, 0.47f, 0.47f), glm::vec2(0.0f, 2.0f) },
+			{ glm::vec3(9.0f, -0.5f,  9.0f),  glm::vec3(0.44f, 0.47f, 0.47f), glm::vec2(2.0f, 0.0f) },
+			{ glm::vec3(-9.0f, -0.5f, -9.0f), glm::vec3(0.44f, 0.47f, 0.47f), glm::vec2(0.0f, 2.0f) },
+			{ glm::vec3(9.0f, -0.5f, -9.0f),  glm::vec3(0.44f, 0.47f, 0.47f), glm::vec2(2.0f, 2.0f) },
+
+			});
+
+		Material plane_material;
+
+		createMesh("plane_mesh1", plane_geometry, plane_material);
+
+		// Cube positions
+
+		std::array plane_positions = {
+			glm::vec3(-0.f, -5.f, 4.f),
+		};
+
+		std::vector<std::unique_ptr<Transform>> plane_position_objects;
+
+		for (size_t i = 0; i < plane_positions.size(); i++) {
+			plane_position_objects.push_back(std::make_unique<Transform>(0, plane_positions.at(i), glm::quat(1.f, 0.f, 0.f, 0.f)));
+		}
+
+		/*----------------------------------------------------------------------------------*/
+
+		// Cube mesh
+
+		Geometry wall_geometry;
+		wall_geometry.addVertices({
+			{ glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.33f, 0.4f, 0.39f), glm::vec2(0.f, 0.f) },
+			{ glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(0.33f, 0.4f, 0.39f), glm::vec2(1.f, 0.f) },
+			{ glm::vec3(0.5f,  0.5f, -0.5f), glm::vec3(0.33f, 0.4f, 0.39f), glm::vec2(1.f, 1.f) },
+			{ glm::vec3(0.5f,  0.5f, -0.5f), glm::vec3(0.33f, 0.4f, 0.39f), glm::vec2(1.f, 1.f) },
+			{ glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(0.33f, 0.4f, 0.39f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.33f, 0.4f, 0.39f), glm::vec2(0.f, 0.f) },
+
+			{ glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(0.55f, 0.58f, 0.59f), glm::vec2(0.f, 0.f) },
+			{ glm::vec3(0.5f, -0.5f,  0.5f), glm::vec3(0.55f, 0.58f, 0.59f), glm::vec2(1.f, 0.f) },
+			{ glm::vec3(0.5f,  0.5f,  0.5f), glm::vec3(0.55f, 0.58f, 0.59f), glm::vec2(1.f, 1.f) },
+			{ glm::vec3(0.5f,  0.5f,  0.5f), glm::vec3(0.55f, 0.58f, 0.59f), glm::vec2(1.f, 1.f) },
+			{ glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(0.55f, 0.58f, 0.59f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(0.55f, 0.58f, 0.59f), glm::vec2(0.f, 0.f) },
+
+			{ glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(0.55f, 0.58f, 0.59f), glm::vec2(1.f, 0.f) },
+			{ glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(0.55f, 0.58f, 0.59f), glm::vec2(1.f, 1.f) },
+			{ glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.55f, 0.58f, 0.59f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.55f, 0.58f, 0.59f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(0.55f, 0.58f, 0.59f), glm::vec2(0.f, 0.f) },
+			{ glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(0.55f, 0.58f, 0.59f), glm::vec2(1.f, 0.f) },
+
+			{ glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(0.55f, 0.58f, 0.59f), glm::vec2(1.f, 0.f) },
+			{ glm::vec3(0.5f,  0.5f, -0.5f),  glm::vec3(0.55f, 0.58f, 0.59f), glm::vec2(1.f, 1.f) },
+			{ glm::vec3(0.5f, -0.5f, -0.5f),  glm::vec3(0.55f, 0.58f, 0.59f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(0.5f, -0.5f, -0.5f),  glm::vec3(0.55f, 0.58f, 0.59f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(0.5f, -0.5f,  0.5f),  glm::vec3(0.55f, 0.58f, 0.59f), glm::vec2(0.f, 0.f) },
+			{ glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(0.55f, 0.58f, 0.59f), glm::vec2(1.f, 0.f) },
+
+			{ glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.33f, 0.4f, 0.39f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(0.5f, -0.5f, -0.5f),  glm::vec3(0.33f, 0.4f, 0.39f), glm::vec2(1.f, 1.f) },
+			{ glm::vec3(0.5f, -0.5f,  0.5f),  glm::vec3(0.33f, 0.4f, 0.39f), glm::vec2(1.f, 0.f) },
+			{ glm::vec3(0.5f, -0.5f,  0.5f),  glm::vec3(0.33f, 0.4f, 0.39f), glm::vec2(1.f, 0.f) },
+			{ glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(0.33f, 0.4f, 0.39f), glm::vec2(0.f, 0.f) },
+			{ glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.33f, 0.4f, 0.39f), glm::vec2(0.f, 1.f) },
+
+			{ glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(0.33f, 0.4f, 0.39f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(0.5f,  0.5f, -0.5f),  glm::vec3(0.33f, 0.4f, 0.39f), glm::vec2(1.f, 1.f) },
+			{ glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(0.33f, 0.4f, 0.39f), glm::vec2(1.f, 0.f) },
+			{ glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(0.33f, 0.4f, 0.39f), glm::vec2(1.f, 0.f) },
+			{ glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(0.33f, 0.4f, 0.39f), glm::vec2(0.f, 0.f) },
+			{ glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(0.33f, 0.4f, 0.39f), glm::vec2(0.f, 1.f) }
+			});
+
+		Material wall_material;
+
+		createMesh("wall_mesh1", wall_geometry, wall_material);
+
+		// Cube positions
+
+		std::array wall_positions = {
+			glm::vec3(-9.f, -5.f, -5.f),
+			glm::vec3(-8.f, -5.f, -5.f),
+			glm::vec3(-7.f, -5.f, -5.f),
+			glm::vec3(-6.f, -5.f, -5.f),
+			glm::vec3(-5.f, -5.f, -5.f),
+			glm::vec3(-4.f, -5.f, -5.f),
+			glm::vec3(-3.f, -5.f, -5.f),
+			glm::vec3(-2.f, -5.f, -5.f),
+			glm::vec3(-1.f, -5.f, -5.f),
+			glm::vec3(0.f, -5.f, -5.f),
+			glm::vec3(1.f, -5.f, -5.f),
+			glm::vec3(2.f, -5.f, -5.f),
+			glm::vec3(3.f, -5.f, -5.f),
+			glm::vec3(4.f, -5.f, -5.f),
+			glm::vec3(5.f, -5.f, -5.f),
+			glm::vec3(6.f, -5.f, -5.f),
+			glm::vec3(7.f, -5.f, -5.f),
+			glm::vec3(8.f, -5.f, -5.f),
+			glm::vec3(9.f, -5.f, -5.f),
+
+			glm::vec3(9.f, -5.f, -4.f),
+			glm::vec3(9.f, -5.f, -3.f),
+			glm::vec3(9.f, -5.f, -2.f),
+			glm::vec3(9.f, -5.f, -1.f),
+			glm::vec3(9.f, -5.f, 0.f),
+			glm::vec3(9.f, -5.f, 1.f),
+			glm::vec3(9.f, -5.f, 2.f),
+			glm::vec3(9.f, -5.f, 3.f),
+			glm::vec3(9.f, -5.f, 4.f),
+			glm::vec3(9.f, -5.f, 5.f),
+			glm::vec3(9.f, -5.f, 6.f),
+			glm::vec3(9.f, -5.f, 7.f),
+			glm::vec3(9.f, -5.f, 8.f),
+			glm::vec3(9.f, -5.f, 9.f),
+			glm::vec3(9.f, -5.f, 10.f),
+			glm::vec3(9.f, -5.f, 11.f),
+			glm::vec3(9.f, -5.f, 12.f),
+			glm::vec3(9.f, -5.f, 13.f),
+
+			glm::vec3(-9.f, -5.f, 13.f),
+			glm::vec3(-8.f, -5.f, 13.f),
+			glm::vec3(-7.f, -5.f, 13.f),
+			glm::vec3(-6.f, -5.f, 13.f),
+			glm::vec3(-5.f, -5.f, 13.f),
+			glm::vec3(-4.f, -5.f, 13.f),
+			glm::vec3(-3.f, -5.f, 13.f),
+			glm::vec3(-2.f, -5.f, 13.f),
+			glm::vec3(-1.f, -5.f, 13.f),
+			glm::vec3(0.f, -5.f, 13.f),
+			glm::vec3(1.f, -5.f, 13.f),
+			glm::vec3(2.f, -5.f, 13.f),
+			glm::vec3(3.f, -5.f, 13.f),
+			glm::vec3(4.f, -5.f, 13.f),
+			glm::vec3(5.f, -5.f, 13.f),
+			glm::vec3(6.f, -5.f, 13.f),
+			glm::vec3(7.f, -5.f, 13.f),
+			glm::vec3(8.f, -5.f, 13.f),
+
+			glm::vec3(-9.f, -5.f, -5.f),
+			glm::vec3(-9.f, -5.f, -4.f),
+			glm::vec3(-9.f, -5.f, -3.f),
+			glm::vec3(-9.f, -5.f, -2.f),
+			glm::vec3(-9.f, -5.f, -1.f),
+			glm::vec3(-9.f, -5.f, 0.f),
+			glm::vec3(-9.f, -5.f, 1.f),
+			glm::vec3(-9.f, -5.f, 2.f),
+			glm::vec3(-9.f, -5.f, 3.f),
+			glm::vec3(-9.f, -5.f, 4.f),
+			glm::vec3(-9.f, -5.f, 5.f),
+			glm::vec3(-9.f, -5.f, 6.f),
+			glm::vec3(-9.f, -5.f, 7.f),
+			glm::vec3(-9.f, -5.f, 8.f),
+			glm::vec3(-9.f, -5.f, 9.f),
+			glm::vec3(-9.f, -5.f, 10.f),
+			glm::vec3(-9.f, -5.f, 11.f),
+			glm::vec3(-9.f, -5.f, 12.f),
+			glm::vec3(-9.f, -5.f, 13.f),
+		};
+
+		std::vector<std::unique_ptr<Transform>> wall_position_objects;
+
+		for (size_t i = 0; i < wall_positions.size(); i++) {
+			wall_position_objects.push_back(std::make_unique<Transform>(0, wall_positions.at(i), glm::quat(1.f, 0.f, 0.f, 0.f)));
+		}
+
+		/*----------------------------------------------------------------------------------*/
+
+		// Snake mesh
+
+		Geometry snake_geometry;
+		snake_geometry.addVertices( {
+			{ glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.09f, 0.47f, 0.2f),  glm::vec2(0.f, 0.f) },
+			{ glm::vec3(0.5f, -0.5f, -0.5f),  glm::vec3(0.09f, 0.47f, 0.2f),  glm::vec2(1.f, 0.f) },
+			{ glm::vec3(0.5f,  0.5f, -0.5f),  glm::vec3(0.09f, 0.47f, 0.2f),  glm::vec2(1.f, 1.f) },
+			{ glm::vec3(0.5f,  0.5f, -0.5f),  glm::vec3(0.09f, 0.47f, 0.2f),  glm::vec2(1.f, 1.f) },
+			{ glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(0.09f, 0.47f, 0.2f),  glm::vec2(0.f, 1.f) },
+			{ glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.09f, 0.47f, 0.2f),  glm::vec2(0.f, 0.f) },
+						
+			{ glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(0.18f, 0.56f, 0.34f), glm::vec2(0.f, 0.f) },
+			{ glm::vec3(0.5f, -0.5f,  0.5f),  glm::vec3(0.18f, 0.56f, 0.34f), glm::vec2(1.f, 0.f) },
+			{ glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(0.18f, 0.56f, 0.34f), glm::vec2(1.f, 1.f) },
+			{ glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(0.18f, 0.56f, 0.34f), glm::vec2(1.f, 1.f) },
+			{ glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(0.18f, 0.56f, 0.34f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(0.18f, 0.56f, 0.34f), glm::vec2(0.f, 0.f) },
+														
+			{ glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(0.18f, 0.56f, 0.34f), glm::vec2(1.f, 0.f) },
+			{ glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(0.18f, 0.56f, 0.34f), glm::vec2(1.f, 1.f) },
+			{ glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.18f, 0.56f, 0.34f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.18f, 0.56f, 0.34f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(0.18f, 0.56f, 0.34f), glm::vec2(0.f, 0.f) },
+			{ glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(0.18f, 0.56f, 0.34f), glm::vec2(1.f, 0.f) },
+													
+			{ glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(0.18f, 0.56f, 0.34f), glm::vec2(1.f, 0.f) },
+			{ glm::vec3(0.5f,  0.5f, -0.5f),  glm::vec3(0.18f, 0.56f, 0.34f), glm::vec2(1.f, 1.f) },
+			{ glm::vec3(0.5f, -0.5f, -0.5f),  glm::vec3(0.18f, 0.56f, 0.34f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(0.5f, -0.5f, -0.5f),  glm::vec3(0.18f, 0.56f, 0.34f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(0.5f, -0.5f,  0.5f),  glm::vec3(0.18f, 0.56f, 0.34f), glm::vec2(0.f, 0.f) },
+			{ glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(0.18f, 0.56f, 0.34f), glm::vec2(1.f, 0.f) },
+
+			{ glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.09f, 0.47f, 0.2f),  glm::vec2(0.f, 1.f) },
+			{ glm::vec3(0.5f, -0.5f, -0.5f),  glm::vec3(0.09f, 0.47f, 0.2f),  glm::vec2(1.f, 1.f) },
+			{ glm::vec3(0.5f, -0.5f,  0.5f),  glm::vec3(0.09f, 0.47f, 0.2f),  glm::vec2(1.f, 0.f) },
+			{ glm::vec3(0.5f, -0.5f,  0.5f),  glm::vec3(0.09f, 0.47f, 0.2f),  glm::vec2(1.f, 0.f) },
+			{ glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(0.09f, 0.47f, 0.2f),  glm::vec2(0.f, 0.f) },
+			{ glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.09f, 0.47f, 0.2f),  glm::vec2(0.f, 1.f) },
+													  			  			  
+			{ glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(0.09f, 0.47f, 0.2f),  glm::vec2(0.f, 1.f) },
+			{ glm::vec3(0.5f,  0.5f, -0.5f),  glm::vec3(0.09f, 0.47f, 0.2f),  glm::vec2(1.f, 1.f) },
+			{ glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(0.09f, 0.47f, 0.2f),  glm::vec2(1.f, 0.f) },
+			{ glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(0.09f, 0.47f, 0.2f),  glm::vec2(1.f, 0.f) },
+			{ glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(0.09f, 0.47f, 0.2f),  glm::vec2(0.f, 0.f) },
+			{ glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(0.09f, 0.47f, 0.2f),  glm::vec2(0.f, 1.f) }
+		} );
+
+		Material snake_material;
+
+		createMesh("snake_mesh1", snake_geometry, snake_material);
+
+		// Snake positions
+
+		std::vector snake_positions = {
+			glm::vec3(-0.f, -5.f, 4.f),
+		};
+
+		std::vector<std::unique_ptr<Transform>> snake_position_objects;
+
+		for (size_t i = 0; i < snake_positions.size(); i++) {
+			snake_position_objects.push_back(std::make_unique<Transform>(0, snake_positions[i], glm::quat(1.f, 0.f, 0.f, 0.f)));
+		}
+
+		/*----------------------------------------------------------------------------------*/
+
+		// Apple mesh
+
+		Geometry apple_geometry;
+		apple_geometry.addVertices({
+			{ glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.89f, 0.03f, 0.03f), glm::vec2(0.f, 0.f) },
+			{ glm::vec3(0.5f, -0.5f, -0.5f),  glm::vec3(0.89f, 0.03f, 0.03f), glm::vec2(1.f, 0.f) },
+			{ glm::vec3(0.5f,  0.5f, -0.5f),  glm::vec3(0.89f, 0.03f, 0.03f), glm::vec2(1.f, 1.f) },
+			{ glm::vec3(0.5f,  0.5f, -0.5f),  glm::vec3(0.89f, 0.03f, 0.03f), glm::vec2(1.f, 1.f) },
+			{ glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(0.89f, 0.03f, 0.03f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.89f, 0.03f, 0.03f), glm::vec2(0.f, 0.f) },
+															
+			{ glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(0.96f, 0.09f, 0.09f), glm::vec2(0.f, 0.f) },
+			{ glm::vec3(0.5f, -0.5f,  0.5f),  glm::vec3(0.96f, 0.09f, 0.09f), glm::vec2(1.f, 0.f) },
+			{ glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(0.96f, 0.09f, 0.09f), glm::vec2(1.f, 1.f) },
+			{ glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(0.96f, 0.09f, 0.09f), glm::vec2(1.f, 1.f) },
+			{ glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(0.96f, 0.09f, 0.09f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(0.96f, 0.09f, 0.09f), glm::vec2(0.f, 0.f) },
+														
+			{ glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(0.96f, 0.09f, 0.09f), glm::vec2(1.f, 0.f) },
+			{ glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(0.96f, 0.09f, 0.09f), glm::vec2(1.f, 1.f) },
+			{ glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.96f, 0.09f, 0.09f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.96f, 0.09f, 0.09f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(0.96f, 0.09f, 0.09f), glm::vec2(0.f, 0.f) },
+			{ glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(0.96f, 0.09f, 0.09f), glm::vec2(1.f, 0.f) },
+													
+			{ glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(0.96f, 0.09f, 0.09f), glm::vec2(1.f, 0.f) },
+			{ glm::vec3(0.5f,  0.5f, -0.5f),  glm::vec3(0.96f, 0.09f, 0.09f), glm::vec2(1.f, 1.f) },
+			{ glm::vec3(0.5f, -0.5f, -0.5f),  glm::vec3(0.96f, 0.09f, 0.09f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(0.5f, -0.5f, -0.5f),  glm::vec3(0.96f, 0.09f, 0.09f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(0.5f, -0.5f,  0.5f),  glm::vec3(0.96f, 0.09f, 0.09f), glm::vec2(0.f, 0.f) },
+			{ glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(0.96f, 0.09f, 0.09f), glm::vec2(1.f, 0.f) },
+
+			{ glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.89f, 0.03f, 0.03f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(0.5f, -0.5f, -0.5f),  glm::vec3(0.89f, 0.03f, 0.03f), glm::vec2(1.f, 1.f) },
+			{ glm::vec3(0.5f, -0.5f,  0.5f),  glm::vec3(0.89f, 0.03f, 0.03f), glm::vec2(1.f, 0.f) },
+			{ glm::vec3(0.5f, -0.5f,  0.5f),  glm::vec3(0.89f, 0.03f, 0.03f), glm::vec2(1.f, 0.f) },
+			{ glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(0.89f, 0.03f, 0.03f), glm::vec2(0.f, 0.f) },
+			{ glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.89f, 0.03f, 0.03f), glm::vec2(0.f, 1.f) },
+
+			{ glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(0.89f, 0.03f, 0.03f), glm::vec2(0.f, 1.f) },
+			{ glm::vec3(0.5f,  0.5f, -0.5f),  glm::vec3(0.89f, 0.03f, 0.03f), glm::vec2(1.f, 1.f) },
+			{ glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(0.89f, 0.03f, 0.03f), glm::vec2(1.f, 0.f) },
+			{ glm::vec3(0.5f,  0.5f,  0.5f),  glm::vec3(0.89f, 0.03f, 0.03f), glm::vec2(1.f, 0.f) },
+			{ glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(0.89f, 0.03f, 0.03f), glm::vec2(0.f, 0.f) },
+			{ glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(0.89f, 0.03f, 0.03f), glm::vec2(0.f, 1.f) }
+			});
+
+		Material apple_material;
+
+		createMesh("apple_mesh1", apple_geometry, apple_material);
+
+		// Snake positions
+
+		std::array apple_positions = {
+			glm::vec3(NDRNG::intInRange(-8, 8), -5.f, NDRNG::intInRange(-4, 12)),
+		};
+
+		std::vector<std::unique_ptr<Transform>> apple_position_objects;
+
+		for (size_t i = 0; i < apple_positions.size(); i++) {
+			apple_position_objects.push_back(std::make_unique<Transform>(0, apple_positions.at(i), glm::quat(1.f, 0.f, 0.f, 0.f)));
+		}
+
+		/*----------------------------------------------------------------------------------*/
+
 
 		// Shader
 		main_shader.use();
-		main_shader.setInt("transparentTexture1", 1);
 
 		post_processing_shader.use();
-		post_processing_shader.setInt("screenTexture", 0);
-
-		/*----------------------------------------------------------------------------------*/
-
-		// Transformations
-
-		// Cubes
-
-		auto cube_transform1 = std::make_unique<Transform>(0, cube_positions.at(0), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto cube_transform2 = std::make_unique<Transform>(1, cube_positions.at(1), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto cube_transform3 = std::make_unique<Transform>(2, cube_positions.at(2), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto cube_transform4 = std::make_unique<Transform>(3, cube_positions.at(3), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto cube_transform5 = std::make_unique<Transform>(4, cube_positions.at(4), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto cube_transform6 = std::make_unique<Transform>(5, cube_positions.at(5), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto cube_transform7 = std::make_unique<Transform>(6, cube_positions.at(6), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto cube_transform8 = std::make_unique<Transform>(7, cube_positions.at(7), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-		auto cube_transform9 = std::make_unique<Transform>(8, cube_positions.at(8), glm::quat(0.f, 1.0f, 0.3f, 0.5f));
-
-		std::vector<std::unique_ptr<Transform>> cube_position_objects;
-
-		cube_position_objects.push_back(std::move(cube_transform1));
-		cube_position_objects.push_back(std::move(cube_transform2));
-		cube_position_objects.push_back(std::move(cube_transform3));
-		cube_position_objects.push_back(std::move(cube_transform4));
-		cube_position_objects.push_back(std::move(cube_transform5));
-		cube_position_objects.push_back(std::move(cube_transform6));
-		cube_position_objects.push_back(std::move(cube_transform7));
-		cube_position_objects.push_back(std::move(cube_transform8));
-		cube_position_objects.push_back(std::move(cube_transform9));
+		post_processing_shader.setInt("screen_texture", 0);
 
 		/*----------------------------------------------------------------------------------*/
 
@@ -275,16 +442,17 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		// Checks if framebuffer is complete
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-			log(logType::ERROR, "Framebuffer is not complete");
+			log(LogType::ERROR, "Framebuffer is not complete");
 		}
 #endif
 
 		/*----------------------------------------------------------------------------------*/
 
-		// Camera object
+		// Camera 
 
-		Camera camera(-90.f, 0.f, (800.f / 2.f), (600.f / 2.f), 45.f, 100.f, 2.25f);
-		
+		Camera camera(-90.f, -56.f, (800.f / 2.f), (600.f / 2.f), 45.f, 100.f, 2.25f);
+		camera(glm::vec3(0.185f, 16.85f, 20.18f), glm::vec3(0.f, -0.82f, -0.55f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 0.f));
+
 		/*----------------------------------------------------------------------------------*/
 
 #ifdef IMGUI_LAYER
@@ -299,50 +467,152 @@ bool gameloop::run(int argc, char* argv[]) {
 
 		/*----------------------------------------------------------------------------------*/
 
-		// Polygon Mode
-		std::array polygon_modes = { GL_FILL, GL_LINE, GL_POINT };
-
-		/*----------------------------------------------------------------------------------*/
-
 		Time last_frame = Time::now();
 
 		bool should_isolte = false;
 
 		/*----------------------------------------------------------------------------------*/
 
+		// 2d array of mesh positions
+		auto mesh_positions = std::vector(19, std::vector(19, 'e'));
+
+		// Speed
+		f32 snake_speed = 0.41f;
+
+		// Direction
+		char direction;
+
+		// Timer
+		Time timer;
+
+		// Dead
+		bool alive = true;
+
+		/*----------------------------------------------------------------------------------*/
+
 		// Game loop
-		while (context::window::isClosed(context::window::getWindow()) == false) {
+		while (!context::window::isClosed(context::window::getWindow()) && alive) {
 
 			// Initialise DT
 			Time delta_time = Time::now() - last_frame;
+
+			// Timer
+			timer += Time::now() - last_frame;
 			last_frame = Time::now();
+
+			// Adjust mesh positions accordingly
+			for (u8 i = 0; i < 18; i++) {
+				for (u8 j = 0; j < 18; j++) {
+					mesh_positions[i][j] = 'e';
+				}
+			}
+
+			for (size_t i = 0; i < wall_positions.size(); i++) {
+				mesh_positions[static_cast<int>(wall_positions[i].x) + 9][static_cast<int>(wall_positions[i].z) + 5] = 'x';
+			}
+			for (size_t i = 0; i < apple_positions.size(); i++) {
+				mesh_positions[static_cast<int>(apple_positions[i].x) + 9][static_cast<int>(apple_positions[i].z) + 5] = 'a';
+			}
+			if (mesh_positions[static_cast<int>(snake_positions[0].x) + 9][static_cast<int>(snake_positions[0].z) + 5] == 'x') {
+				alive = false;
+			}
+			else if (mesh_positions[static_cast<int>(snake_positions[0].x) + 9][static_cast<int>(snake_positions[0].z) + 5] == 'a') {
+				if (direction == 'u') {
+					snake_positions.push_back(glm::vec3(snake_positions[snake_positions.size() - 1].x, -5.f, snake_positions[snake_positions.size() - 1].z - 1.f));
+				}
+				else if (direction == 'l') {
+					snake_positions.push_back(glm::vec3(snake_positions[snake_positions.size() - 1].x - 1.f, -5.f, snake_positions[snake_positions.size() - 1].z));
+				}
+				else if (direction == 'd') {
+					snake_positions.push_back(glm::vec3(snake_positions[snake_positions.size() - 1].x, -5.f, snake_positions[snake_positions.size() - 1].z + 1.f));
+				}
+				else if (direction == 'r') {
+					snake_positions.push_back(glm::vec3(snake_positions[snake_positions.size() - 1].x + 1.f, -5.f, snake_positions[snake_positions.size() - 1].z));
+				}
+
+				snake_position_objects.push_back(std::make_unique<Transform>(0, snake_positions.at(snake_positions.size() - 1), glm::quat(1.f, 0.f, 0.f, 0.f)));
+
+				// Create new apple
+				apple_positions[0] = glm::vec3(NDRNG::intInRange(-8, 8), -5.f, NDRNG::intInRange(-4, 12));
+				apple_position_objects.pop_back();
+				apple_position_objects.push_back(std::make_unique<Transform>(0, apple_positions.at(apple_positions.size() - 1), glm::quat(1.f, 0.f, 0.f, 0.f)));
+			}
+			for (size_t i = 0; i < snake_positions.size(); i++) {
+				mesh_positions[static_cast<int>(snake_positions[i].x) + 9][static_cast<int>(snake_positions[i].z) + 5] = 's';
+			}
+
+			// Movement
+			if (timer >= Time::seconds(snake_speed)) {
+				for (size_t i = 1; i < snake_position_objects.size(); i++) {
+					if (direction == 'u') {
+						snake_positions[i].x = snake_positions[i - 1].x;
+						snake_positions[i].z = snake_positions[i - 1].z;
+						snake_position_objects[i]->setPosition(snake_positions[i]);
+						snake_position_objects[i]->createModel();
+					}
+					else if (direction == 'l') {
+						snake_positions[i].x = snake_positions[i - 1].x;
+						snake_positions[i].z = snake_positions[i - 1].z;
+						snake_position_objects[i]->setPosition(snake_positions[i]);
+						snake_position_objects[i]->createModel();
+					}
+					else if (direction == 'd') {
+						snake_positions[i].x = snake_positions[i - 1].x;
+						snake_positions[i].z = snake_positions[i - 1].z;
+						snake_position_objects[i]->setPosition(snake_positions[i]);
+						snake_position_objects[i]->createModel();
+					}
+					else if (direction == 'r') {
+						snake_positions[i].x = snake_positions[i - 1].x;
+						snake_positions[i].z = snake_positions[i - 1].z;
+						snake_position_objects[i]->setPosition(snake_positions[i]);
+						snake_position_objects[i]->createModel();
+					}
+				}
+
+				if (direction == 'u') {
+					snake_positions[0].z -= 1.f;
+					snake_position_objects[0]->setPosition(snake_positions[0]);
+					snake_position_objects[0]->createModel();
+				}
+				else if (direction == 'l') {
+					snake_positions[0].x -= 1.f;
+					snake_position_objects[0]->setPosition(snake_positions[0]);
+					snake_position_objects[0]->createModel();
+				}
+				else if (direction == 'd') {
+					snake_positions[0].z += 1.f;
+					snake_position_objects[0]->setPosition(snake_positions[0]);
+					snake_position_objects[0]->createModel();
+				}
+				else if (direction == 'r') {
+					snake_positions[0].x += 1.f;
+					snake_position_objects[0]->setPosition(snake_positions[0]);
+					snake_position_objects[0]->createModel();
+				}
+
+				timer = { };
+			}
 
 #ifdef IMGUI_LAYER
 			context::beginImguiFrame();
 
 			// GUI
 			dockspace_and_menubar_gui.update();
-			editor_gui.update(textures, std::move(solid_loaded_textures1), error_texture1, transparent_texture1);
-#else
+			editor_gui.update();
+#endif
 			// Background colour
-			GLAD_CHECK_ERROR(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
+			GLAD_CHECK_ERROR(glClearColor(0.2f, 0.3f, 0.3f, 1.f));
 			GLAD_CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
-			// Textures
-			solid_texture1->bind(0);
-			transparent_texture1.bind(1);
-
-			// Polygon Mode
-			polygon_mode = polygonMode::FILL;
-#endif
-
+			// Camera
 			camera.update(delta_time.getSeconds());
 
 #ifdef IMGUI_LAYER
 			// First pass
 			// Clear framebuffers content and enable depth test
 			GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, screen_quad_FBO));
-			GLAD_CHECK_ERROR(glClearColor(editor_gui.getBackgroundColour().x, editor_gui.getBackgroundColour().y, editor_gui.getBackgroundColour().z, editor_gui.getBackgroundColour().w));
+			GLAD_CHECK_ERROR(glClearColor(0.2f, 0.3f, 0.3f, 1.f));
 			GLAD_CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 			GLAD_CHECK_ERROR(glEnable(GL_DEPTH_TEST));
 #endif
@@ -356,19 +626,46 @@ bool gameloop::run(int argc, char* argv[]) {
 			glm::mat4 view = camera.getMat4View();
 			main_shader.setMat4("view", view);
 
-			glm::mat4 transform = camera.getMat4Transform();
-			s32 transform_loc = glGetUniformLocation(main_shader.mID, "transform");
-			main_shader.modMatrix4fv(transform_loc, 1, GL_FALSE, glm::value_ptr(transform));
-
 			// Polygon Mode
-			int pm = polygon_modes[static_cast<u8>(polygon_mode)];
-			GLAD_CHECK_ERROR(glPolygonMode(GL_FRONT_AND_BACK, pm));
+			GLAD_CHECK_ERROR(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
 
-			// Draw boxes
-			GLAD_CHECK_ERROR(glBindVertexArray(cube_VAO));
+			// Draw
 
-			for (size_t i = 0; i < cube_position_objects.size(); i++) {
-				glm::mat4 model = cube_position_objects[i]->getModel();
+			// Plane
+			GLAD_CHECK_ERROR(glBindVertexArray(findMesh("plane_mesh1").value().vao));
+
+			for (size_t i = 0; i < plane_position_objects.size(); i++) {
+				glm::mat4 model = plane_position_objects[i]->getModel();
+				main_shader.setMat4("model", model);
+
+				GLAD_CHECK_ERROR(glDrawArrays(GL_TRIANGLES, 0, 36));
+			}
+
+			// Wall
+			GLAD_CHECK_ERROR(glBindVertexArray(findMesh("wall_mesh1").value().vao));
+
+			for (size_t i = 0; i < wall_position_objects.size(); i++) {
+				glm::mat4 model = wall_position_objects[i]->getModel();
+				main_shader.setMat4("model", model);
+
+				GLAD_CHECK_ERROR(glDrawArrays(GL_TRIANGLES, 0, 36));
+			}
+
+			// Snake
+			GLAD_CHECK_ERROR(glBindVertexArray(findMesh("snake_mesh1").value().vao));
+
+			for (size_t i = 0; i < snake_position_objects.size(); i++) {
+				glm::mat4 model = snake_position_objects[i]->getModel();
+				main_shader.setMat4("model", model);
+
+				GLAD_CHECK_ERROR(glDrawArrays(GL_TRIANGLES, 0, 36));
+			}
+
+			// Apple
+			GLAD_CHECK_ERROR(glBindVertexArray(findMesh("apple_mesh1").value().vao));
+
+			for (size_t i = 0; i < apple_position_objects.size(); i++) {
+				glm::mat4 model = apple_position_objects[i]->getModel();
 				main_shader.setMat4("model", model);
 
 				GLAD_CHECK_ERROR(glDrawArrays(GL_TRIANGLES, 0, 36));
@@ -376,13 +673,13 @@ bool gameloop::run(int argc, char* argv[]) {
 
 #ifdef IMGUI_LAYER
 			// Second pass
-			GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0)); 
-			GLAD_CHECK_ERROR(glClearColor(1.f, 1.f, 1.f, 1.f)); 
+			GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+			GLAD_CHECK_ERROR(glClearColor(1.f, 1.f, 1.f, 1.f));
 			GLAD_CHECK_ERROR(glClear(GL_COLOR_BUFFER_BIT));
 
 			// Draw post-processed scene on a qaud covering the screen and copy that texture into second FBO
 			post_processing_shader.use();
-			post_processing_shader.setUint("postProcessingType", editor_gui.getPostProcessingType());
+			post_processing_shader.setUint("post_processing_type", 0);
 			GLAD_CHECK_ERROR(glBindVertexArray(screen_quad_VAO));
 			GLAD_CHECK_ERROR(glDisable(GL_DEPTH_TEST));
 			GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, scene_gui.getFBO()));
@@ -391,6 +688,7 @@ bool gameloop::run(int argc, char* argv[]) {
 			GLAD_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 
 			// GUI
+			editor_gui.update();
 			console_gui.update();
 			logger_gui.update();
 			profiler_gui.update(delta_time);
@@ -404,17 +702,12 @@ bool gameloop::run(int argc, char* argv[]) {
 			should_isolte = shouldIsolate();
 #endif
 
-			// Unbind all texture units at end of frame (helps toggling of textures)
-			std::vector<u16> tex_units = { 0, 1, 2 };
-			Texture::unbind(tex_units);
-
-
 #ifdef IMGUI_LAYER
 			context::renderImgui();
 #endif
 			context::window::swapBuffers();
 			context::window::pollEvents();
-			update(delta_time.getSeconds(), camera, should_isolte);
+			update(delta_time.getSeconds(), camera, direction, should_isolte);
 			input::endFrame();
 		}
 	}

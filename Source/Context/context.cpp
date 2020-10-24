@@ -1,6 +1,5 @@
 #include "Context/context.hpp"
 
-#include "Input/input_responder.hpp"
 #include "Core/logger.hpp"
 #include "Rendering/graphic.hpp"
 
@@ -28,7 +27,7 @@ namespace {
 	}
 	bool windowVerifier(GLFWwindow* window) {
 		if (window == NULL) {
-			log(logType::ERROR, "Failed to create GLFW window");
+			log(LogType::ERROR, "Failed to create GLFW window");
 			glfwTerminate();
 			return false;
 		}
@@ -45,7 +44,7 @@ void context::initialiseGLFW() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	log(logType::INFO, "CONTEXT | GLFW Successfully Initialised");
+	log(LogType::INFO, "CONTEXT | GLFW Successfully Initialised");
 }
 
 void context::glfwContext() {
@@ -84,7 +83,7 @@ void context::scrollContext(GLFWwindow* window, double xoffset, double yoffset) 
 		ImGui_ImplGlfw_InitForOpenGL(::window, true);
 		ImGui_ImplOpenGL3_Init("#version 330 core");
 
-		log(logType::INFO, "CONTEXT | ImGui Successfully Initialised");
+		log(LogType::INFO, "CONTEXT | ImGui Successfully Initialised");
 	}
 	void context::setImguiTheme(std::function<void()> theme) {
 		theme();

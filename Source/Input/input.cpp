@@ -7,7 +7,7 @@
 
 namespace {
 
-    input::states state;
+    input::States state;
 } // namespace
 
 /*----------------------------------------------------------------------------------*/
@@ -35,7 +35,7 @@ void input::onButton(u16 key, u16 action) {
         break;
     }
 }
-input::states const& input::getState() {
+input::States const& input::getState() {
     return state;
 }
 

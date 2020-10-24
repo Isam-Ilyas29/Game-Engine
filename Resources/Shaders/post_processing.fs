@@ -1,36 +1,36 @@
 #version 330 core
 
 
-out vec4 FragColour;
+out vec4 frag_colour;
 
-in vec2 TexCoords;
+in vec2 tex_coord;
 
-uniform sampler2D screenTexture;
-uniform uint postProcessingType;
+uniform sampler2D screen_texture;
+uniform uint post_processing_type;
 
 const float offset = 1.f / 300.f;        
 
 void main() {
-    switch (postProcessingType) {
+    switch (post_processing_type) {
         
     case 0u:
         // Default
 
-        FragColour = texture(screenTexture, TexCoords);
+        frag_colour = texture(screen_texture, tex_coord);
         break;
 
     case 1u:
         // Inverted Colours
 
-        FragColour = vec4(vec3(1.f - texture(screenTexture, TexCoords)), 1.f);
+        frag_colour = vec4(vec3(1.f - texture(screen_texture, tex_coord)), 1.f);
         break;
 
     case 2u:
         // Greyscale
 
-        FragColour = texture(screenTexture, TexCoords);
-        float average = 0.2126f * FragColour.r + 0.7152f * FragColour.g + 0.0722f * FragColour.b;
-        FragColour = vec4(average, average, average, 1.f);
+        frag_colour = texture(screen_texture, tex_coord);
+        float average = 0.2126f * frag_colour.r + 0.7152f * frag_colour.g + 0.0722f * frag_colour.b;
+        frag_colour = vec4(average, average, average, 1.f);
         break;
 
     case 3u:
@@ -56,14 +56,14 @@ void main() {
         
         vec3 sharpen_colours_sampleTexture[9];
         for (int i = 0; i < 9; i++) {
-            sharpen_colours_sampleTexture[i] = vec3(texture(screenTexture, TexCoords.st + sharpen_colours_offsets[i]));
+            sharpen_colours_sampleTexture[i] = vec3(texture(screen_texture, tex_coord.st + sharpen_colours_offsets[i]));
         }
         vec3 sharpen_colours_colour = vec3(0.f);
         for (int i = 0; i < 9; i++) {
             sharpen_colours_colour += sharpen_colours_sampleTexture[i] * sharpen_colours_kernel[i];
         }
         
-        FragColour = vec4(sharpen_colours_colour, 1.f);
+        frag_colour = vec4(sharpen_colours_colour, 1.f);
         break;
 
     case 4u:
@@ -89,18 +89,18 @@ void main() {
         
         vec3 blur_sampleTexture[9];
         for (int i = 0; i < 9; i++) {
-            blur_sampleTexture[i] = vec3(texture(screenTexture, TexCoords.st + blur_offsets[i]));
+            blur_sampleTexture[i] = vec3(texture(screen_texture, tex_coord.st + blur_offsets[i]));
         }
         vec3 blur_colour = vec3(0.f);
         for (int i = 0; i < 9; i++) {
             blur_colour += blur_sampleTexture[i] * blur_kernel[i];
         }
         
-        FragColour = vec4(blur_colour, 1.f);
+        frag_colour = vec4(blur_colour, 1.f);
         break;
 
     default:
-        FragColour = vec4(1.f, 1.f, 1.f, 1.f);
+        frag_colour = vec4(1.f, 1.f, 1.f, 1.f);
         break;
     }
 }

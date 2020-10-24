@@ -5,7 +5,6 @@
 #include "Core/logger.hpp"
 #include "Core/profiler.hpp"
 #include "Core/console.hpp"
-#include "Rendering/editor.hpp"
 #include "Rendering/graphic.hpp"
 #include "Core/rng.hpp"
 
@@ -163,224 +162,16 @@
 
 	// Editor
 
-	// Texture
-	const char* imguiCategory::EditorGUI::mCurrentItem = "None";
-	u8 imguiCategory::EditorGUI::mSelectedValue = 0;
-	bool imguiCategory::EditorGUI::mApplyTexture;
-	bool imguiCategory::EditorGUI::mApplyTransparentOverlay;
+	void imguiCategory::EditorGUI::update() {
 
-	// Post-processing
-	bool imguiCategory::EditorGUI::mDefault = true;
-	bool imguiCategory::EditorGUI::mInvertedColour;
-	bool imguiCategory::EditorGUI::mGreyscale;
-	bool imguiCategory::EditorGUI::mSharpenedColours;
-	bool imguiCategory::EditorGUI::mBlur;
-
-	// Background Colour
-	ImVec4 imguiCategory::EditorGUI::mLocalColour = ImVec4(0.2f, 0.3f, 0.3f, 1.0f);
-	bool imguiCategory::EditorGUI::mApplyBackground;
-
-	// Polygon Mode
-	int imguiCategory::EditorGUI::mSelectedItem;
-	const char* imguiCategory::EditorGUI::mItems[] = { "Fill", "Line", "Point" };
-
-	void imguiCategory::EditorGUI::update(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture) {
-		
 		if (::should_editor_gui) {
-			// Set window size and pos
 			ImGui::SetNextWindowSize(mWindowSize, ImGuiCond_FirstUseEver);
 			ImGui::SetNextWindowPos(mWindowPos, ImGuiCond_FirstUseEver);
 
 			ImGui::Begin("Editor##editor1");
-			{
-				// Texture
-				if (ImGui::CollapsingHeader("Textures")) {
-
-					// Copes items of passed in vector into another vector of 'const char*'
-					std::vector<const char*> items;
-					items.push_back("None");
-					for (size_t i = 0; i < textures.size(); i++) {
-						items.push_back(textures[i].data());
-					}
-
-					// Texture loader combo:
-					ImGui::TextWrapped("\nTexture Picker: ");
-					if (ImGui::BeginCombo("##texture_picker1", mCurrentItem, ImGuiComboFlags_NoArrowButton)) {
-						for (size_t i = 0; i < items.size(); i++) {
-							bool is_selected = (mCurrentItem == items[i]);
-							if (ImGui::Selectable(items[i], is_selected)) {
-								mSelectedValue = i;		//Index of selected item
-								mCurrentItem = items[i];	//Name of selected item
-							}
-							if (is_selected) {
-								ImGui::SetItemDefaultFocus();
-							}
-						}
-						ImGui::EndCombo();
-					}
-
-					ImGuiStyle& style = ImGui::GetStyle();
-					float spacing = style.ItemInnerSpacing.x;
-
-
-					// Creates arrows and makes sure they cannot go beyond/below possible value limit
-					ImGui::SameLine(0, spacing);
-					if (ImGui::ArrowButton("##left1", ImGuiDir_Left)) {
-						if (mSelectedValue != 0) {
-							mSelectedValue -= 1;
-							mCurrentItem = items[mSelectedValue];
-						}
-					}
-					ImGui::SameLine(0, spacing);
-					if (ImGui::ArrowButton("##right1", ImGuiDir_Right)) {
-						if (mSelectedValue != (items.size() - 1)) {
-							mSelectedValue += 1;
-							mCurrentItem = items[mSelectedValue];
-						}
-					}
-
-					for (size_t i = 0; i < loaded_textures.size(); i++) {
-						bool correct_texture = (i == mSelectedValue);
-
-						// Makes sure if selected item is none no image preview will be loaded and in else statement it default loads the error texture
-						if (correct_texture && mSelectedValue != 0) {
-							// Image previewer
-							GLuint imgui_preview_image_texture = 0;
-
-							bool image = loaded_textures[i]->previewImage(&imgui_preview_image_texture);
-							IM_ASSERT(image);
-
-							ImGui::TextWrapped("\nImage Preview: ");
-							ImGui::Image((void*)(intptr_t)imgui_preview_image_texture, ImVec2(160, 160));
-
-							ImGui::TextWrapped("\n");
-							ImGui::TextWrapped("Apply: ");
-							ImGui::SameLine();
-							ImGui::Checkbox("##apply_texture1", &mApplyTexture);
-
-							break;
-						}
-					}
-
-					// Transparent Overlay
-					ImGui::TextWrapped("\n");
-					ImGui::TextWrapped("Transparent Overlay: ");
-					ImGui::SameLine();
-					ImGui::Checkbox("##transparent_overlay1", &mApplyTransparentOverlay);
-
-					ImGui::Text("\n");
-				}
-
-				// Post processing
-				if (ImGui::CollapsingHeader("Post-processing")) {
-					ImGui::Text("\n");
-
-					if (ImGui::Checkbox("Default##post_processing_default1", &mDefault)) {
-						mInvertedColour = false;
-						mGreyscale = false;
-						mSharpenedColours = false;
-						mBlur = false;
-						mPostProcessingType = 0;
-					}
-					if (ImGui::Checkbox("Inverted Colours##post_processing_inverted_colours1", &mInvertedColour)) {
-						mDefault = false;
-						mGreyscale = false;
-						mSharpenedColours = false;
-						mBlur = false;
-						mPostProcessingType = 1;
-					}
-					if (ImGui::Checkbox("Greyscale##post_processing_grey_scale1", &mGreyscale)) {
-						mDefault = false;
-						mInvertedColour = false;
-						mSharpenedColours = false;
-						mBlur = false;
-						mPostProcessingType = 2;
-					}
-					if (ImGui::Checkbox("Sharpened Colours##post_processing_sharpened_colours_1", &mSharpenedColours)) {
-						mDefault = false;
-						mInvertedColour = false;
-						mGreyscale = false;
-						mBlur = false;
-						mPostProcessingType = 3;
-					}
-					if (ImGui::Checkbox("Blur##post_processing_blur1", &mBlur)) {
-						mDefault = false;
-						mInvertedColour = false;
-						mGreyscale = false;
-						mSharpenedColours = false;
-						mPostProcessingType = 4;
-					}
-
-					ImGui::Text("\n");
-				}
-
-				// Background Colour
-				if (ImGui::CollapsingHeader("Background Colour")) {
-					ImGui::TextWrapped("\nBackground Colour Picker: ");
-					ImGui::ColorEdit3("##background_colour_picker1", (float*)&mLocalColour);
-
-					ImGui::TextWrapped("\n");
-					ImGui::TextWrapped("Apply: ");
-					ImGui::SameLine();
-					ImGui::Checkbox("##apply_background1", &mApplyBackground);
-
-					ImGui::Text("\n");
-				}
-
-				// Polygon Mode
-				if (ImGui::CollapsingHeader("Polygon Mode")) {
-
-					// Polygon toggle checkbox: 
-					ImGui::TextWrapped("\nPolygon Mode: ");
-					ImGui::ListBox("##polygon_mode1", &mSelectedItem, mItems, IM_ARRAYSIZE(mItems), 3);
-					ImGui::Text("\n");
-				}
-
-			}
+			{ }
 			ImGui::End();
 		}
-
-		// Texture
-		for (size_t i = 0; i < loaded_textures.size(); i++) {
-			bool correct_texture = (i == mSelectedValue);
-
-			if (correct_texture && mSelectedValue != 0) {
-				if (mApplyTexture) {
-					loaded_textures[i]->bind(0);
-				}
-				else {
-					error_texture.bind(0);
-				}
-
-				break;
-			}
-			else {
-				error_texture.bind(0);
-			}
-		}
-
-		if (mApplyTransparentOverlay) {
-			transparent_texture.bind(1);
-		}
-
-		// Background Colour
-		if (mApplyBackground) {
-			mFinalColour = ImVec4(mLocalColour.x, mLocalColour.y, mLocalColour.z, mLocalColour.w);
-		}
-		else {
-			mFinalColour = ImVec4(0.2f, 0.3f, 0.3f, 1.0f);	// Default
-		}
-
-		// Polygon Mode
-		polygon_mode = static_cast<polygonMode>(mSelectedItem);
-	}
-
-	const ImVec4 imguiCategory::EditorGUI::getBackgroundColour() {
-		return mFinalColour;
-	}
-
-	const u32 imguiCategory::EditorGUI::getPostProcessingType() {
-		return mPostProcessingType;
 	}
 
 	/*----------------------------------------------------------------------------------*/
@@ -411,7 +202,7 @@ imguiCategory::SceneGUI::SceneGUI() {
 
 	// Checks if framebuffer is complete
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		log(logType::ERROR, "Framebuffer is not complete");
+		log(LogType::ERROR, "Framebuffer is not complete");
 	}
 
 
@@ -439,13 +230,13 @@ void imguiCategory::SceneGUI::update(unsigned int post_processing_fbo_texture, u
 				// Viewport
 				GLAD_CHECK_ERROR(glViewport(0, 0, ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionHeight()));
 
-				// Resizes the texture
+				// Creates a color attachment texture
 				GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, post_processing_fbo_texture));
 				GLAD_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
 				GLAD_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mTexture));
 				GLAD_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, NULL));
 
-				// Resizes the RBO
+				// Creates a renderbuffer object for depth and stencil attachment
 				GLAD_CHECK_ERROR(glBindRenderbuffer(GL_RENDERBUFFER, mRBO));
 				GLAD_CHECK_ERROR(glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionHeight()));
 				GLAD_CHECK_ERROR(glBindRenderbuffer(GL_RENDERBUFFER, post_processing_rbo));
@@ -520,17 +311,17 @@ const unsigned int imguiCategory::SceneGUI::getRBO() {
 				{
 					for (GUILogData const& log_data : gui_log_data) {
 						if (std::count(std::begin(mFind), std::begin(mFind) + strlen(mFind), ' ') == strlen(mFind)) {
-							if (mInfoCategory && log_data.type == logType::INFO) {
+							if (mInfoCategory && log_data.type == LogType::INFO) {
 								ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
 								ImGui::TextWrapped("%s", log_data.full_log.data());
 								ImGui::PopStyleColor();
 							}
-							if (mWarningCategory && log_data.type == logType::WARNING) {
+							if (mWarningCategory && log_data.type == LogType::WARNING) {
 								ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
 								ImGui::TextWrapped("%s", log_data.full_log.data());
 								ImGui::PopStyleColor();
 							}
-							if (mErrorCategory && log_data.type == logType::ERROR) {
+							if (mErrorCategory && log_data.type == LogType::ERROR) {
 								ImGui::PushStyleColor(ImGuiCol_Text, setGUILogTextColour(log_data.type));
 								ImGui::TextWrapped("%s", log_data.full_log.data());
 								ImGui::PopStyleColor();
@@ -594,17 +385,17 @@ const unsigned int imguiCategory::SceneGUI::getRBO() {
 					// Dummy log
 					if (ImGui::Button(ICON_FA_PLUS "   Dummy Log ##dummy_log1")) {
 						for (u8 i = 0; i < 5; i++) {
-							u8 ran = NDRNG::intInRange(1, 3);
+							u8 random = NDRNG::intInRange(1, 3);
 
-							switch (ran) {
+							switch (random) {
 							case 1:
-								log(logType::INFO, "This is information");
+								log(LogType::INFO, "This is information");
 								break;
 							case 2:
-								log(logType::WARNING, "This is a warning");
+								log(LogType::WARNING, "This is a warning");
 								break;
 							case 3:
-								log(logType::ERROR, "This is an error");
+								log(LogType::ERROR, "This is an error");
 								break;
 							}
 						}

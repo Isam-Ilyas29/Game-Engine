@@ -48,35 +48,9 @@
 			ImVec2 mWindowSize = ImVec2(1920.f, 1006.f);
 			ImVec2 mWindowPos = ImVec2(0.f, 25.f);
 
-			// Colour
-			ImVec4 mFinalColour;
-
 		public:
-			// Texture
-			static const char* mCurrentItem;
-			static u8 mSelectedValue;
-			static bool mApplyTexture;
-			static bool mApplyTransparentOverlay;
 
-			// Post-processing
-			static bool mDefault;
-			static bool mInvertedColour;
-			static bool mGreyscale;
-			static bool mSharpenedColours;
-			static bool mBlur;
-			u32 mPostProcessingType = 0;
-
-			// Colour
-			static ImVec4 mLocalColour;
-			static bool mApplyBackground;
-
-			// Polygon Mode
-			static int mSelectedItem;
-			static const char* mItems[];
-
-			void update(const std::vector<std::string>& textures, const std::vector<std::unique_ptr<Texture>>& loaded_textures, const Texture& error_texture, const Texture& transparent_texture);
-			const ImVec4 getBackgroundColour();
-			const u32 getPostProcessingType();
+			void update();
 		};
 
 		/*----------------------------------------------------------------------------------*/

@@ -19,13 +19,13 @@ Camera::Camera(f32 yaw, f32 pitch, f32 lastX, f32 lastY, f32 FOV, f32 render_dis
 	// Default settings
 	mSpeed = 2.5f;
 
-	mCameraVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
+	mCameraVelocity = glm::vec3(0.f, 0.f, 0.f);
 
-	mCameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-	mCameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-	mCameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	mCameraPos = glm::vec3(0.f, 0.f, 15.f);
+	mCameraFront = glm::vec3(0.f, 0.f, -1.f);
+	mCameraUp = glm::vec3(0.f, 1.f, 0.f);
 
-	mSpawnPostion = glm::vec3(0.0f, 0.0f, 0.0f);
+	mSpawnPostion = glm::vec3(0.f, 0.f, 0.f);
 }
 
 void Camera::operator() (glm::vec3 camera_pos, glm::vec3 camera_front, glm::vec3 camera_up, glm::vec3 spawn_postion) {
@@ -48,6 +48,12 @@ void Camera::update(f32 delta_time) {
 	}
 
 	mCameraVelocity = glm::vec3(0.f, 0.f, 0.f);
+
+	glm::vec3 front;
+	front.x = cos(glm::radians(mYaw)) * cos(glm::radians(mPitch));
+	front.y = sin(glm::radians(mPitch));
+	front.z = sin(glm::radians(mYaw)) * cos(glm::radians(mPitch));
+	mCameraFront = glm::normalize(front);
 }
 
 /*----------------------------------------------------------------------------------*/
@@ -102,12 +108,6 @@ void Camera::cursorRotation(f32 xPos, f32 yPos) {
 		mPitch = 89.0f;
 	if (mPitch < -89.0f)
 		mPitch = -89.0f;
-
-	glm::vec3 front;
-	front.x = cos(glm::radians(mYaw)) * cos(glm::radians(mPitch));
-	front.y = sin(glm::radians(mPitch));
-	front.z = sin(glm::radians(mYaw)) * cos(glm::radians(mPitch));
-	mCameraFront = glm::normalize(front);
 }
 
 /*----------------------------------------------------------------------------------*/

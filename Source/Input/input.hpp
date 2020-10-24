@@ -10,7 +10,7 @@ namespace input {
     /*----------------------------------------------------------------------------------*/
 
     // Keys and Mouse Buttons
-    struct states {
+    struct States {
         std::unordered_set<u16> pressed;
         std::unordered_set<u16> held;
         std::unordered_set<u16> released;
@@ -19,7 +19,7 @@ namespace input {
     /*----------------------------------------------------------------------------------*/
 
     void onButton(u16 key, u16 action);
-    states const& getState();
+    States const& getState();
 
     bool isPressed(u16 key);
     bool isHeld(u16 key);
