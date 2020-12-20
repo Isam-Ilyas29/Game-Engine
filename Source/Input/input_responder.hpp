@@ -10,18 +10,18 @@
 
 /*----------------------------------------------------------------------------------*/
 
-enum class sceneStates;
+enum class SceneStates;
 
-void enableSceneState(sceneStates state);
-void disableSceneState(sceneStates state);
-bool isSceneState(sceneStates state);
+void enableSceneState(SceneStates state);
+void disableSceneState(SceneStates state);
+bool isSceneState(SceneStates state);
 
 /*----------------------------------------------------------------------------------*/
 
-void keyboardResponder(Camera& camera);
+void keyboardResponder(char& direction);
 void mouseResponder(Camera& camera);
 void scrollResponder(Camera& camera);
 
-void update(f32 delta_time, Camera& camera, bool should_isolate);
+void update(f32 delta_time, Camera& camera, char& direction, bool should_isolate);
 
 /*----------------------------------------------------------------------------------*/

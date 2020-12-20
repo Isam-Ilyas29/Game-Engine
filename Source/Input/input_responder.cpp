@@ -12,58 +12,52 @@
 
 // Scene states and has the correspoding functions and bitset
 
-enum class sceneStates {
+enum class SceneStates {
 	STATE_HALTED,
 	STATE_CAMERA,
 
 	_COUNT
 };
 
-std::bitset<size_t(sceneStates::_COUNT)> scene_state;
+std::bitset<size_t(SceneStates::_COUNT)> scene_state;
 
-void enableSceneState(sceneStates state) {
+void enableSceneState(SceneStates state) {
 	scene_state[size_t(state)] = true;
 }
-void disableSceneState(sceneStates state) {
+void disableSceneState(SceneStates state) {
 	scene_state[size_t(state)] = false;
 }
-bool isSceneState(sceneStates state) {
+bool isSceneState(SceneStates state) {
 	bool state_to_check = scene_state[size_t(state)];
 	return state_to_check;
 }
 
 /*----------------------------------------------------------------------------------*/
 
-void keyboardResponder(Camera& camera) {
+void keyboardResponder(char& direction) {
 
 	/*-----------------------------------------*/
 
 	if (input::isHeld(GLFW_KEY_W)) {
-		camera.moveForward();
+		direction = 'u';
 	}
 
 	/*-----------------------------------------*/
 
 	if (input::isHeld(GLFW_KEY_A)) {
-		camera.moveLeft();
+		direction = 'l';
 	}
 
 	/*-----------------------------------------*/
 
 	if (input::isHeld(GLFW_KEY_S)) {
-		camera.moveBackward();
+		direction = 'd';
 	}
 
 	/*-----------------------------------------*/
 
 	if (input::isHeld(GLFW_KEY_D)) {
-		camera.moveRight();
-	}
-
-	/*-----------------------------------------*/
-
-	if (input::isHeld(GLFW_KEY_LEFT_SHIFT)) {
-		polygon_mode = polygonMode::LINE;
+		direction = 'r';
 	}
 
 	/*-----------------------------------------*/
@@ -91,25 +85,25 @@ void scrollResponder(Camera& camera) {
 
 /*----------------------------------------------------------------------------------*/
 
-void update(f32 delta_time, Camera& camera, bool should_isolate) {
+void update(f32 delta_time, Camera& camera, char& direction, bool should_isolate) {
 
 	if (should_isolate) {
-		disableSceneState(sceneStates::STATE_CAMERA);
-		enableSceneState(sceneStates::STATE_HALTED);
+		disableSceneState(SceneStates::STATE_CAMERA);
+		enableSceneState(SceneStates::STATE_HALTED);
 	}
 	else {
-		disableSceneState(sceneStates::STATE_HALTED);
-		enableSceneState(sceneStates::STATE_CAMERA);
+		disableSceneState(SceneStates::STATE_HALTED);
+		enableSceneState(SceneStates::STATE_CAMERA);
 	}
 
 	/*---------------------------------------------*/
 
-	if (isSceneState(sceneStates::STATE_CAMERA)) {
-		keyboardResponder(camera);
+	if (isSceneState(SceneStates::STATE_CAMERA)) {
+		keyboardResponder(direction);
 		mouseResponder(camera);
 		scrollResponder(camera);
 	}
-	else if (isSceneState(sceneStates::STATE_HALTED)) {
+	else if (isSceneState(SceneStates::STATE_HALTED)) {
 		//std::cout << "YOU ARE ISOLATED FROM ALL OTHER SCENE STATES!" << std::endl;
 	}
 }

@@ -15,7 +15,7 @@
 #include "Camera/camera.hpp"
 #include "Rendering/ImGUI/gui.hpp"
 #include "Rendering/ImGUI/imgui_theme.hpp"
-#include "Game/input_responder.hpp"
+#include "Input/input_responder.hpp"
 #include "Core/utils.hpp"
 
 #include <GLFW/glfw3.h>
